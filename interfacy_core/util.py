@@ -26,4 +26,4 @@ def type_as_str(t):
     type_str = repr(t)
     if "<class '" in type_str:
         type_str = type_str.split("'")[1]
-    return type_str
+    return type_str.split(".")[-1]

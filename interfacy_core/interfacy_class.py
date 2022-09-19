@@ -2,8 +2,8 @@ import inspect
 
 import docstring_parser
 
-from interfacy_func import InterfacyFunction
-from util import docstring_description, has_docstring
+from interfacy_core.interfacy_func import InterfacyFunction
+from interfacy_core.util import docstring_description, has_docstring
 
 
 class InterfacyClass:

@@ -3,8 +3,8 @@ from typing import Callable
 
 import docstring_parser
 
-from interfacy_param import InterfacyParameter
-from util import docstring_description, has_docstring
+from interfacy_core.interfacy_param import InterfacyParameter
+from interfacy_core.util import docstring_description, has_docstring
 
 
 class InterfacyFunction:

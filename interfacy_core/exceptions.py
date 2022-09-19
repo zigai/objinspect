@@ -1,4 +1,4 @@
-from util import type_as_str
+from interfacy_core.util import type_as_str
 
 
 class InterfacyException(Exception):

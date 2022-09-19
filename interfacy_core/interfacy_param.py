@@ -2,7 +2,7 @@ import enum
 import inspect
 from typing import Any
 
-from interfacy.constants import EMPTY
+from interfacy_core.constants import EMPTY
 
 
 class ParameterShape(enum.IntEnum):
