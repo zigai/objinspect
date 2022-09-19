@@ -1,1 +1,1 @@
-# interfacy-core
+# Interfacy Core
