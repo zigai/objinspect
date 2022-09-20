@@ -1,4 +1,5 @@
 import inspect
+from collections import OrderedDict
 
 import docstring_parser
 
@@ -14,16 +15,32 @@ class InterfacyClass:
         self.has_docstring = has_docstring(self.docstring)
         members = inspect.getmembers(self.cls, inspect.isfunction)
         self.has_init = members[0][0] == "__init__"
-        self.methods = [InterfacyFunction(i[1]) for i in members]
+        methods = [InterfacyFunction(i[1]) for i in members]
+        self.methods = OrderedDict()
+        for i in methods:
+            self.methods[i.name] = i
         self.__parsed_docstring = self.__parse_docstring()
         self.description = docstring_description(self.__parsed_docstring)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(name='{self.name}', methods={len(self.methods)}, has_init={self.has_init}, has_docstring={self.has_docstring})"
+
+    def __iter__(self):
+        for i in self.methods.values():
+            yield i
+
+    def __getitem__(self, item: str | int) -> InterfacyFunction:
+        match item:
+            case str():
+                return self.methods[item]
+            case int():
+                return list(self.methods.values())[item]
+            case _:
+                raise TypeError(type(item))
 
     def __parse_docstring(self):
         return docstring_parser.parse(self.docstring) if self.has_docstring else None
 
     @property
     def dict(self):
-        return {"name": self.name, "methods": [i.dict for i in self.methods]}
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(name='{self.name}', methods={len(self.methods)}, has_init={self.has_init}, has_docstring={self.has_docstring})"
+        return {"name": self.name, "methods": [i.dict for i in self.methods.values()]}
