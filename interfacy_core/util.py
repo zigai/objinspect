@@ -27,3 +27,7 @@ def type_as_str(t):
     if "<class '" in type_str:
         type_str = type_str.split("'")[1]
     return type_str.split(".")[-1]
+
+
+def extract_enum_options(e):
+    return tuple(e.__members__.keys())
