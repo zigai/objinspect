@@ -17,7 +17,6 @@ class InterfacyFunction(Iterable):
         self.has_docstring = has_docstring(self.docstring)
         self.__parsed_docstr = self.__parse_docstring()
         self.parameters = self.__get_parameters()
-        print(self.parameters)
         self.description = docstring_description(self.__parsed_docstr)
 
     def __repr__(self) -> str:
