@@ -1,3 +1,5 @@
+import os
+
 from docstring_parser import Docstring
 
 
@@ -31,3 +33,7 @@ def type_as_str(t):
 
 def extract_enum_options(e):
     return tuple(e.__members__.keys())
+
+
+def is_file(path):
+    return os.path.isfile(path)
