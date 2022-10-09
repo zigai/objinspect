@@ -16,8 +16,6 @@ def example_func1(a, b=None, c=4):
 
 function1 = InterfacyFunction(example_func1)
 
-# ---------------
-
 
 def test_params_len():
     assert len(function1.parameters) == 3

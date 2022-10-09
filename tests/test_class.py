@@ -25,11 +25,10 @@ class ExampleClass1:
 
 cls1 = InterfacyClass(ExampleClass1)
 
-# ---
-
 
 def test_getitem():
     assert cls1["__init__"].name == "__init__"
+    assert cls1.has_init == True
     assert cls1[0].name == "__init__"
     assert cls1["method_1"].name == "method_1"
     with pytest.raises(IndexError):
