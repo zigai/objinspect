@@ -1,5 +1,5 @@
 import pytest
-from interfacy_core.interfacy_class import InterfacyClass
+from py_inspect import Class
 
 
 class ExampleClass1:
@@ -23,20 +23,20 @@ class ExampleClass1:
         print(f"{self.b=}")
 
 
-cls1 = InterfacyClass(ExampleClass1)
+cls1 = Class(ExampleClass1)
 
 
 def test_getitem():
-    assert cls1["__init__"].name == "__init__"
+    assert cls1.get_method("__init__").name == "__init__"
     assert cls1.has_init == True
-    assert cls1[0].name == "__init__"
-    assert cls1["method_1"].name == "method_1"
+    assert cls1.get_method(0).name == "__init__"
+    assert cls1.get_method("method_1").name == "method_1"
     with pytest.raises(IndexError):
-        cls1[3]
+        cls1.get_method(3)
     with pytest.raises(TypeError):
-        cls1[3.3]
+        cls1.get_method(3.3)
     with pytest.raises(KeyError):
-        cls1["abc"]
+        cls1.get_method("abc")
 
 
 def test_init():
@@ -49,7 +49,3 @@ def test_description():
 
 def test_methods_len():
     assert len(cls1.methods) == 2
-
-
-def test_init_first():
-    assert cls1[0].name == "__init__"
