@@ -7,16 +7,16 @@ README = (HERE / "README.md").read_text()
 REQUIREMENTS = (HERE / "requirements.txt").read_text()
 
 setup(
-    name="interfacy-core",
-    version="0.0.1",
+    name="py-inspect",
+    version="0.1.0",
     description="",
     long_description=README,
     long_description_content_type="text/markdown",
-    author="Žiga IvanŠek",
+    author="Žiga Ivanšek",
     author_email="ziga.ivansek@gmail.com",
-    url="https://github.com/zigai/",
+    url="https://github.com/zigai/py-inspect",
     python_requires=">=3.10",
-    license="",
+    license="MIT",
     classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.10",
