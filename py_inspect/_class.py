@@ -4,11 +4,13 @@ from collections import OrderedDict
 import docstring_parser
 
 from py_inspect.function import Function, _get_docstr_desc, _has_docstr
+from py_inspect.util import get_methods
 
 
 class Class:
-    def __init__(self, cls) -> None:
+    def __init__(self, cls, include_inherited: bool = True) -> None:
         self.cls = cls
+        self.include_inherited = include_inherited
         self.initialized = False
         try:
             self.name: str = self.cls.__name__
@@ -29,7 +31,15 @@ class Class:
         return f"{self.__class__.__name__}(name='{self.name}', methods={len(self._methods)}, has_init={self.has_init}, has_docstring={self.has_docstring})"
 
     def _find_methods(self):
-        members = inspect.getmembers(self.cls, inspect.isfunction)
+        if self.initialized:
+            members = inspect.getmembers(self.cls, inspect.ismethod)
+        else:
+            members = inspect.getmembers(self.cls, inspect.isfunction)
+        if not self.include_inherited:
+            if not self.initialized:
+                members = [i for i in members if i[0] in get_methods(self.cls)]
+            else:
+                members = [i for i in members if i[0] in get_methods(self.cls.__class__)]
         methods = OrderedDict()
         for i in [Function(i[1]) for i in members]:
             methods[i.name] = i
