@@ -1,22 +1,9 @@
 import types
 import typing
+from types import FunctionType
 from typing import Any
 
 from py_inspect.constants import UNION_TYPE
-
-
-class UnionParameter:
-    def __init__(self, params: tuple) -> None:
-        self.params = params
-
-    def __iter__(self):
-        for i in self.params:
-            yield i
-
-    def __repr__(self) -> str:
-        params = [type_to_str(i) for i in self.params]
-        params = " | ".join(params)
-        return f"{self.__class__.__name__}({params})"
 
 
 def type_to_str(t) -> str:
@@ -67,6 +54,26 @@ def type_args(t: Any):
     return typing.get_args(t)
 
 
+class UnionParameter:
+    def __init__(self, params: tuple) -> None:
+        self.params = params
+
+    def __iter__(self):
+        for i in self.params:
+            yield i
+
+    def __repr__(self) -> str:
+        params = [type_to_str(i) for i in self.params]
+        params = " | ".join(params)
+        return f"{self.__class__.__name__}({params})"
+
+    @classmethod
+    def from_type(cls, t):
+        if type(t) in UNION_TYPE:
+            return cls(type_args(t))
+        raise TypeError(t)
+
+
 def type_simplify(t: Any):
     """
     Examples:
@@ -84,6 +91,17 @@ def type_simplify(t: Any):
     return origin
 
 
+def get_methods(cls) -> list[str]:
+    """
+    Get names of methods that belong to a class. Do not incdule inherited methods.
+    """
+    return list(
+        name
+        for name, method in cls.__dict__.items()
+        if isinstance(method, (FunctionType, classmethod, staticmethod))
+    )
+
+
 __all__ = [
     "UnionParameter",
     "type_to_str",
@@ -92,4 +110,5 @@ __all__ = [
     "type_origin",
     "type_args",
     "type_simplify",
+    "get_methods",
 ]
