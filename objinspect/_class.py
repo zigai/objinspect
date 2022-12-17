@@ -3,8 +3,8 @@ from collections import OrderedDict
 
 import docstring_parser
 
-from py_inspect.function import Function, _get_docstr_desc, _has_docstr
-from py_inspect.util import get_methods
+from objinspect.function import Function, _get_docstr_desc, _has_docstr
+from objinspect.util import get_methods
 
 
 class Class:

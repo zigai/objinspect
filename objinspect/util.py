@@ -3,7 +3,7 @@ import typing
 from types import FunctionType
 from typing import Any
 
-from py_inspect.constants import UNION_TYPE
+from objinspect.constants import UNION_TYPE
 
 
 def type_to_str(t) -> str:

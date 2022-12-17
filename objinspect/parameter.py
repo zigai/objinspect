@@ -1,7 +1,7 @@
 import inspect
 from typing import Any
 
-from py_inspect.constants import EMPTY
+from objinspect.constants import EMPTY
 
 
 class Parameter:

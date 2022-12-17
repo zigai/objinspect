@@ -5,7 +5,7 @@ from typing import Callable
 import docstring_parser
 from docstring_parser import Docstring
 
-from py_inspect.parameter import Parameter
+from objinspect.parameter import Parameter
 
 
 def _has_docstr(docstring: str | None) -> bool:

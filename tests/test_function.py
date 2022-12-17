@@ -1,6 +1,7 @@
 import pytest
-from py_inspect.constants import EMPTY
-from py_inspect.function import Function
+
+from objinspect.constants import EMPTY
+from objinspect.function import Function
 
 
 def example_func1(a, b=None, c=4):

@@ -1,5 +1,6 @@
 import pytest
-from py_inspect import Class
+
+from objinspect import Class
 
 
 class ExampleClass1:
