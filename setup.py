@@ -7,7 +7,7 @@ README = (HERE / "README.md").read_text()
 REQUIREMENTS = (HERE / "requirements.txt").read_text()
 
 setup(
-    name="py-inspect",
+    name="objinspect",
     version="0.1.0",
     description="",
     long_description=README,
