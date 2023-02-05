@@ -25,6 +25,26 @@ def _get_docstr_desc(docstring: Docstring | None) -> str:
 
 
 class Function:
+
+    """
+    Class representing a function and its attributes.
+
+    Args:
+        func (Callable): The function to be inspected.
+        skip_self (bool, optional): Whether to skip the self parameter. Defaults to True.
+
+    Attributes:
+        func (Callable): The function to be inspected.
+        skip_self (bool): Whether to skip the self parameter.
+        name (str): The name of the function.
+        docstring (str): The docstring of the function.
+        has_docstring (bool): Whether the function has a docstring.
+        description (str): The description part of the function's docstring.
+        params (list[Parameter]): A list of parameters of the function.
+        dict (dict): A dictionary representation of the function's attributes.
+
+    """
+
     def __init__(self, func: Callable, skip_self: bool = True) -> None:
         self.func = func
         self.skip_self = skip_self
@@ -60,6 +80,18 @@ class Function:
         return parameters
 
     def get_param(self, arg: str | int) -> Parameter:
+        """
+        Retrieve a single `Parameter` object.
+
+        Args:
+            arg (str | int): Either the name or index of the parameter to retrieve.
+
+        Returns:
+            Parameter: A `Parameter` object.
+
+        Raises:
+            TypeError: If arg is not a string or an integer.
+        """
         match arg:
             case str():
                 return self._parameters[arg]
@@ -70,6 +102,9 @@ class Function:
 
     @property
     def params(self) -> list[Parameter]:
+        """
+        Returns a list of parameters of the function.
+        """
         return list(self._parameters.values())
 
     @property

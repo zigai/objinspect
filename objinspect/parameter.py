@@ -5,6 +5,13 @@ from objinspect.constants import EMPTY
 
 
 class Parameter:
+    """
+    A class to hold parameter information.
+
+    A `Parameter` instance contains information about a function or method parameter, including its name, type, default
+    value, and description.
+    """
+
     def __init__(
         self,
         name: str,
@@ -13,6 +20,17 @@ class Parameter:
         default: Any = EMPTY,
         description: str | None = None,
     ) -> None:
+        """
+        Initialize a `Parameter` instance.
+
+        Args:
+            name (str): The name of the parameter.
+            kind (inspect._ParameterKind): The kind of the parameter, i.e. POSITIONAL_ONLY, POSITIONAL_OR_KEYWORD, VAR_POSITIONAL,
+                KEYWORD_ONLY, or VAR_KEYWORD.
+            type (Any): The type of the parameter.
+            default (Any): The default value of the parameter.
+            description (str | None): The description of the parameter.
+        """
         self.name = name
         self.type = type
         self.default = default
@@ -25,6 +43,7 @@ class Parameter:
         return f"{self.__class__.__name__}({data})"
 
     def _infer_type(self):
+        """Infer the type of the parameter based on its default value."""
         if self.is_typed or self.is_required:
             return
         if self.default is None:

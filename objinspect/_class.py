@@ -8,6 +8,23 @@ from objinspect.util import get_methods
 
 
 class Class:
+    """
+    The Class inspects a class or an instance of a class and provides access to the class's methods and other information about the class.
+
+    Args:
+        cls (class or instance): The class to be inspected.
+        include_inherited (bool, optional): If set to True, the class's inherited methods will also be inspected. Default is True.
+
+    Attributes:
+        name (str): The name of the class or instance.
+        docstring (str): The docstring of the class or instance, if present.
+        has_docstring (bool): Whether the class or instance has a docstring or not.
+        methods (list[Function]): A list of :class:`objinspect.function.Function` objects representing the class's methods.
+        has_init (bool): Whether the class has an `__init__` method or not.
+        description (str): The first line of the class's docstring, if present.
+        dict (dict): A dictionary representation of the class, containing 'name', 'methods'.
+    """
+
     def __init__(self, cls, include_inherited: bool = True) -> None:
         self.cls = cls
         self.include_inherited = include_inherited
@@ -46,6 +63,15 @@ class Class:
         return methods
 
     def get_method(self, method: str | int):
+        """
+        Retrieves a method from the list of methods of the class or instance.
+
+        Args:
+            method (str or int): The method name or index to retrieve.
+
+        Returns:
+            Function: The :class:`Function` object representing the requested method.
+        """
         match method:
             case str():
                 return self._methods[method]
@@ -56,6 +82,9 @@ class Class:
 
     @property
     def methods(self) -> list[Function]:
+        """
+        Returns the list of methods of the class or instance as a list of :class:`Function` objects.
+        """
         return list(self._methods.values())
 
     @property

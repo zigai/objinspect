@@ -2,6 +2,8 @@ import inspect
 import types
 import typing
 
+inspect._empty.__repr__ = lambda: "EMPTY"
+inspect._empty.__str__ = lambda: "EMPTY"
 EMPTY = inspect._empty
 SPECIAL_GENERIC_ALIAS = typing._SpecialGenericAlias  # type: ignore
 UNION_GENERIC_ALIAS = typing._UnionGenericAlias  # type: ignore

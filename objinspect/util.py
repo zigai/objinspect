@@ -7,6 +7,22 @@ from objinspect.constants import UNION_TYPE
 
 
 def type_to_str(t) -> str:
+    """
+    Convert a Python type to its string representation.
+
+    Args:
+        t (type): A Python type.
+
+    Returns:
+        str: The string representation of the Python type.
+
+    Example:
+        >>> from objinspect import util
+        >>> type_to_str(util.UnionParameter)
+        'UnionParameter'
+        >>> type_to_str(int)
+        'int
+    """
     type_str = repr(t)
     if "<class '" in type_str:
         type_str = type_str.split("'")[1]
@@ -14,27 +30,58 @@ def type_to_str(t) -> str:
 
 
 def get_enum_options(e):
+    """
+    Get the options of a Python Enum.
+
+    Args:
+        e (enum.Enum): A Python Enum.
+
+    Returns:
+        tuple: A tuple of the names of the Enum options.
+
+    Example:
+        >>> import enum
+        >>> class Color(enum.Enum):
+        ...     RED = 1
+        ...     GREEN = 2
+        ...     BLUE = 3
+        >>> get_enum_options(Color)
+        ('RED', 'GREEN', 'BLUE')
+    """
     return tuple(e.__members__.keys())
 
 
 def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}):
     """
+    Call a method with the given name on the given object.
+
+    Args:
+        obj (object): The object to call the method on.
+        name (str): The name of the method to call.
+        args (tuple, optional): The positional arguments to pass to the method. Defaults to ().
+        kwargs (dict, optional): The keyword arguments to pass to the method. Defaults to {}.
+
+    Returns:
+        object: The result of calling the method.
+
     Examples:
     >>> import math
     >>> call_method(math, "pow", args=(2, 2))
     4.0
     """
-    return obj.__getattribute__(name)(*args, **kwargs)
+
+    return getattr(obj, name)(*args, **kwargs)
 
 
 def type_origin(t: Any):
     """
     typing.get_origin wrapper
-    Examples:
-    >>> type_args(list[list[str]])
-    <class 'list'>
-    >>> type_origin(float | int)
-    <class 'types.UnionType'>
+
+    Example:
+        >>> type_args(list[list[str]])
+        <class 'list'>
+        >>> type_origin(float | int)
+        <class 'types.UnionType'>
     """
     return typing.get_origin(t)
 
@@ -43,18 +90,30 @@ def type_args(t: Any):
     """
     typing.get_args wrapper
 
-    Examples:
-    >>> type_args(list[str])
-    (<class 'str'>,)
-    >>> type_args(dict[str, int])
-    (<class 'str'>, <class 'int'>)
-    >>> type_args(list[list[str]])
-    (list[str],)
+    Example:
+        >>> type_args(list[str])
+        (<class 'str'>,)
+        >>> type_args(dict[str, int])
+        (<class 'str'>, <class 'int'>)
+        >>> type_args(list[list[str]])
+        (list[str],)
     """
     return typing.get_args(t)
 
 
 class UnionParameter:
+    """
+    Class UnionParameter is used to store the parameters of Union type.
+    It can store multiple parameters in a tuple and can convert the Union type to its parameters using the `from_type` classmethod.
+
+    Attributes:
+    params (tuple): A tuple of parameters of Union type.
+
+    Example:
+    >>> UnionParameter(params=(str, int))
+    UnionParameter(str | int)
+    """
+
     def __init__(self, params: tuple) -> None:
         self.params = params
 
@@ -93,7 +152,7 @@ def type_simplify(t: Any):
 
 def get_methods(cls) -> list[str]:
     """
-    Get names of methods that belong to a class. Do not incdule inherited methods.
+    Get names of methods that belong to a class. Does not incdule inherited methods.
     """
     return list(
         name
