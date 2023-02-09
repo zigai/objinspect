@@ -29,7 +29,7 @@ def type_to_str(t) -> str:
     return type_str.split(".")[-1]
 
 
-def get_enum_options(e):
+def get_enum_options(e) -> tuple[str, ...]:
     """
     Get the options of a Python Enum.
 
@@ -51,7 +51,7 @@ def get_enum_options(e):
     return tuple(e.__members__.keys())
 
 
-def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}):
+def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> Any:
     """
     Call a method with the given name on the given object.
 
@@ -69,49 +69,22 @@ def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}):
     >>> call_method(math, "pow", args=(2, 2))
     4.0
     """
-
     return getattr(obj, name)(*args, **kwargs)
-
-
-def type_origin(t: Any):
-    """
-    typing.get_origin wrapper
-
-    Example:
-        >>> type_args(list[list[str]])
-        <class 'list'>
-        >>> type_origin(float | int)
-        <class 'types.UnionType'>
-    """
-    return typing.get_origin(t)
-
-
-def type_args(t: Any):
-    """
-    typing.get_args wrapper
-
-    Example:
-        >>> type_args(list[str])
-        (<class 'str'>,)
-        >>> type_args(dict[str, int])
-        (<class 'str'>, <class 'int'>)
-        >>> type_args(list[list[str]])
-        (list[str],)
-    """
-    return typing.get_args(t)
 
 
 class UnionParameter:
     """
-    Class UnionParameter is used to store the parameters of Union type.
+    UnionParameter is used to store the parameters of Union type.
     It can store multiple parameters in a tuple and can convert the Union type to its parameters using the `from_type` classmethod.
 
     Attributes:
     params (tuple): A tuple of parameters of Union type.
 
     Example:
-    >>> UnionParameter(params=(str, int))
-    UnionParameter(str | int)
+    >>> UnionParameter((float, int))
+    UnionParameter(float | int)
+    >>> UnionParameter.from_type(float | int)
+    UnionParameter(float | int)
     """
 
     def __init__(self, params: tuple) -> None:
@@ -133,7 +106,7 @@ class UnionParameter:
         raise TypeError(t)
 
 
-def type_simplify(t: Any):
+def type_simplify(t: Any) -> Any | UnionParameter:
     """
     Examples:
     >>> type_simplify(list[str])
@@ -150,15 +123,43 @@ def type_simplify(t: Any):
     return origin
 
 
-def get_methods(cls) -> list[str]:
+def get_uninherited_method_names(cls) -> list[str]:
     """
-    Get names of methods that belong to a class. Does not incdule inherited methods.
+    Get the methods of a class that are not inherited from its parent classes.
     """
-    return list(
+    return [
         name
         for name, method in cls.__dict__.items()
         if isinstance(method, (FunctionType, classmethod, staticmethod))
-    )
+    ]
+
+
+def type_origin(t: Any) -> Any:
+    """
+    typing.get_origin wrapper
+
+    Example:
+        >>> type_args(list[list[str]])
+        <class 'list'>
+        >>> type_origin(float | int)
+        <class 'types.UnionType'>
+    """
+    return typing.get_origin(t)
+
+
+def type_args(t: Any) -> Any:
+    """
+    typing.get_args wrapper
+
+    Example:
+        >>> type_args(list[str])
+        (<class 'str'>,)
+        >>> type_args(dict[str, int])
+        (<class 'str'>, <class 'int'>)
+        >>> type_args(list[list[str]])
+        (list[str],)
+    """
+    return typing.get_args(t)
 
 
 __all__ = [
@@ -169,5 +170,5 @@ __all__ = [
     "type_origin",
     "type_args",
     "type_simplify",
-    "get_methods",
+    "get_uninherited_method_names",
 ]
