@@ -1,6 +1,6 @@
 import inspect
 from collections import OrderedDict
-from typing import Callable
+from typing import Any, Callable
 
 import docstring_parser
 from docstring_parser import Docstring
@@ -27,7 +27,7 @@ def _get_docstr_desc(docstring: Docstring | None) -> str:
 class Function:
 
     """
-    Class representing a function and its attributes.
+    Class representing a function/method and its attributes.
 
     Args:
         func (Callable): The function to be inspected.
@@ -68,9 +68,9 @@ class Function:
         if self._parsed_docstr is not None:
             params_mapping = {p.arg_name: p for p in self._parsed_docstr.params}
             for param in params:
-                if param_name := params_mapping.get(param.name, False):
-                    if param_name.description:
-                        param.description = param_name.description
+                if parameter := params_mapping.get(param.name, False):
+                    if parameter.description:
+                        param.description = parameter.description
 
         parameters = OrderedDict()
         for i in params:
@@ -100,6 +100,9 @@ class Function:
             case _:
                 raise TypeError(type(arg))
 
+    def call(self, *args, **kwargs) -> Any:
+        return self.func(*args, **kwargs)
+
     @property
     def params(self) -> list[Parameter]:
         """
@@ -111,7 +114,7 @@ class Function:
     def dict(self):
         return {
             "name": self.name,
-            "parameters": [i.dict for i in self._parameters.values()],
+            "parameters": [i.dict for i in self.params],
             "docstring": self.docstring,
         }
 

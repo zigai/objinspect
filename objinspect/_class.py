@@ -28,12 +28,12 @@ class Class:
     def __init__(self, cls, include_inherited: bool = True) -> None:
         self.cls = cls
         self.include_inherited = include_inherited
-        self.initialized = False
+        self.is_initialized = False
         try:
             self.name: str = self.cls.__name__
         except AttributeError:
             self.name = f"{self.cls.__class__.__name__} instance"
-            self.initialized = True
+            self.is_initialized = True
 
         self.docstring = inspect.getdoc(self.cls)
         self.has_docstring = _has_docstr(self.docstring)
@@ -47,13 +47,18 @@ class Class:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name='{self.name}', methods={len(self._methods)}, has_init={self.has_init}, has_docstring={self.has_docstring})"
 
+    def _get_class_base(self):
+        if self.is_initialized:
+            return self.cls.__class__
+        return self.cls
+
     def _find_methods(self):
-        if self.initialized:
+        if self.is_initialized:
             members = inspect.getmembers(self.cls, inspect.ismethod)
         else:
             members = inspect.getmembers(self.cls, inspect.isfunction)
         if not self.include_inherited:
-            if not self.initialized:
+            if not self.is_initialized:
                 members = [i for i in members if i[0] in get_methods(self.cls)]
             else:
                 members = [i for i in members if i[0] in get_methods(self.cls.__class__)]
