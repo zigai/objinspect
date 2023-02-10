@@ -3,15 +3,25 @@ import inspect
 from objinspect import constants, util
 from objinspect._class import Class
 from objinspect.function import Function
+from objinspect.method import Method
+from objinspect.method_extractor import MethodExtractor
 from objinspect.parameter import Parameter
 
 
-def objinspect(object, include_inherited: bool = True):
+def objinspect(
+    obj,
+    init=True,
+    public=True,
+    inherited=True,
+    static_methods=True,
+    protected=False,
+    private=False,
+):
     """
     The objinspect function takes an `object` and an optional `include_inherited` flag (defaults to True) and returns either a `Function` or a `Class` object  representing its structure.
 
     Args:
-        object (object): The object to be inspected.
+        obj (object): The object to be inspected.
         include_inherited (bool, optional): Whether to include inherited attributes and methods in the inspection. Defaults to True.
 
     Returns:
@@ -27,6 +37,14 @@ def objinspect(object, include_inherited: bool = True):
         >>> objinspect(math.pow).dict
         {'name': 'pow', 'parameters': [{'name': 'x', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None}, {'name': 'y', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None}], 'docstring': 'Return x**y (x to the power of y).'}
     """
-    if inspect.isclass(object):
-        return Class(object, include_inherited)
-    return Function(object)
+    if inspect.isclass(obj):
+        return Class(
+            obj,
+            init=init,
+            public=public,
+            inherited=inherited,
+            static_methods=static_methods,
+            protected=protected,
+            private=private,
+        )
+    return Function(obj)

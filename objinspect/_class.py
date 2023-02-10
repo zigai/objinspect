@@ -1,42 +1,43 @@
 import inspect
 from collections import OrderedDict
+from typing import Any
 
 import docstring_parser
 
-from objinspect.function import Function, _get_docstr_desc, _has_docstr
-from objinspect.util import get_methods
+from objinspect.function import _get_docstr_desc, _has_docstr
+from objinspect.method import Method
+from objinspect.method_extractor import MethodExtractor
 
 
 class Class:
-    """
-    The Class inspects a class or an instance of a class and provides access to the class's methods and other information about the class.
-
-    Args:
-        cls (class or instance): The class to be inspected.
-        include_inherited (bool, optional): If set to True, the class's inherited methods will also be inspected. Default is True.
-
-    Attributes:
-        name (str): The name of the class or instance.
-        docstring (str): The docstring of the class or instance, if present.
-        has_docstring (bool): Whether the class or instance has a docstring or not.
-        methods (list[Function]): A list of :class:`objinspect.function.Function` objects representing the class's methods.
-        has_init (bool): Whether the class has an `__init__` method or not.
-        description (str): The first line of the class's docstring, if present.
-        dict (dict): A dictionary representation of the class, containing 'name', 'methods'.
-    """
-
-    def __init__(self, cls, include_inherited: bool = True) -> None:
+    def __init__(
+        self,
+        cls,
+        init=True,
+        public=True,
+        inherited=True,
+        static_methods=True,
+        protected=False,
+        private=False,
+    ) -> None:
         self.cls = cls
-        self.include_inherited = include_inherited
         self.is_initialized = False
         try:
             self.name: str = self.cls.__name__
         except AttributeError:
             self.name = f"{self.cls.__class__.__name__} instance"
             self.is_initialized = True
-
+        self.instance = None if not self.is_initialized else self.cls
         self.docstring = inspect.getdoc(self.cls)
         self.has_docstring = _has_docstr(self.docstring)
+        self.extractor_kwargs = {
+            "init": init,
+            "public": public,
+            "inherited": inherited,
+            "static_methods": static_methods,
+            "protected": protected,
+            "private": private,
+        }
         self._methods = self._find_methods()
         self.has_init = "__init__" in self._methods
         self._parsed_docstring = (
@@ -45,7 +46,7 @@ class Class:
         self.description = _get_docstr_desc(self._parsed_docstring)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(name='{self.name}', methods={len(self._methods)}, has_init={self.has_init}, has_docstring={self.has_docstring})"
+        return f"{self.__class__.__name__}(name='{self.name}', methods={len(self._methods)}, has_init={self.has_init}, description={self.description})"
 
     def _get_class_base(self):
         if self.is_initialized:
@@ -53,26 +54,28 @@ class Class:
         return self.cls
 
     def _find_methods(self):
-        if self.is_initialized:
-            members = inspect.getmembers(self.cls, inspect.ismethod)
-        else:
-            members = inspect.getmembers(self.cls, inspect.isfunction)
-        if not self.include_inherited:
-            if not self.is_initialized:
-                members = [i for i in members if i[0] in get_methods(self.cls)]
-            else:
-                members = [i for i in members if i[0] in get_methods(self.cls.__class__)]
         methods = OrderedDict()
-        for i in [Function(i[1]) for i in members]:
+        for i in MethodExtractor(**self.extractor_kwargs).extract(self._get_class_base()):
             methods[i.name] = i
         return methods
 
-    def get_method(self, method: str | int):
+    def initialize(self, *args, **kwargs) -> None:
+        if self.is_initialized:
+            raise ValueError(f"Class {self.cls} is already initialized")
+        self.instance = self.cls(*args, **kwargs)
+        self.is_initialized = True
+
+    def call_method(self, method: str | int, *args, **kwargs) -> Any:
+        if not self.is_initialized:
+            raise ValueError("Class is not initialized")
+        return self.get_method(method).call(self.instance, *args, **kwargs)
+
+    def get_method(self, method: str | int) -> Method:
         """
         Retrieves a method from the list of methods of the class or instance.
 
         Args:
-            method (str or int): The method name or index to retrieve.
+            method (str | int): The method name or index to retrieve.
 
         Returns:
             Function: The :class:`Function` object representing the requested method.
@@ -86,15 +89,20 @@ class Class:
                 raise TypeError(type(method))
 
     @property
-    def methods(self) -> list[Function]:
+    def methods(self) -> list[Method]:
         """
         Returns the list of methods of the class or instance as a list of :class:`Function` objects.
         """
         return list(self._methods.values())
 
     @property
-    def dict(self):
-        return {"name": self.name, "methods": [i.dict for i in self._methods.values()]}
+    def dict(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "methods": [i.dict for i in self.methods],
+            "description": self.description,
+            "initialized": self.is_initialized,
+        }
 
 
 __all__ = ["Class"]

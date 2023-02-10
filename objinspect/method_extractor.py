@@ -23,7 +23,7 @@ class MethodExtractor:
         if not static_methods:
             self.name_filters.append(self._is_static_method)
         if not inherited:
-            self.method_filters.append(self._is_inherited)
+            self.method_filters.append(lambda method: not self._is_inherited(method))
         if not private:
             self.name_filters.append(self._is_private_method)
         if not protected:
@@ -44,7 +44,7 @@ class MethodExtractor:
         return not name.startswith("_")
 
     def _is_inherited(self, method: Callable) -> bool:
-        return not method.__qualname__.startswith(self.cls.__name__)
+        return method.__qualname__.startswith(self.cls.__name__)
 
     def check_method(self, name: str, method: Callable) -> bool:
         for f in self.name_filters:
