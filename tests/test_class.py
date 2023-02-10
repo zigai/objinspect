@@ -59,7 +59,7 @@ def test_init():
     with pytest.raises(ValueError):
         A.call_method("method_2")
 
-    A.initialize("a", 1)
+    A.init("a", 1)
     assert A.instance.a == "a"
     assert A.instance.b == 1
 
