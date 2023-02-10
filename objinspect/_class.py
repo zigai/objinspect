@@ -10,6 +10,31 @@ from objinspect.method_extractor import MethodExtractor
 
 
 class Class:
+
+    """
+    Class for wrapping a class or class instance and providing information about its methods.
+
+    Args:
+        cls (type or object): The class or class instance to wrap.
+        init (bool, optional): Include the class's __init__ method. Defaults to True.
+        public (bool, optional): Include public methods. Defaults to True.
+        inherited (bool, optional): Include inherited methods. Defaults to True.
+        static_methods (bool, optional): Include static methods. Defaults to True.
+        protected (bool, optional): Include protected methods. Defaults to False.
+        private (bool, optional): Include private methods. Defaults to False.
+
+    Attributes:
+        cls (type or object): The class or class instance that was passed as an argument.
+        is_initialized (bool): Whether the class has been initialized as an instance.
+        name (str): The name of the class.
+        instance (object | None): The instance of the class if it has been initialized, otherwise None.
+        docstring (str | None): The docstring of the class if it exists, otherwise None.
+        has_docstring (bool): Whether the class has a docstring.
+        extractor_kwargs (dict): The keyword arguments used to initialize the MethodExtractor object.
+        has_init (bool): Whether the class has an __init__ method.
+        description (str): The description of the class from its docstring.
+    """
+
     def __init__(
         self,
         cls,
@@ -59,15 +84,36 @@ class Class:
             methods[i.name] = i
         return methods
 
-    def initialize(self, *args, **kwargs) -> None:
+    def init(self, *args, **kwargs) -> None:
+        """
+        Initializes the class as an instance using the provided arguments.
+
+        Raises:
+            ValueError: If the class is already initialized.
+
+        """
         if self.is_initialized:
             raise ValueError(f"Class {self.cls} is already initialized")
         self.instance = self.cls(*args, **kwargs)
         self.is_initialized = True
 
     def call_method(self, method: str | int, *args, **kwargs) -> Any:
+        """
+        Calls the specified method on the class or instance.
+
+        Args:
+            method (str | int): The name or index of the method to call.
+            *args: Positional arguments to pass to the method.
+            **kwargs: Keyword arguments to pass to the method.
+
+        Returns:
+            Any: The result of calling the specified method.
+
+        Raises:
+            ValueError: If the class has not been initialized.
+        """
         if not self.is_initialized:
-            raise ValueError("Class is not initialized")
+            raise ValueError(f"Class {self.cls} is not initialized")
         return self.get_method(method).call(self.instance, *args, **kwargs)
 
     def get_method(self, method: str | int) -> Method:
@@ -78,7 +124,7 @@ class Class:
             method (str | int): The method name or index to retrieve.
 
         Returns:
-            Function: The :class:`Function` object representing the requested method.
+            Method: The :class:`Method` object representing the requested method.
         """
         match method:
             case str():

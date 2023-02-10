@@ -101,6 +101,13 @@ class Function:
                 raise TypeError(type(arg))
 
     def call(self, *args, **kwargs) -> Any:
+        """
+        Calls the function and returns the result of its call.
+
+        Args:
+            *args: Positional arguments passed to the function.
+            **kwargs: Keyword arguments passed to the function.
+        """
         return self.func(*args, **kwargs)
 
     @property
