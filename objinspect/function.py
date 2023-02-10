@@ -27,7 +27,7 @@ def _get_docstr_desc(docstring: Docstring | None) -> str:
 class Function:
 
     """
-    Class representing a function/method and its attributes.
+    A Function object represents a function and its attributes.
 
     Args:
         func (Callable): The function to be inspected.
@@ -111,7 +111,7 @@ class Function:
         return list(self._parameters.values())
 
     @property
-    def dict(self):
+    def dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "parameters": [i.dict for i in self.params],

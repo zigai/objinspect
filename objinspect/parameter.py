@@ -6,8 +6,6 @@ from objinspect.constants import EMPTY
 
 class Parameter:
     """
-    A class to hold parameter information.
-
     A `Parameter` instance contains information about a function or method parameter, including its name, type, default
     value, and description.
     """
