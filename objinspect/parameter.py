@@ -19,6 +19,7 @@ class Parameter:
         type: Any = EMPTY,
         default: Any = EMPTY,
         description: str | None = None,
+        infer_type: bool = True,
     ) -> None:
         """
         Initialize a `Parameter` instance.
@@ -36,7 +37,8 @@ class Parameter:
         self.default = default
         self.description = description
         self.kind = kind
-        self._infer_type()
+        if infer_type:
+            self._infer_type()
 
     def __repr__(self):
         data = f"name='{self.name}', kind={str(self.kind)}, type={self.type}, default={self.default}, description='{self.description}'"
