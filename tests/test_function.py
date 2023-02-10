@@ -4,7 +4,7 @@ from objinspect.constants import EMPTY
 from objinspect.function import Function
 
 
-def example_func1(a, b=None, c=4):
+def func_test1(a, b=None, c=4):
     """Test function 1
 
     Args:
@@ -15,7 +15,7 @@ def example_func1(a, b=None, c=4):
     ...
 
 
-function1 = Function(example_func1)
+function1 = Function(func_test1)
 
 
 def test_params_len():
@@ -61,3 +61,9 @@ def test_is_param_optional():
     assert function1.get_param("a").is_optional == False
     assert function1.get_param("b").is_optional == True
     assert function1.get_param("c").is_optional == True
+
+
+def test_call():
+    from math import pow
+
+    assert Function(pow).call(2, 2) == 4

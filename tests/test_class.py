@@ -3,7 +3,7 @@ import pytest
 from objinspect import Class
 
 
-class ExampleClass1:
+class ClassTestA:
     """ExampleClass1 dostring"""
 
     def __init__(self, a: str, b: int) -> None:
@@ -23,30 +23,44 @@ class ExampleClass1:
         print(f"{self.a=}")
         print(f"{self.b=}")
 
+    def method_2(self):
+        return self.a + str(self.b)
 
-cls1 = Class(ExampleClass1)
+
+A = Class(ClassTestA)
 
 
 def test_getitem():
-    assert cls1.get_method("__init__").name == "__init__"
-    assert cls1.has_init == True
-    assert cls1.get_method(0).name == "__init__"
-    assert cls1.get_method("method_1").name == "method_1"
+    assert A.get_method("__init__").name == "__init__"
+    assert A.has_init == True
+    assert A.get_method(0).name == "__init__"
+    assert A.get_method("method_1").name == "method_1"
     with pytest.raises(IndexError):
-        cls1.get_method(3)
+        A.get_method(3)
     with pytest.raises(TypeError):
-        cls1.get_method(3.3)
+        A.get_method(3.3)
     with pytest.raises(KeyError):
-        cls1.get_method("abc")
+        A.get_method("abc")
 
 
 def test_init():
-    assert cls1.has_init == True
+    assert A.has_init == True
 
 
 def test_description():
-    assert cls1.description == "ExampleClass1 dostring"
+    assert A.description == "ExampleClass1 dostring"
 
 
 def test_methods_len():
-    assert len(cls1.methods) == 2
+    assert len(A.methods) == 3
+
+
+def test_init():
+    with pytest.raises(ValueError):
+        A.call_method("method_2")
+
+    A.initialize("a", 1)
+    assert A.instance.a == "a"
+    assert A.instance.b == 1
+
+    assert A.call_method("method_2") == "a1"
