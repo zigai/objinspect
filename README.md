@@ -1,4 +1,8 @@
 # objinspect
+[![PyPI version](https://badge.fury.io/py/objinspect.svg)](https://badge.fury.io/py/objinspect)
+![Supported versions](https://img.shields.io/badge/python-3.10+-blue.svg)
+[![Downloads](https://static.pepy.tech/badge/objinspect)](https://pepy.tech/project/objinspect)
+[![license](https://img.shields.io/github/license/zigai/objinspect.svg)](https://github.com/zigai/objinspect/blob/main/LICENSE)
 
 View the structure of Python classes and functions.
 
