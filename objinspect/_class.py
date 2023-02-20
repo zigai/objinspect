@@ -1,3 +1,4 @@
+import functools
 import inspect
 from collections import OrderedDict
 from typing import Any
@@ -5,8 +6,7 @@ from typing import Any
 import docstring_parser
 
 from objinspect.function import _get_docstr_desc, _has_docstr
-from objinspect.method import Method
-from objinspect.method_extractor import MethodExtractor
+from objinspect.method import Method, MethodFilter
 
 
 class Class:
@@ -73,16 +73,19 @@ class Class:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name='{self.name}', methods={len(self._methods)}, has_init={self.has_init}, description={self.description})"
 
+    @functools.cached_property
     def _get_class_base(self):
         if self.is_initialized:
             return self.cls.__class__
         return self.cls
 
     def _find_methods(self):
-        methods = OrderedDict()
-        for i in MethodExtractor(**self.extractor_kwargs).extract(self._get_class_base()):
-            methods[i.name] = i
-        return methods
+        filtr = MethodFilter(**self.extractor_kwargs)
+        members = inspect.getmembers(self.cls, inspect.isfunction)
+        _methods = OrderedDict()
+        for i in filtr.extract([Method(i[1], self._get_class_base) for i in members]):
+            _methods[i.name] = i
+        return _methods
 
     def init(self, *args, **kwargs) -> None:
         """
