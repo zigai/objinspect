@@ -66,17 +66,17 @@ class Function:
 
         # Try finding descriptions for parameters
         if self._parsed_docstr is not None:
-            params_mapping = {p.arg_name: p for p in self._parsed_docstr.params}
+            params_mapping = {par.arg_name: par for par in self._parsed_docstr.params}
             for param in params:
                 if parameter := params_mapping.get(param.name, False):
                     if parameter.description:
                         param.description = parameter.description
 
         parameters = OrderedDict()
-        for i in params:
-            if i.name == "self" and self.skip_self:
+        for param in params:
+            if param.name == "self" and self.skip_self:
                 continue
-            parameters[i.name] = i
+            parameters[param.name] = param
         return parameters
 
     def get_param(self, arg: str | int) -> Parameter:
