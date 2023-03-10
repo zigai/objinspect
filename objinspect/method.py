@@ -68,8 +68,8 @@ class MethodFilter:
             self.checks.append(lambda method: method.is_public)
 
     def check(self, method: Method) -> bool:
-        for check in self.checks:
-            if check(method):
+        for check_func in self.checks:
+            if check_func(method):
                 return False
         return True
 

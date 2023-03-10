@@ -80,12 +80,12 @@ class Class:
         return self.cls
 
     def _find_methods(self):
-        filtr = MethodFilter(**self.extractor_kwargs)
+        method_filter = MethodFilter(**self.extractor_kwargs)
         members = inspect.getmembers(self.cls, inspect.isfunction)
-        _methods = OrderedDict()
-        for i in filtr.extract([Method(i[1], self._get_class_base) for i in members]):
-            _methods[i.name] = i
-        return _methods
+        methods = OrderedDict()
+        for i in method_filter.extract([Method(i[1], self._get_class_base) for i in members]):
+            methods[i.name] = i
+        return methods
 
     def init(self, *args, **kwargs) -> None:
         """
@@ -115,9 +115,10 @@ class Class:
         Raises:
             ValueError: If the class has not been initialized.
         """
-        if not self.is_initialized:
+        method_obj = self.get_method(method)
+        if not self.is_initialized and not method_obj.is_static:
             raise ValueError(f"Class {self.cls} is not initialized")
-        return self.get_method(method).call(self.instance, *args, **kwargs)
+        return method_obj.call(self.instance, *args, **kwargs)
 
     def get_method(self, method: str | int) -> Method:
         """
@@ -151,6 +152,7 @@ class Class:
             "methods": [i.dict for i in self.methods],
             "description": self.description,
             "initialized": self.is_initialized,
+            "docstring": self.docstring,
         }
 
 
