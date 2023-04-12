@@ -1,5 +1,4 @@
 import inspect
-import types
 
 from objinspect.function import Function
 

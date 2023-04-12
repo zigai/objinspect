@@ -1,17 +1,13 @@
-import types
-import typing
 from types import FunctionType
 from typing import Any
 
-from objinspect.constants import UNION_TYPE
 
-
-def type_to_str(t) -> str:
+def type_to_str(t: Any) -> str:
     """
-    Convert a Python type to its string representation.
+    Convert a Python type to its string representation (without the module name).
 
     Args:
-        t (type): A Python type.
+        t (Any): A Python type.
 
     Returns:
         str: The string representation of the Python type.
@@ -21,7 +17,7 @@ def type_to_str(t) -> str:
         >>> type_to_str(util.UnionParameter)
         'UnionParameter'
         >>> type_to_str(int)
-        'int
+        'int'
     """
     type_str = repr(t)
     if "<class '" in type_str:
@@ -72,57 +68,6 @@ def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> 
     return getattr(obj, name)(*args, **kwargs)
 
 
-class UnionParameter:
-    """
-    UnionParameter is used to store the parameters of Union type.
-    It can store multiple parameters in a tuple and can convert the Union type to its parameters using the `from_type` classmethod.
-
-    Attributes:
-    params (tuple): A tuple of parameters of Union type.
-
-    Example:
-    >>> UnionParameter((float, int))
-    UnionParameter(float | int)
-    >>> UnionParameter.from_type(float | int)
-    UnionParameter(float | int)
-    """
-
-    def __init__(self, params: tuple) -> None:
-        self.params = params
-
-    def __iter__(self):
-        for i in self.params:
-            yield i
-
-    def __repr__(self) -> str:
-        params = [type_to_str(i) for i in self.params]
-        params = " | ".join(params)
-        return f"{self.__class__.__name__}({params})"
-
-    @classmethod
-    def from_type(cls, t):
-        if type(t) in UNION_TYPE:
-            return cls(type_args(t))
-        raise TypeError(t)
-
-
-def type_simplify(t: Any) -> Any | UnionParameter:
-    """
-    Examples:
-    >>> type_simplify(list[str])
-    <class 'list'>
-    >>> type_simplify(float | list[str])
-    UnionParameter(float | list)
-    """
-    origin = type_origin(t)
-    if type(origin) is types.NoneType:
-        return t
-    if origin in UNION_TYPE:
-        origin = type_args(t)
-        return UnionParameter(tuple(type_simplify(i) for i in origin))
-    return origin
-
-
 def get_uninherited_method_names(cls) -> list[str]:
     """
     Get the methods of a class that are not inherited from its parent classes.
@@ -134,41 +79,9 @@ def get_uninherited_method_names(cls) -> list[str]:
     ]
 
 
-def type_origin(t: Any) -> Any:
-    """
-    typing.get_origin wrapper
-
-    Example:
-        >>> type_args(list[list[str]])
-        <class 'list'>
-        >>> type_origin(float | int)
-        <class 'types.UnionType'>
-    """
-    return typing.get_origin(t)
-
-
-def type_args(t: Any) -> Any:
-    """
-    typing.get_args wrapper
-
-    Example:
-        >>> type_args(list[str])
-        (<class 'str'>,)
-        >>> type_args(dict[str, int])
-        (<class 'str'>, <class 'int'>)
-        >>> type_args(list[list[str]])
-        (list[str],)
-    """
-    return typing.get_args(t)
-
-
 __all__ = [
-    "UnionParameter",
     "type_to_str",
     "get_enum_options",
     "call_method",
-    "type_origin",
-    "type_args",
-    "type_simplify",
     "get_uninherited_method_names",
 ]
