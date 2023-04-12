@@ -1,5 +1,4 @@
 import inspect
-from collections import OrderedDict
 from typing import Any, Callable
 
 import docstring_parser
@@ -60,7 +59,7 @@ class Function:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name='{self.name}', parameters={len(self._parameters)}, description='{self.description}')"
 
-    def _find_parameters(self) -> OrderedDict[str, Parameter]:
+    def _find_parameters(self) -> dict[str, Parameter]:
         args = inspect.signature(self.func)
         params = [Parameter.from_inspect_param(i) for i in args.parameters.values()]
 
@@ -72,7 +71,7 @@ class Function:
                     if parameter.description:
                         param.description = parameter.description
 
-        parameters = OrderedDict()
+        parameters = {}
         for param in params:
             if param.name == "self" and self.skip_self:
                 continue

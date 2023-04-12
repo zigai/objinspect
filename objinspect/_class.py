@@ -1,6 +1,5 @@
 import functools
 import inspect
-from collections import OrderedDict
 from typing import Any
 
 import docstring_parser
@@ -82,7 +81,7 @@ class Class:
     def _find_methods(self):
         method_filter = MethodFilter(**self.extractor_kwargs)
         members = inspect.getmembers(self.cls, inspect.isfunction)
-        methods = OrderedDict()
+        methods = {}
         for i in method_filter.extract([Method(i[1], self._get_class_base) for i in members]):
             methods[i.name] = i
         return methods
