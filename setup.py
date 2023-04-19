@@ -8,7 +8,7 @@ REQUIREMENTS = (HERE / "requirements.txt").read_text()
 
 setup(
     name="objinspect",
-    version="0.2.0",
+    version="0.2.1",
     description="View the structure of Python classes and functions ",
     long_description=README,
     long_description_content_type="text/markdown",
