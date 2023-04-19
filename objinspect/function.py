@@ -51,7 +51,7 @@ class Function:
         self.docstring = inspect.getdoc(self.func)
         self.has_docstring = _has_docstr(self.docstring)
         self._parsed_docstr: Docstring | None = (
-            docstring_parser.parse(self.docstring) if self.has_docstring else None
+            docstring_parser.parse(self.docstring) if self.has_docstring else None  # type: ignore
         )
         self._parameters = self._find_parameters()
         self.description = _get_docstr_desc(self._parsed_docstr)
@@ -68,8 +68,8 @@ class Function:
             params_mapping = {par.arg_name: par for par in self._parsed_docstr.params}
             for param in params:
                 if parameter := params_mapping.get(param.name, False):
-                    if parameter.description:
-                        param.description = parameter.description
+                    if parameter.description:  # type: ignore
+                        param.description = parameter.description  # type: ignore
 
         parameters = {}
         for param in params:

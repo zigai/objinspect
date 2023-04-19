@@ -65,7 +65,7 @@ class Class:
         self._methods = self._find_methods()
         self.has_init = "__init__" in self._methods
         self._parsed_docstring = (
-            docstring_parser.parse(self.docstring) if self.has_docstring else None
+            docstring_parser.parse(self.docstring) if self.has_docstring else None  # type: ignore
         )
         self.description = _get_docstr_desc(self._parsed_docstring)
 

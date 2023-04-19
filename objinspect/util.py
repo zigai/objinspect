@@ -13,9 +13,8 @@ def type_to_str(t: Any) -> str:
         str: The string representation of the Python type.
 
     Example:
-        >>> from objinspect import util
-        >>> type_to_str(util.UnionParameter)
-        'UnionParameter'
+        >>> type_to_str(datetime.datetime)
+        'datetime'
         >>> type_to_str(int)
         'int'
     """
@@ -25,7 +24,7 @@ def type_to_str(t: Any) -> str:
     return type_str.split(".")[-1]
 
 
-def get_enum_options(e) -> tuple[str, ...]:
+def get_enum_choices(e) -> tuple[str, ...]:
     """
     Get the options of a Python Enum.
 
@@ -41,7 +40,7 @@ def get_enum_options(e) -> tuple[str, ...]:
         ...     RED = 1
         ...     GREEN = 2
         ...     BLUE = 3
-        >>> get_enum_options(Color)
+        >>> get_enum_choices(Color)
         ('RED', 'GREEN', 'BLUE')
     """
     return tuple(e.__members__.keys())
@@ -81,7 +80,7 @@ def get_uninherited_method_names(cls) -> list[str]:
 
 __all__ = [
     "type_to_str",
-    "get_enum_options",
+    "get_enum_choices",
     "call_method",
     "get_uninherited_method_names",
 ]
