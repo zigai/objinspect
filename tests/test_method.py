@@ -2,13 +2,13 @@ from objinspect import Class
 from objinspect.method import Method, MethodFilter
 
 
-class ClassTestA:
+class ExampleClassA:
     def inherited_method(self):
         """Inherited method"""
         print("Called inherited")
 
 
-class ClassTestB(ClassTestA):
+class ExampleClassB(ExampleClassA):
     def __init__(self) -> None:
         """__init__ method"""
         print("init")
@@ -42,54 +42,54 @@ class ClassTestB(ClassTestA):
 
 
 def test_method():
-    assert Method(ClassTestB.public_method, ClassTestB).is_public
-    assert Method(ClassTestB._protected_method, ClassTestB).is_protected
-    assert Method(ClassTestB.static_method, ClassTestB).is_static
-    assert Method(ClassTestB.class_method, ClassTestB).is_classmethod
+    assert Method(ExampleClassB.public_method, ExampleClassB).is_public
+    assert Method(ExampleClassB._protected_method, ExampleClassB).is_protected
+    assert Method(ExampleClassB.static_method, ExampleClassB).is_static
+    assert Method(ExampleClassB.class_method, ExampleClassB).is_classmethod
 
 
 def test_method_inherited():
-    assert Method(ClassTestB.inherited_method, ClassTestB).is_inherited
-    assert not Method(ClassTestB.public_method, ClassTestB).is_inherited
-    assert not Method(ClassTestB._protected_method, ClassTestB).is_inherited
-    assert not Method(ClassTestB.static_method, ClassTestB).is_inherited
-    assert not Method(ClassTestB.class_method, ClassTestB).is_inherited
+    assert Method(ExampleClassB.inherited_method, ExampleClassB).is_inherited
+    assert not Method(ExampleClassB.public_method, ExampleClassB).is_inherited
+    assert not Method(ExampleClassB._protected_method, ExampleClassB).is_inherited
+    assert not Method(ExampleClassB.static_method, ExampleClassB).is_inherited
+    assert not Method(ExampleClassB.class_method, ExampleClassB).is_inherited
 
 
 def test_method_public():
-    assert not Method(ClassTestB._protected_method, ClassTestB).is_public
-    assert Method(ClassTestB.public_method, ClassTestB).is_public
-    assert Method(ClassTestB.static_method, ClassTestB).is_public
-    assert Method(ClassTestB.class_method, ClassTestB).is_public
-    assert Method(ClassTestB.inherited_method, ClassTestB).is_public
+    assert not Method(ExampleClassB._protected_method, ExampleClassB).is_public
+    assert Method(ExampleClassB.public_method, ExampleClassB).is_public
+    assert Method(ExampleClassB.static_method, ExampleClassB).is_public
+    assert Method(ExampleClassB.class_method, ExampleClassB).is_public
+    assert Method(ExampleClassB.inherited_method, ExampleClassB).is_public
 
 
 def test_method_protected():
-    assert Method(ClassTestB._protected_method, ClassTestB).is_protected
-    assert not Method(ClassTestB.public_method, ClassTestB).is_protected
-    assert not Method(ClassTestB.static_method, ClassTestB).is_protected
-    assert not Method(ClassTestB.class_method, ClassTestB).is_protected
-    assert not Method(ClassTestB.inherited_method, ClassTestB).is_protected
+    assert Method(ExampleClassB._protected_method, ExampleClassB).is_protected
+    assert not Method(ExampleClassB.public_method, ExampleClassB).is_protected
+    assert not Method(ExampleClassB.static_method, ExampleClassB).is_protected
+    assert not Method(ExampleClassB.class_method, ExampleClassB).is_protected
+    assert not Method(ExampleClassB.inherited_method, ExampleClassB).is_protected
 
 
 def test_method_static():
-    assert Method(ClassTestB.static_method, ClassTestB).is_static
-    assert not Method(ClassTestB.public_method, ClassTestB).is_static
-    assert not Method(ClassTestB.class_method, ClassTestB).is_static
-    assert not Method(ClassTestB.inherited_method, ClassTestB).is_static
-    assert not Method(ClassTestB._protected_method, ClassTestB).is_static
+    assert Method(ExampleClassB.static_method, ExampleClassB).is_static
+    assert not Method(ExampleClassB.public_method, ExampleClassB).is_static
+    assert not Method(ExampleClassB.class_method, ExampleClassB).is_static
+    assert not Method(ExampleClassB.inherited_method, ExampleClassB).is_static
+    assert not Method(ExampleClassB._protected_method, ExampleClassB).is_static
 
 
 def test_class_method():
-    assert Method(ClassTestB.class_method, ClassTestB).is_classmethod
-    assert not Method(ClassTestB.public_method, ClassTestB).is_classmethod
-    assert not Method(ClassTestB.static_method, ClassTestB).is_classmethod
-    assert not Method(ClassTestB.inherited_method, ClassTestB).is_classmethod
-    assert not Method(ClassTestB._protected_method, ClassTestB).is_classmethod
+    assert Method(ExampleClassB.class_method, ExampleClassB).is_classmethod
+    assert not Method(ExampleClassB.public_method, ExampleClassB).is_classmethod
+    assert not Method(ExampleClassB.static_method, ExampleClassB).is_classmethod
+    assert not Method(ExampleClassB.inherited_method, ExampleClassB).is_classmethod
+    assert not Method(ExampleClassB._protected_method, ExampleClassB).is_classmethod
 
 
 def test_extractor():
-    ALL_METHODS = Class(ClassTestB).methods
+    ALL_METHODS = Class(ExampleClassB).methods
     assert "__init__" not in [i.name for i in MethodFilter(init=False).extract(ALL_METHODS)]
     assert "__private_method" not in [
         i.name for i in MethodFilter(private=False).extract(ALL_METHODS)

@@ -3,8 +3,8 @@ import pytest
 from objinspect import Class
 
 
-class ClassTestA:
-    """ExampleClass1 dostring"""
+class ExampleClassA:
+    """ExampleClassA dostring"""
 
     def __init__(self, a: str, b: int) -> None:
         """__init__ method
@@ -27,7 +27,7 @@ class ClassTestA:
         return self.a + str(self.b)
 
 
-A = Class(ClassTestA)
+A = Class(ExampleClassA)
 
 
 def test_getitem():
