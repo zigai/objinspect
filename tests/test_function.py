@@ -46,7 +46,7 @@ def test_type_inference():
 
 def test_descriptions():
     assert func.has_docstring == True
-    assert func.description == "Test function 1"
+    assert func.description == "example_function dostring"
     assert func.get_param("a").description == "Argument a"
     assert func.get_param("b").description == "Argument b. Defaults to None."
     assert func.get_param("c").description == "Argument c. Defaults to 4."

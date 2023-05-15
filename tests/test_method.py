@@ -91,10 +91,10 @@ def test_class_method():
 def test_extractor():
     ALL_METHODS = Class(ExampleClassB).methods
     assert "__init__" not in [i.name for i in MethodFilter(init=False).extract(ALL_METHODS)]
+    assert "public_method" not in [i.name for i in MethodFilter(public=False).extract(ALL_METHODS)]
     assert "__private_method" not in [
         i.name for i in MethodFilter(private=False).extract(ALL_METHODS)
     ]
-    assert "public_method" not in [i.name for i in MethodFilter(public=False).extract(ALL_METHODS)]
     assert "_protected_method" not in [
         i.name for i in MethodFilter(protected=False).extract(ALL_METHODS)
     ]

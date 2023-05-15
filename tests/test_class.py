@@ -48,7 +48,7 @@ def test_init():
 
 
 def test_description():
-    assert A.description == "ExampleClass1 dostring"
+    assert A.description == "ExampleClassA dostring"
 
 
 def test_methods_len():
