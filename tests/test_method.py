@@ -89,7 +89,6 @@ def test_class_method():
 
 
 def test_extractor():
-
     all_methods = Class(ClassTestB).methods
     assert "__init__" not in [i.name for i in MethodFilter(init=False).extract(all_methods)]
     assert "__private_method" not in [
