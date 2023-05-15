@@ -39,7 +39,7 @@ def test_getitem():
 
 def test_type_inference():
     assert function1.get_param("a").type is EMPTY
-    assert function1.get_param("b").type is EMPTY
+    assert function1.get_param("b").type is type(None)
     assert function1.get_param("c").type is int
 
 
@@ -53,7 +53,7 @@ def test_descriptions():
 
 def test_is_param_typed():
     assert function1.get_param("a").is_typed == False
-    assert function1.get_param("b").is_typed == False
+    assert function1.get_param("b").is_typed == True
     assert function1.get_param("c").is_typed == True
 
 

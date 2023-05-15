@@ -39,7 +39,7 @@ class Method(Function):
 
     @property
     def is_inherited(self) -> bool:
-        return not self.name in self.cls.__dict__
+        return self.name not in self.cls.__dict__
 
 
 class MethodFilter:

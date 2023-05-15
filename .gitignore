@@ -131,3 +131,4 @@ E61*
 1570*
 models.json
 example*.py
+*ruff_cache

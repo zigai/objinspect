@@ -3,8 +3,7 @@ import inspect
 from objinspect import constants, util
 from objinspect._class import Class
 from objinspect.function import Function
-from objinspect.method import Method
-from objinspect.method_extractor import MethodExtractor
+from objinspect.method import Method, MethodFilter
 from objinspect.parameter import Parameter
 
 
