@@ -4,8 +4,33 @@ from objinspect.function import Function
 
 
 class Method(Function):
-    def __init__(self, func, cls, skip_self: bool = True):
-        super().__init__(func, skip_self)
+    """
+    The Method class represents a method of a class.
+
+    Args:
+        method (Callable): The method to be inspected.
+        cls (type): The class to which the method belongs.
+        skip_self (bool, optional): Whether to skip the self parameter. Defaults to True.
+
+    Attributes:
+        name (str): The name of the method.
+        docstring (str): The docstring of the method.
+        has_docstring (bool): Whether the method has a docstring.
+        description (str): The description part of the method's docstring.
+        params (list[Parameter]): A list of parameters of the method.
+        dict (dict): A dictionary representation of the method's attributes.
+        is_static (bool): Whether the method is static.
+        is_classmethod (bool): Whether the method is a classmethod.
+        is_property (bool): Whether the method is a property.
+        is_private (bool): Whether the method is private.
+        is_protected (bool): Whether the method is protected.
+        is_public (bool): Whether the method is public.
+        is_inherited (bool): Whether the method is inherited.
+
+    """
+
+    def __init__(self, method, cls, skip_self: bool = True):
+        super().__init__(method, skip_self)
         self.cls = cls
 
     @property

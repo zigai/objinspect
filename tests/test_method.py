@@ -4,7 +4,7 @@ from objinspect.method import Method, MethodFilter
 
 class ClassTestA:
     def inherited_method(self):
-        """INHERITED METHOD"""
+        """Inherited method"""
         print("Called inherited")
 
 
@@ -14,30 +14,30 @@ class ClassTestB(ClassTestA):
         print("init")
 
     def public_method(self, a: int, b: str = "b") -> None:
-        """PUBLIC METHOD"""
+        """Public method"""
         print("Called public_method")
 
     def __private_method(self) -> None:
-        """PRIVATE METHOD"""
+        """Private method"""
         print("Called __private_method")
 
     def _protected_method(self) -> None:
-        """PROTECTED METHOD"""
+        """Protected method"""
         print("Called _protected_method")
 
     @staticmethod
     def static_method():
-        """STATIC METHOD"""
+        """Static method"""
         print("Called static_method")
 
     @classmethod
     def class_method(cls):
-        """CLASS METHOD"""
+        """Class method"""
         print("Called class_method")
 
     @property
     def property_method(self):
-        """PROPERTY METHOD"""
+        """Property"""
         return "property"
 
 
@@ -89,18 +89,18 @@ def test_class_method():
 
 
 def test_extractor():
-    all_methods = Class(ClassTestB).methods
-    assert "__init__" not in [i.name for i in MethodFilter(init=False).extract(all_methods)]
+    ALL_METHODS = Class(ClassTestB).methods
+    assert "__init__" not in [i.name for i in MethodFilter(init=False).extract(ALL_METHODS)]
     assert "__private_method" not in [
-        i.name for i in MethodFilter(private=False).extract(all_methods)
+        i.name for i in MethodFilter(private=False).extract(ALL_METHODS)
     ]
-    assert "public_method" not in [i.name for i in MethodFilter(public=False).extract(all_methods)]
+    assert "public_method" not in [i.name for i in MethodFilter(public=False).extract(ALL_METHODS)]
     assert "_protected_method" not in [
-        i.name for i in MethodFilter(protected=False).extract(all_methods)
+        i.name for i in MethodFilter(protected=False).extract(ALL_METHODS)
     ]
     assert "static_method" not in [
-        i.name for i in MethodFilter(static_methods=False).extract(all_methods)
+        i.name for i in MethodFilter(static_methods=False).extract(ALL_METHODS)
     ]
     assert "inherited_method" not in [
-        i.name for i in MethodFilter(inherited=False).extract(all_methods)
+        i.name for i in MethodFilter(inherited=False).extract(ALL_METHODS)
     ]

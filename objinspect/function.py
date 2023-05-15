@@ -33,8 +33,6 @@ class Function:
         skip_self (bool, optional): Whether to skip the self parameter. Defaults to True.
 
     Attributes:
-        func (Callable): The function to be inspected.
-        skip_self (bool): Whether to skip the self parameter.
         name (str): The name of the function.
         docstring (str): The docstring of the function.
         has_docstring (bool): Whether the function has a docstring.
