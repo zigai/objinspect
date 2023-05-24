@@ -1,4 +1,5 @@
 import inspect
+from types import NoneType
 from typing import Any, Callable
 
 import docstring_parser
@@ -51,15 +52,17 @@ class Function:
         self._parsed_docstr: Docstring | None = (
             docstring_parser.parse(self.docstring) if self.has_docstring else None  # type: ignore
         )
-        self._parameters = self._find_parameters()
+        self.return_type = NoneType
+        self._parameters = self._get_parameters()
         self.description = _get_docstr_desc(self._parsed_docstr)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name='{self.name}', parameters={len(self._parameters)}, description='{self.description}')"
 
-    def _find_parameters(self) -> dict[str, Parameter]:
-        args = inspect.signature(self.func)
-        params = [Parameter.from_inspect_param(i) for i in args.parameters.values()]
+    def _get_parameters(self) -> dict[str, Parameter]:
+        signature = inspect.signature(self.func)
+        params = [Parameter.from_inspect_param(i) for i in signature.parameters.values()]
+        self.return_type = signature.return_annotation
 
         # Try finding descriptions for parameters
         if self._parsed_docstr is not None:

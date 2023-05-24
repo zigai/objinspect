@@ -67,7 +67,7 @@ def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> 
     return getattr(obj, name)(*args, **kwargs)
 
 
-def get_uninherited_method_names(cls) -> list[str]:
+def get_uninherited_methods(cls) -> list[str]:
     """
     Get the methods of a class that are not inherited from its parent classes.
     """
@@ -82,5 +82,5 @@ __all__ = [
     "type_to_str",
     "get_enum_choices",
     "call_method",
-    "get_uninherited_method_names",
+    "get_uninherited_methods",
 ]

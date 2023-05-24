@@ -4,7 +4,7 @@ from objinspect.constants import EMPTY
 from objinspect.function import Function
 
 
-def example_function(a, b=None, c=4):
+def example_function(a, b=None, c=4) -> int:
     """
     example_function dostring
 
@@ -13,7 +13,7 @@ def example_function(a, b=None, c=4):
         b (optional): Argument b. Defaults to None.
         c (int, optional): Argument c. Defaults to 4.
     """
-    ...
+    return c * 2
 
 
 func = Function(example_function)
@@ -30,6 +30,7 @@ def test_getitem():
     assert func.get_param("a").name == "a"
     assert func.get_param("b").name == "b"
     assert func.get_param("c").name == "c"
+    assert func.return_type is int
     with pytest.raises(IndexError):
         func.get_param(3)
     with pytest.raises(TypeError):
