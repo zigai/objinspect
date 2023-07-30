@@ -6,6 +6,7 @@ import docstring_parser
 
 from objinspect.function import _get_docstr_desc, _has_docstr
 from objinspect.method import Method, MethodFilter
+from objinspect.parameter import Parameter
 
 
 class Class:
@@ -84,7 +85,7 @@ class Class:
             return self.cls.__class__
         return self.cls
 
-    def _find_methods(self):
+    def _find_methods(self) -> dict[str, Method]:
         method_filter = MethodFilter(**self.extractor_kwargs)
         members = inspect.getmembers(self.cls, inspect.isfunction)
         methods = {}
@@ -153,7 +154,7 @@ class Class:
             return None
 
     @property
-    def init_args(self):
+    def init_args(self) -> list[Parameter] | None:
         if self.init_method is None:
             return None
         return self.init_method.params

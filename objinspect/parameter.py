@@ -36,13 +36,13 @@ class Parameter:
         self.description = description
         self.kind = kind
         if infer_type and not self.is_typed:
-            self.type = self._get_infered_type()
+            self.type = self.get_infered_type()
 
     def __repr__(self):
         data = f"name='{self.name}', kind={str(self.kind)}, type={self.type}, default={self.default}, description='{self.description}'"
         return f"{self.__class__.__name__}({data})"
 
-    def _get_infered_type(self):
+    def get_infered_type(self):
         """Infer the type of the parameter based on its default value."""
         if self.default is EMPTY:
             return EMPTY
