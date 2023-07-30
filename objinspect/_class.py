@@ -43,14 +43,18 @@ class Class:
         static_methods=True,
         protected=False,
         private=False,
+        skip_self=True,
     ) -> None:
         self.cls = cls
         self.is_initialized = False
+        self.skip_self = skip_self
+
         try:
             self.name: str = self.cls.__name__
         except AttributeError:
             self.name = f"{self.cls.__class__.__name__} instance"
             self.is_initialized = True
+
         self.instance = None if not self.is_initialized else self.cls
         self.docstring = inspect.getdoc(self.cls)
         self.has_docstring = _has_docstr(self.docstring)
@@ -73,7 +77,7 @@ class Class:
         return f"{self.__class__.__name__}(name='{self.name}', methods={len(self._methods)}, has_init={self.has_init}, description={self.description})"
 
     @functools.cached_property
-    def _get_class_base(self):
+    def _class_base(self):
         if self.is_initialized:
             return self.cls.__class__
         return self.cls
@@ -82,8 +86,10 @@ class Class:
         method_filter = MethodFilter(**self.extractor_kwargs)
         members = inspect.getmembers(self.cls, inspect.isfunction)
         methods = {}
-        for i in method_filter.extract([Method(i[1], self._get_class_base) for i in members]):
-            methods[i.name] = i
+        for method in method_filter.extract(
+            [Method(i[1], self._class_base, skip_self=self.skip_self) for i in members]
+        ):
+            methods[method.name] = method
         return methods
 
     def init(self, *args, **kwargs) -> None:
@@ -138,6 +144,19 @@ class Class:
                 raise TypeError(type(method))
 
     @property
+    def init_method(self):
+        try:
+            return self.get_method("__init__")
+        except KeyError:
+            return None
+
+    @property
+    def init_args(self):
+        if self.init_method is None:
+            return None
+        return self.init_method.params
+
+    @property
     def methods(self) -> list[Method]:
         """
         Returns the list of methods of the class or instance as a list of :class:`Function` objects.
@@ -148,7 +167,7 @@ class Class:
     def dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
-            "methods": [i.dict for i in self.methods],
+            "methods": [method.dict for method in self.methods],
             "description": self.description,
             "initialized": self.is_initialized,
             "docstring": self.docstring,
