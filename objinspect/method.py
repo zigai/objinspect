@@ -76,6 +76,7 @@ class MethodFilter:
         static_methods=True,
         protected=False,
         private=False,
+        classmethod=False,
     ) -> None:
         self.checks = []
         if not init:
@@ -90,6 +91,8 @@ class MethodFilter:
             self.checks.append(lambda method: method.is_protected)
         if not public:
             self.checks.append(lambda method: method.is_public)
+        if not classmethod:
+            self.checks.append(lambda method: method.is_classmethod)
 
     def check(self, method: Method) -> bool:
         for check_func in self.checks:

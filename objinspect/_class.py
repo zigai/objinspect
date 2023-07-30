@@ -43,6 +43,7 @@ class Class:
         static_methods=True,
         protected=False,
         private=False,
+        classmethod=True,
         skip_self=True,
     ) -> None:
         self.cls = cls
@@ -65,6 +66,7 @@ class Class:
             "static_methods": static_methods,
             "protected": protected,
             "private": private,
+            "classmethod": classmethod,
         }
         self._methods = self._find_methods()
         self.has_init = "__init__" in self._methods
