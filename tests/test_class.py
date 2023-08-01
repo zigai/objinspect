@@ -55,7 +55,7 @@ def test_methods_len():
     assert len(A.methods) == 3
 
 
-def test_init():
+def test_init_2():
     with pytest.raises(ValueError):
         A.call_method("method_2")
 
