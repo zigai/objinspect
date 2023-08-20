@@ -15,7 +15,7 @@ def objinspect(
     static_methods=True,
     protected=False,
     private=False,
-):
+) -> Function | Class | Method:
     """
     The objinspect function takes an `object` and an optional `include_inherited` flag (defaults to True) and returns either a `Function` or a `Class` object  representing its structure.
 
@@ -46,4 +46,9 @@ def objinspect(
             protected=protected,
             private=private,
         )
+    if inspect.ismethod(obj):
+        return Method(obj, obj.__class__)
     return Function(obj)
+
+
+__all__ = ["objinspect", "Class", "Function", "Method", "Parameter", "MethodFilter"]

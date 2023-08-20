@@ -1,20 +1,8 @@
 import pytest
+from examples import example_function
 
 from objinspect.constants import EMPTY
 from objinspect.function import Function
-
-
-def example_function(a, b=None, c=4) -> int:
-    """
-    example_function dostring
-
-    Args:
-        a: Argument a
-        b (optional): Argument b. Defaults to None.
-        c (int, optional): Argument c. Defaults to 4.
-    """
-    return c * 2
-
 
 func = Function(example_function)
 

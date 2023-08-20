@@ -130,5 +130,5 @@ dmypy.json
 E61*
 1570*
 models.json
-example*.py
+objinspect/example*.py
 *ruff_cache
