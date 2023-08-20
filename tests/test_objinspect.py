@@ -12,4 +12,3 @@ def test_correct_return_types():
 def test_method_of_instance():
     obj = objinspect(ExampleClassA("a", 1).method_1)
     assert isinstance(obj, Method)
-    print(obj.cls)
