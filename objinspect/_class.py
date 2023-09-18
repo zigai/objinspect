@@ -50,10 +50,12 @@ class Class:
         self.cls = cls
         self.is_initialized = False
         self.skip_self = skip_self
+        self.receieved_instance = False
 
         try:
             self.name: str = self.cls.__name__
         except AttributeError:
+            self.receieved_instance = True
             self.name = f"{self.cls.__class__.__name__} instance"
             self.is_initialized = True
 
@@ -87,7 +89,8 @@ class Class:
 
     def _find_methods(self) -> dict[str, Method]:
         method_filter = MethodFilter(**self.extractor_kwargs)
-        members = inspect.getmembers(self.cls, inspect.isfunction)
+        fn = inspect.isfunction if not self.is_initialized else inspect.ismethod
+        members = inspect.getmembers(self.cls, fn)
         methods = {}
         for method in method_filter.extract(
             [Method(i[1], self._class_base, skip_self=self.skip_self) for i in members]
@@ -126,6 +129,8 @@ class Class:
         method_obj = self.get_method(method)
         if not self.is_initialized and not method_obj.is_static:
             raise ValueError(f"Class {self.cls} is not initialized")
+        if self.receieved_instance:
+            return method_obj.call(*args, **kwargs)
         return method_obj.call(self.instance, *args, **kwargs)
 
     def get_method(self, method: str | int) -> Method:
