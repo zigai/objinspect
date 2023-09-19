@@ -1,5 +1,10 @@
+from inspect import _ParameterKind
 from types import FunctionType
 from typing import Any
+
+from objinspect._class import Class
+from objinspect.function import Function
+from objinspect.method import Method
 
 
 def type_to_str(t: Any) -> str:
@@ -78,9 +83,37 @@ def get_uninherited_methods(cls) -> list[str]:
     ]
 
 
+def split_args_kwargs(func_args: dict, func: Function | Method) -> tuple[tuple, dict]:
+    """
+    Split the arguments passed to a function into positional and keyword arguments.
+    """
+    args, kwargs = [], {}
+    for param in func.params:
+        if param.kind == _ParameterKind.POSITIONAL_ONLY:
+            args.append(func_args[param.name])
+        else:
+            kwargs[param.name] = func_args[param.name]
+    return tuple(args), kwargs
+
+
+def split_init_args(args: dict, cls: Class, method: Method) -> tuple[dict, dict]:
+    """
+    Split the arguments into those that should be passed to the __init__ method and those that should be passed to the method.
+    """
+    if not method.is_static and cls.has_init:
+        init_method = cls.get_method("__init__")
+        init_arg_names = [i.name for i in init_method.params]
+        args_init = {k: v for k, v in args.items() if k in init_arg_names}
+        args_method = {k: v for k, v in args.items() if k not in init_arg_names}
+        return args_init, args_method
+    return {}, args
+
+
 __all__ = [
     "type_to_str",
     "get_enum_choices",
     "call_method",
     "get_uninherited_methods",
+    "split_args_kwargs",
+    "split_init_args",
 ]
