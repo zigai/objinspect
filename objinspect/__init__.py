@@ -125,6 +125,8 @@ def prettydir(obj: object, dunders: bool = False, color=True, sep: bool = False)
         for k, v in variables.items():
             k = colored(k, FG.LIGHT_BLUE) if color else k
             val_str = str(v)
+            if isinstance(v, str):
+                val_str = f"'{val_str}'"
             if len(val_str) > 50:
                 val_str = val_str[:50] + "..."
             print("\t" + k + " = " + val_str)
