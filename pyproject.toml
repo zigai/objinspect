@@ -27,6 +27,7 @@ keywords = [
   "object inspection",
   "code introspection",
   "python inspect",
+  "pretty dir",
 ]
 
 dependencies = ["docstring-parser==0.15.0"]

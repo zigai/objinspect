@@ -1,4 +1,5 @@
 import inspect
+from inspect import _ParameterKind
 
 from objinspect.function import Function
 
@@ -102,6 +103,19 @@ class MethodFilter:
 
     def extract(self, methods: list[Method]) -> list[Method]:
         return [i for i in methods if self.check(i)]
+
+
+def split_args_kwargs(func_args: dict, func: Function | Method) -> tuple[tuple, dict]:
+    """
+    Split the arguments passed to a function into positional and keyword arguments.
+    """
+    args, kwargs = [], {}
+    for param in func.params:
+        if param.kind == _ParameterKind.POSITIONAL_ONLY:
+            args.append(func_args[param.name])
+        else:
+            kwargs[param.name] = func_args[param.name]
+    return tuple(args), kwargs
 
 
 __all__ = ["Method", "MethodFilter"]

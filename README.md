@@ -21,11 +21,11 @@ pip install git+https://github.com/zigai/objinspect
 
 ``` python
 >>> import math
->>> from objinspect import objinspect
->>> objinspect(math.pow)
+>>> from objinspect import inspect
+>>> inspect(math.pow)
 Function(name='pow', parameters=2, description='Return x**y (x to the power of y).')
 
->>> objinspect(math.pow).dict
+>>> inspect(math.pow).dict
 [
    {
       "default":"<class""inspect._empty"">",
@@ -43,11 +43,11 @@ Function(name='pow', parameters=2, description='Return x**y (x to the power of y
    }
 ]
                  
->>> objinspect(objinspect)
+>>> inspect(inspect)
 Function(
-    name="objinspect",
+    name="inspect",
     parameters=2,
-    description="The objinspect function  takes an object and an optional include_inherited flag (defaults to True) and returns either a Function object or a Class object depending on the type of object.",
+    description="The inspect function  takes an object and an optional include_inherited flag (defaults to True) and returns either a Function object or a Class object depending on the type of object.",
 )
 ```
 # License

@@ -1,7 +1,10 @@
 import inspect
-from typing import Any
+import typing as T
+
+from stdl.st import FG, colored
 
 from objinspect.constants import EMPTY
+from objinspect.util import type_to_str
 
 
 class Parameter:
@@ -14,8 +17,8 @@ class Parameter:
         self,
         name: str,
         kind: inspect._ParameterKind,
-        type: Any = EMPTY,
-        default: Any = EMPTY,
+        type: T.Any = EMPTY,
+        default: T.Any = EMPTY,
         description: str | None = None,
         infer_type: bool = True,
     ) -> None:
@@ -69,6 +72,28 @@ class Parameter:
             "default": self.default,
             "description": self.description,
         }
+
+    def to_str(self, *, color: bool = True) -> str:
+        """
+        Return a string representation of the parameter.
+
+        Args:
+            color (bool, optional): Whether to colorize the output. Defaults to True.
+        """
+        type_str = f"{type_to_str(self.type)}" if self.is_typed else ""
+        if color and type_str:
+            type_str = colored(type_str, FG.GREEN)
+        type_str = f": {type_str}" if type_str != "" else ""
+
+        default_str = f"{self.default}" if self.is_optional else ""
+        if self.default is not EMPTY:
+            if color:
+                default_str = colored(default_str, FG.BLUE)
+            default_str = f" = {default_str}"
+        else:
+            default_str = ""
+        name_str = self.name if not color else colored(self.name, FG.LIGHT_BLUE)
+        return f"{name_str}{type_str}{default_str}"
 
     @classmethod
     def from_inspect_param(

@@ -1,8 +1,9 @@
 import functools
 import inspect
-from typing import Any
+import typing as T
 
 import docstring_parser
+from stdl.st import FG, colored
 
 from objinspect.function import _get_docstr_desc, _has_docstr
 from objinspect.method import Method, MethodFilter
@@ -111,7 +112,7 @@ class Class:
         self.instance = self.cls(*args, **kwargs)
         self.is_initialized = True
 
-    def call_method(self, method: str | int, *args, **kwargs) -> Any:
+    def call_method(self, method: str | int, *args, **kwargs) -> T.Any:
         """
         Calls the specified method on the class or instance.
 
@@ -172,7 +173,7 @@ class Class:
         return list(self._methods.values())
 
     @property
-    def dict(self) -> dict[str, Any]:
+    def dict(self) -> dict[str, T.Any]:
         return {
             "name": self.name,
             "methods": [method.dict for method in self.methods],
@@ -181,5 +182,34 @@ class Class:
             "docstring": self.docstring,
         }
 
+    def to_str(self, *, color: bool = True) -> str:
+        if color:
+            string = colored("class", FG.BLUE) + " " + colored(self.name, FG.GREEN) + ":"
+        else:
+            string = f"class {self.name}:"
+        if self.description:
+            if color:
+                string += "\n" + colored(self.description, FG.GRAY)
+            else:
+                string += "\n" + self.description
+        if not len(self.methods):
+            return string
+        string += "\n"
+        string += "\n".join(["\t" + method.to_str(color=color) for method in self.methods])
+        return string
 
-__all__ = ["Class"]
+
+def split_init_args(args: dict, cls: Class, method: Method) -> tuple[dict, dict]:
+    """
+    Split the arguments into those that should be passed to the __init__ method and those that should be passed to the method.
+    """
+    if not method.is_static and cls.has_init:
+        init_method = cls.get_method("__init__")
+        init_arg_names = [i.name for i in init_method.params]
+        args_init = {k: v for k, v in args.items() if k in init_arg_names}
+        args_method = {k: v for k, v in args.items() if k not in init_arg_names}
+        return args_init, args_method
+    return {}, args
+
+
+__all__ = ["Class", "split_init_args"]

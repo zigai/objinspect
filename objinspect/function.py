@@ -1,11 +1,14 @@
 import inspect
+import typing as T
 from types import NoneType
-from typing import Any, Callable
 
 import docstring_parser
 from docstring_parser import Docstring
+from stdl.st import FG, ansi_ljust, colored
 
+from objinspect.constants import EMPTY
 from objinspect.parameter import Parameter
+from objinspect.util import type_to_str
 
 
 def _has_docstr(docstring: str | None) -> bool:
@@ -43,7 +46,7 @@ class Function:
 
     """
 
-    def __init__(self, func: Callable, skip_self: bool = True) -> None:
+    def __init__(self, func: T.Callable, skip_self: bool = True) -> None:
         self.func = func
         self.skip_self = skip_self
         self.name: str = self.func.__name__
@@ -100,7 +103,7 @@ class Function:
             case _:
                 raise TypeError(type(arg))
 
-    def call(self, *args, **kwargs) -> Any:
+    def call(self, *args, **kwargs) -> T.Any:
         """
         Calls the function and returns the result of its call.
 
@@ -118,12 +121,44 @@ class Function:
         return list(self._parameters.values())
 
     @property
-    def dict(self) -> dict[str, Any]:
+    def dict(self) -> dict[str, T.Any]:
         return {
             "name": self.name,
             "parameters": [i.dict for i in self.params],
             "docstring": self.docstring,
         }
+
+    def to_str(self, *, color: bool = True, description: bool = True, ljust: int = 58) -> str:
+        """
+        Return a string representation of the function.
+
+        Args:
+            color (bool, optional): Whether to colorize the string. Defaults to True.
+            description (bool, optional): Whether to include the description of the function. Defaults to True.
+            ljust (int, optional): The width of the string. Defaults to 50.
+        """
+        name_str = self.name if not color else colored(self.name, FG.YELLOW)
+        params = ", ".join([i.to_str(color=color) for i in self.params])
+        if color:
+            params = colored("(", FG.YELLOW) + params + colored(")", FG.YELLOW)
+
+        if self.return_type is not EMPTY:
+            return_str = type_to_str(self.return_type)
+            if color:
+                return_str = colored(return_str, FG.GREEN)
+            return_str = " -> " + return_str
+        else:
+            return_str = ""
+
+        string = f"{name_str}{params}{return_str}"
+
+        if description and self.description:
+            string = ansi_ljust(string, ljust)
+            description_str = f" # {self.description}"
+            if color:
+                description_str = colored(description_str, FG.GRAY)
+            return string + description_str
+        return string
 
 
 __all__ = ["Function"]
