@@ -1,5 +1,8 @@
 import typing as T
 from types import FunctionType
+from enum import EnumMeta
+
+import typing_extensions
 
 
 def type_to_str(t: T.Any) -> str:
@@ -46,6 +49,13 @@ def get_enum_choices(e) -> tuple[str, ...]:
     return tuple(e.__members__.keys())
 
 
+def get_literal_choices(literal_t) -> tuple[str, ...]:
+    """
+    Get the options of a Python Literal.
+    """
+    return T.get_args(literal_t)
+
+
 def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> T.Any:
     """
     Call a method with the given name on the given object.
@@ -78,9 +88,22 @@ def get_uninherited_methods(cls) -> list[str]:
     ]
 
 
+def is_enum(t: T.Any) -> bool:
+    return isinstance(t, EnumMeta)
+
+
+def is_literal(t: T.Any) -> bool:
+    return t is typing_extensions.Literal or (
+        hasattr(t, "__origin__") and t.__origin__ is typing_extensions.Literal
+    )
+
+
 __all__ = [
     "type_to_str",
     "get_enum_choices",
+    "get_literal_choices",
     "call_method",
     "get_uninherited_methods",
+    "is_enum",
+    "is_literal",
 ]

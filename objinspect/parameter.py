@@ -6,6 +6,8 @@ from stdl.st import FG, colored
 from objinspect.constants import EMPTY
 from objinspect.util import type_to_str
 
+ParameterKind = inspect._ParameterKind
+
 
 class Parameter:
     """
@@ -16,7 +18,7 @@ class Parameter:
     def __init__(
         self,
         name: str,
-        kind: inspect._ParameterKind,
+        kind: ParameterKind,
         type: T.Any = EMPTY,
         default: T.Any = EMPTY,
         description: str | None = None,
