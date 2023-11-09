@@ -1,8 +1,10 @@
 import typing as T
-from types import FunctionType
 from enum import EnumMeta
+from types import FunctionType
 
 import typing_extensions
+
+from objinspect.constants import EMPTY
 
 
 def type_to_str(t: T.Any) -> str:
@@ -96,6 +98,78 @@ def is_literal(t: T.Any) -> bool:
     return t is typing_extensions.Literal or (
         hasattr(t, "__origin__") and t.__origin__ is typing_extensions.Literal
     )
+
+
+def create_function(
+    name: str,
+    args: dict[str, T.Tuple[T.Any, T.Any]],
+    body: str | list[str],
+    globs: dict[str, T.Any],
+    return_type: T.Any | EMPTY = EMPTY,
+    docstring: str | None = None,
+) -> T.Callable:
+    """
+    Create a function with the given name, arguments, body, and globals.
+
+    Args:
+        name (str): The name of the function.
+        args (dict): A dictionary mapping argument names to tuples of the argument type and default value.
+        body (str | list): The body of the function. If a string, it will be split by newlines.
+        globs (dict): The globals to use when executing the function.
+        return_type (Any, optional): The return type of the function. Defaults to EMPTY.
+        docstring (str, optional): The docstring of the function. Defaults to None.
+
+    Example:
+        >>> add = create_function(
+        ...     name="add",
+        ...     args={
+        ...         "a": (int, None),
+        ...         "b": (int, 2),
+        ...     },
+        ...     body=[
+        ...         "result = a + b",
+        ...         "return result",
+        ...          ],
+        ...     docstring="Adds two numbers together. If b is not provided, defaults to 2.",
+        ...     globs=globals(),
+        ...   )
+        >>> add(2, 2)
+        4
+
+    """
+
+    arg_str = []
+    for arg, annotations in args.items():
+        if len(annotations) == 2:
+            t, default = annotations
+        elif len(annotations) == 1:
+            t = annotations[0]
+            default = EMPTY
+        else:
+            raise ValueError(f"Invalid annotations for argument {arg}: {annotations}")
+        arg_str.append(f"{arg}: {t.__name__}")
+        if default is not EMPTY:
+            arg_str[-1] += f" = {repr(default)}"
+    arg_str = ", ".join(arg_str)
+
+    body_str = "\n    ".join(body) if isinstance(body, list) else body
+
+    func_str = f"def {name}({arg_str})"
+    func_str += f" -> {return_type.__name__}" if return_type is not EMPTY else ""
+    func_str += ":"
+    if docstring:
+        func_str += f'\n    """{docstring}"""'
+    func_str += f"\n    {body_str}"
+
+    code_obj = compile(func_str, "<string>", "exec")
+    exec(code_obj, globs)
+    func = globs[name]
+
+    func.__annotations__ = {arg: annotation[0] for arg, annotation in args.items()}
+    if return_type is not None:
+        func.__annotations__["return"] = return_type
+
+    return func
 
 
 __all__ = [

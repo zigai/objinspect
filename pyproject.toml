@@ -1,14 +1,14 @@
 [project]
 name = "objinspect"
-version = "0.2.6"
+version = "0.2.7"
 description = "View the structure of Python classes and functions"
 authors = [{ name = "Žiga Ivanšek", email = "ziga.ivansek@gmail.com" }]
-license = { file = "LICENSE.txt" }
+license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
   "docstring-parser==0.15.0",
-  "stdl==0.4.8",
+  "stdl>=0.4.8",
   "typing-extensions==4.7.1",
 ]
 
@@ -34,7 +34,7 @@ keywords = [
 
 [project.optional-dependencies]
 test = ["pytest"]
-dev = ["black", "pytest", "flake8"]
+dev = ["black", "pytest", "ruff"]
 
 [project.urls]
 Repository = "https://github.com/zigai/objinspect"
