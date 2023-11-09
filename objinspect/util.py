@@ -107,7 +107,7 @@ def create_function(
     globs: dict[str, T.Any],
     return_type: T.Any | EMPTY = EMPTY,
     docstring: str | None = None,
-) -> T.Callable:
+) -> T.Callable[..., T.Any]:
     """
     Create a function with the given name, arguments, body, and globals.
 
@@ -147,15 +147,25 @@ def create_function(
             default = EMPTY
         else:
             raise ValueError(f"Invalid annotations for argument {arg}: {annotations}")
-        arg_str.append(f"{arg}: {t.__name__}")
+
+        if t is not EMPTY:
+            arg_str.append(f"{arg}: {t.__name__}")
+        else:
+            arg_str.append(arg)
         if default is not EMPTY:
             arg_str[-1] += f" = {repr(default)}"
+
     arg_str = ", ".join(arg_str)
-
     body_str = "\n    ".join(body) if isinstance(body, list) else body
-
     func_str = f"def {name}({arg_str})"
-    func_str += f" -> {return_type.__name__}" if return_type is not EMPTY else ""
+
+    if return_type is not EMPTY:
+        if return_type is None:
+            func_str += " -> None"
+        else:
+            func_str += f" -> {return_type.__name__}"
+
+    # func_str += f" -> {return_type.__name__}" if return_type is not EMPTY else ""
     func_str += ":"
     if docstring:
         func_str += f'\n    """{docstring}"""'
@@ -164,9 +174,8 @@ def create_function(
     code_obj = compile(func_str, "<string>", "exec")
     exec(code_obj, globs)
     func = globs[name]
-
     func.__annotations__ = {arg: annotation[0] for arg, annotation in args.items()}
-    if return_type is not None:
+    if return_type is not EMPTY:
         func.__annotations__["return"] = return_type
 
     return func
