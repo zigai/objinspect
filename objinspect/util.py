@@ -165,7 +165,6 @@ def create_function(
         else:
             func_str += f" -> {return_type.__name__}"
 
-    # func_str += f" -> {return_type.__name__}" if return_type is not EMPTY else ""
     func_str += ":"
     if docstring:
         func_str += f'\n    """{docstring}"""'
