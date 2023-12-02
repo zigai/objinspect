@@ -4,7 +4,7 @@ from types import NoneType
 
 import docstring_parser
 from docstring_parser import Docstring
-from stdl.st import FG, ansi_ljust, colored
+from stdl.st import ansi_ljust, colored
 
 from objinspect.constants import EMPTY
 from objinspect.parameter import Parameter
@@ -137,15 +137,15 @@ class Function:
             description (bool, optional): Whether to include the description of the function. Defaults to True.
             ljust (int, optional): The width of the string. Defaults to 50.
         """
-        name_str = self.name if not color else colored(self.name, FG.YELLOW)
+        name_str = self.name if not color else colored(self.name, "yellow")
         params = ", ".join([i.to_str(color=color) for i in self.params])
         if color:
-            params = colored("(", FG.YELLOW) + params + colored(")", FG.YELLOW)
+            params = colored("(", "yellow") + params + colored(")", "yellow")
 
         if self.return_type is not EMPTY:
             return_str = type_to_str(self.return_type)
             if color:
-                return_str = colored(return_str, FG.GREEN)
+                return_str = colored(return_str, "green")
             return_str = " -> " + return_str
         else:
             return_str = ""
@@ -156,7 +156,7 @@ class Function:
             string = ansi_ljust(string, ljust)
             description_str = f" # {self.description}"
             if color:
-                description_str = colored(description_str, FG.GRAY)
+                description_str = colored(description_str, "gray")
             return string + description_str
         return string
 

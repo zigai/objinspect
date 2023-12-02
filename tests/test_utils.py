@@ -2,7 +2,7 @@ import typing as T
 
 import pytest
 
-from objinspect.util import EMPTY, create_function
+from objinspect.util import create_function
 
 
 class TestCreateFunction:

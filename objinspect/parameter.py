@@ -1,7 +1,7 @@
 import inspect
 import typing as T
 
-from stdl.st import FG, colored
+from stdl.st import colored
 
 from objinspect.constants import EMPTY
 from objinspect.util import type_to_str
@@ -84,17 +84,17 @@ class Parameter:
         """
         type_str = f"{type_to_str(self.type)}" if self.is_typed else ""
         if color and type_str:
-            type_str = colored(type_str, FG.GREEN)
+            type_str = colored(type_str, "green")
         type_str = f": {type_str}" if type_str != "" else ""
 
         default_str = f"{self.default}" if self.is_optional else ""
         if self.default is not EMPTY:
             if color:
-                default_str = colored(default_str, FG.BLUE)
+                default_str = colored(default_str, "blue")
             default_str = f" = {default_str}"
         else:
             default_str = ""
-        name_str = self.name if not color else colored(self.name, FG.LIGHT_BLUE)
+        name_str = self.name if not color else colored(self.name, "light_blue")
         return f"{name_str}{type_str}{default_str}"
 
     @classmethod

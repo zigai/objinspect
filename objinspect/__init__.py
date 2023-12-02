@@ -2,7 +2,7 @@ import inspect as _inspect
 from collections import defaultdict
 
 from stdl.log import br
-from stdl.st import FG, colored
+from stdl.st import colored
 
 from objinspect._class import Class
 from objinspect.function import Function
@@ -123,7 +123,7 @@ def prettydir(obj: object, dunders: bool = False, color=True, sep: bool = False)
     if len(variables):
         print("\nVariables:")
         for k, v in variables.items():
-            k = colored(k, FG.LIGHT_BLUE) if color else k
+            k = colored(k, "light_blue") if color else k
             val_str = str(v)
             if isinstance(v, str):
                 val_str = f"'{val_str}'"

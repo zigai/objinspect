@@ -3,7 +3,7 @@ import inspect
 import typing as T
 
 import docstring_parser
-from stdl.st import FG, colored
+from stdl.st import colored
 
 from objinspect.function import _get_docstr_desc, _has_docstr
 from objinspect.method import Method, MethodFilter
@@ -184,12 +184,12 @@ class Class:
 
     def to_str(self, *, color: bool = True) -> str:
         if color:
-            string = colored("class", FG.BLUE) + " " + colored(self.name, FG.GREEN) + ":"
+            string = colored("class", "blue") + " " + colored(self.name, "green") + ":"
         else:
             string = f"class {self.name}:"
         if self.description:
             if color:
-                string += "\n" + colored(self.description, FG.GRAY)
+                string += "\n" + colored(self.description, "gray")
             else:
                 string += "\n" + self.description
         if not len(self.methods):
