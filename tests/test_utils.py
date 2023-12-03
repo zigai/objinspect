@@ -2,7 +2,7 @@ import typing as T
 
 import pytest
 
-from objinspect.util import create_function
+from objinspect.util import create_function, get_literal_choices, is_literal
 
 
 class TestCreateFunction:
@@ -62,6 +62,53 @@ class TestCreateFunction:
     def test_edge_cases(self):
         nop = create_function(name="nop", args={}, body="pass", globs=globals())
         assert nop() is None
+
+
+import typing as T
+
+import pytest
+
+
+class TestIsLiteral:
+    def test_literal_type(self):
+        assert is_literal(T.Literal["a", "b"]) == True
+
+    def test_non_literal_type(self):
+        assert is_literal(int) == False
+
+    def test_nested_literal_type(self):
+        nested_literal = T.Literal[T.Literal["a", "b"]]
+        assert is_literal(nested_literal) == True
+
+    def test_literal_or_none(self):
+        literal_or_none = T.Literal["a", "b"] | None
+        assert is_literal(literal_or_none) == True
+
+    def test_composite_without_literal(self):
+        composite_without_literal = T.Union[int, str]
+        assert is_literal(composite_without_literal) == False
+
+
+class TestGetLiteralChoices:
+    def test_literal_type(self):
+        assert get_literal_choices(T.Literal["a", "b"]) == ("a", "b")
+
+    def test_non_literal_type(self):
+        with pytest.raises(ValueError):
+            get_literal_choices(int)
+
+    def test_nested_literal_type(self):
+        nested_literal = T.Literal[T.Literal["a", "b"]]
+        assert get_literal_choices(nested_literal) == ("a", "b")
+
+    def test_literal_or_none(self):
+        literal_or_none = T.Literal["a", "b"] | None
+        assert get_literal_choices(literal_or_none) == ("a", "b")
+
+    def test_composite_without_literal(self):
+        composite_without_literal = T.Union[int, str]
+        with pytest.raises(ValueError):
+            get_literal_choices(composite_without_literal)
 
 
 # Example of running the tests with pytest

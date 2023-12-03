@@ -1,6 +1,6 @@
 [project]
 name = "objinspect"
-version = "0.2.8"
+version = "0.2.9"
 description = "View the structure of Python classes and functions"
 authors = [{ name = "Žiga Ivanšek", email = "ziga.ivansek@gmail.com" }]
 license = { file = "LICENSE" }
@@ -8,7 +8,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
   "docstring-parser>=0.15.0",
-  "stdl>=0.5.0",
+  "stdl>=0.5.1",
   "typing-extensions>=4.7.1",
 ]
 

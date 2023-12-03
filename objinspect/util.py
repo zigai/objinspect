@@ -55,7 +55,12 @@ def get_literal_choices(literal_t) -> tuple[str, ...]:
     """
     Get the options of a Python Literal.
     """
-    return T.get_args(literal_t)
+    if is_full_literal(literal_t):
+        return T.get_args(literal_t)
+    for i in T.get_args(literal_t):
+        if is_full_literal(i):
+            return T.get_args(i)
+    raise ValueError(f"{literal_t} is not a literal")
 
 
 def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> T.Any:
@@ -94,10 +99,22 @@ def is_enum(t: T.Any) -> bool:
     return isinstance(t, EnumMeta)
 
 
+def is_full_literal(t: T.Any) -> bool:
+    if t is typing_extensions.Literal:
+        return True
+    if hasattr(t, "__origin__") and t.__origin__ is typing_extensions.Literal:
+        return True
+    return False
+
+
 def is_literal(t: T.Any) -> bool:
-    return t is typing_extensions.Literal or (
-        hasattr(t, "__origin__") and t.__origin__ is typing_extensions.Literal
-    )
+    if is_full_literal(t):
+        return True
+
+    for i in T.get_args(t):
+        if is_literal(i):
+            return True
+    return False
 
 
 def create_function(
