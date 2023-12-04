@@ -29,40 +29,6 @@ def type_to_str(t: T.Any) -> str:
     return type_str.split(".")[-1]
 
 
-def get_enum_choices(e) -> tuple[str, ...]:
-    """
-    Get the options of a Python Enum.
-
-    Args:
-        e (enum.Enum): A Python Enum.
-
-    Returns:
-        tuple: A tuple of the names of the Enum options.
-
-    Example:
-        >>> import enum
-        >>> class Color(enum.Enum):
-        ...     RED = 1
-        ...     GREEN = 2
-        ...     BLUE = 3
-        >>> get_enum_choices(Color)
-        ('RED', 'GREEN', 'BLUE')
-    """
-    return tuple(e.__members__.keys())
-
-
-def get_literal_choices(literal_t) -> tuple[str, ...]:
-    """
-    Get the options of a Python Literal.
-    """
-    if is_full_literal(literal_t):
-        return T.get_args(literal_t)
-    for i in T.get_args(literal_t):
-        if is_full_literal(i):
-            return T.get_args(i)
-    raise ValueError(f"{literal_t} is not a literal")
-
-
 def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> T.Any:
     """
     Call a method with the given name on the given object.
@@ -99,22 +65,69 @@ def is_enum(t: T.Any) -> bool:
     return isinstance(t, EnumMeta)
 
 
-def is_full_literal(t: T.Any) -> bool:
+def get_enum_choices(e) -> tuple[str, ...]:
+    """
+    Get the options of a Python Enum.
+
+    Args:
+        e (enum.Enum): A Python Enum.
+
+    Returns:
+        tuple: A tuple of the names of the Enum options.
+
+    Example:
+        >>> import enum
+        >>> class Color(enum.Enum):
+        ...     RED = 1
+        ...     GREEN = 2
+        ...     BLUE = 3
+        >>> get_enum_choices(Color)
+        ('RED', 'GREEN', 'BLUE')
+    """
+    return tuple(e.__members__.keys())
+
+
+def is_pure_literal(t: T.Any) -> bool:
     if t is typing_extensions.Literal:
-        return True
+        return False
     if hasattr(t, "__origin__") and t.__origin__ is typing_extensions.Literal:
         return True
     return False
 
 
 def is_literal(t: T.Any) -> bool:
-    if is_full_literal(t):
+    if is_pure_literal(t):
         return True
 
     for i in T.get_args(t):
         if is_literal(i):
             return True
     return False
+
+
+def get_literal_choices(literal_t) -> tuple[str, ...]:
+    """
+    Get the options of a Python Literal.
+    """
+    if is_pure_literal(literal_t):
+        return T.get_args(literal_t)
+    for i in T.get_args(literal_t):
+        if is_pure_literal(i):
+            return T.get_args(i)
+    raise ValueError(f"{literal_t} is not a literal")
+
+
+def literal_contains(literal_t, value: T.Any) -> bool:
+    """
+    Check if a value is in a Python Literal.
+    """
+    if not is_pure_literal(literal_t):
+        raise ValueError(f"{literal_t} is not a literal")
+
+    values = get_literal_choices(literal_t)
+    if not len(values):
+        raise ValueError(f"{literal_t} has no values")
+    return value in values
 
 
 def create_function(
