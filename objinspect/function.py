@@ -1,10 +1,11 @@
 import inspect
 import typing as T
+from dataclasses import dataclass
 from types import NoneType
 
 import docstring_parser
 from docstring_parser import Docstring
-from stdl.st import ansi_ljust, colored
+from stdl.st import ForegroundColor, ansi_ljust, colored
 
 from objinspect.constants import EMPTY
 from objinspect.parameter import Parameter
@@ -27,8 +28,16 @@ def _get_docstr_desc(docstring: Docstring | None) -> str:
     return ""
 
 
-class Function:
+@dataclass
+class FunctionStrTheme:
+    name: ForegroundColor = "yellow"
+    bracket: ForegroundColor = "white"
+    params: ForegroundColor = "light_blue"
+    ret: ForegroundColor = "green"
+    description: ForegroundColor = "gray"
 
+
+class Function:
     """
     A Function object represents a function and its attributes.
 
@@ -128,7 +137,14 @@ class Function:
             "docstring": self.docstring,
         }
 
-    def to_str(self, *, color: bool = True, description: bool = True, ljust: int = 58) -> str:
+    def as_str(
+        self,
+        *,
+        color: bool = True,
+        description: bool = True,
+        ljust: int = 58,
+        theme: FunctionStrTheme | None = None,
+    ) -> str:
         """
         Return a string representation of the function.
 
@@ -136,16 +152,21 @@ class Function:
             color (bool, optional): Whether to colorize the string. Defaults to True.
             description (bool, optional): Whether to include the description of the function. Defaults to True.
             ljust (int, optional): The width of the string. Defaults to 50.
+            theme (FunctionStrTheme, optional): Color theme to use. Default will be used if None.
+
         """
-        name_str = self.name if not color else colored(self.name, "yellow")
-        params = ", ".join([i.to_str(color=color) for i in self.params])
+        if theme is None:
+            theme = FunctionStrTheme()
+
+        name_str = self.name if not color else colored(self.name, theme.name)
+        params = ", ".join([i.as_str(color=color) for i in self.params])
         if color:
-            params = colored("(", "yellow") + params + colored(")", "yellow")
+            params = colored("(", theme.bracket) + params + colored(")", theme.bracket)
 
         if self.return_type is not EMPTY:
             return_str = type_to_str(self.return_type)
             if color:
-                return_str = colored(return_str, "green")
+                return_str = colored(return_str, theme.ret)
             return_str = " -> " + return_str
         else:
             return_str = ""
@@ -156,7 +177,7 @@ class Function:
             string = ansi_ljust(string, ljust)
             description_str = f" # {self.description}"
             if color:
-                description_str = colored(description_str, "gray")
+                description_str = colored(description_str, theme.description)
             return string + description_str
         return string
 

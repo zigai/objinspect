@@ -1,19 +1,26 @@
 import functools
 import inspect
 import typing as T
+from dataclasses import dataclass
 
 import docstring_parser
-from stdl.st import colored
+from stdl.st import ForegroundColor, colored
 
 from objinspect.function import _get_docstr_desc, _has_docstr
 from objinspect.method import Method, MethodFilter
 from objinspect.parameter import Parameter
 
 
-class Class:
+@dataclass
+class ClassStrTheme:
+    class_kw: ForegroundColor = "blue"
+    name: ForegroundColor = "yellow"
+    description: ForegroundColor = "gray"
 
+
+class Class:
     """
-    Class for wrapping a class or class instance and providing information about its methods.
+    Wraps  a class or class instance and provides information about its methods.
 
     Args:
         cls (type or object): The class or class instance to wrap.
@@ -182,26 +189,34 @@ class Class:
             "docstring": self.docstring,
         }
 
-    def to_str(self, *, color: bool = True) -> str:
+    def as_str(
+        self, *, color: bool = True, indent: int = 2, theme: ClassStrTheme | None = None
+    ) -> str:
+        if theme is None:
+            theme = ClassStrTheme()
+
         if color:
-            string = colored("class", "blue") + " " + colored(self.name, "green") + ":"
+            string = colored("class", theme.class_kw) + " " + colored(self.name, theme.name) + ":"
         else:
             string = f"class {self.name}:"
+
         if self.description:
             if color:
-                string += "\n" + colored(self.description, "gray")
+                string += "\n" + colored(self.description, theme.description)
             else:
                 string += "\n" + self.description
         if not len(self.methods):
             return string
+
         string += "\n"
-        string += "\n".join(["\t" + method.to_str(color=color) for method in self.methods])
+        string += "\n".join([" " * indent + method.as_str(color=color) for method in self.methods])
         return string
 
 
 def split_init_args(args: dict, cls: Class, method: Method) -> tuple[dict, dict]:
     """
-    Split the arguments into those that should be passed to the __init__ method and those that should be passed to the method.
+    Split the arguments into those that should be passed to the __init__ method
+    and those that should be passed to the method call.
     """
     if not method.is_static and cls.has_init:
         init_method = cls.get_method("__init__")

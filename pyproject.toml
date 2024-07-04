@@ -1,7 +1,7 @@
 [project]
 name = "objinspect"
-version = "0.2.9"
-description = "View the structure of Python classes and functions"
+version = "0.2.10"
+description = "A high-level library for Python object inspection"
 authors = [{ name = "Žiga Ivanšek", email = "ziga.ivansek@gmail.com" }]
 license = { file = "LICENSE" }
 readme = "README.md"
@@ -30,6 +30,10 @@ keywords = [
   "code introspection",
   "python inspect",
   "pretty dir",
+  "debugging",
+  "development-tools",
+  "code-analysis",
+  "function-signature",
 ]
 
 

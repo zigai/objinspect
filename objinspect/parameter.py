@@ -1,12 +1,20 @@
 import inspect
 import typing as T
+from dataclasses import dataclass
 
-from stdl.st import colored
+from stdl.st import ForegroundColor, colored
 
 from objinspect.constants import EMPTY
 from objinspect.util import type_to_str
 
 ParameterKind = inspect._ParameterKind
+
+
+@dataclass
+class ParameterStrTheme:
+    name: ForegroundColor = "light_blue"
+    type: ForegroundColor = "green"
+    default: ForegroundColor = "blue"
 
 
 class Parameter:
@@ -75,26 +83,31 @@ class Parameter:
             "description": self.description,
         }
 
-    def to_str(self, *, color: bool = True) -> str:
+    def as_str(self, *, color: bool = True, theme: ParameterStrTheme | None = None) -> str:
         """
         Return a string representation of the parameter.
 
         Args:
             color (bool, optional): Whether to colorize the output. Defaults to True.
+            theme (ParameterStrTheme, optional): Color theme to use. Default will be used if None.
         """
+        if theme is None:
+            theme = ParameterStrTheme()
+
         type_str = f"{type_to_str(self.type)}" if self.is_typed else ""
         if color and type_str:
-            type_str = colored(type_str, "green")
+            type_str = colored(type_str, theme.type)
         type_str = f": {type_str}" if type_str != "" else ""
 
         default_str = f"{self.default}" if self.is_optional else ""
         if self.default is not EMPTY:
             if color:
-                default_str = colored(default_str, "blue")
+                default_str = colored(default_str, theme.default)
             default_str = f" = {default_str}"
         else:
             default_str = ""
-        name_str = self.name if not color else colored(self.name, "light_blue")
+
+        name_str = self.name if not color else colored(self.name, theme.name)
         return f"{name_str}{type_str}{default_str}"
 
     @classmethod

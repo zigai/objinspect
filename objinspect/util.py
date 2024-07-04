@@ -87,7 +87,30 @@ def get_enum_choices(e) -> tuple[str, ...]:
     return tuple(e.__members__.keys())
 
 
-def is_pure_literal(t: T.Any) -> bool:
+def is_direct_literal(t: T.Any) -> bool:
+    """
+    Determine if the given type is a 'pure' Literal type.
+    It checks if the input type is a direct instance of Literal,
+    not including the Literal class itself. This function distinguishes between the
+    Literal class itself and instantiated Literal types. It returns True only for the latter.
+
+    Args:
+        t (Any): The type to check.
+
+    Returns:
+        bool: True if the type is a pure Literal, False otherwise.
+
+    Examples:
+        >>> from typing_extensions import Literal
+        >>> is_direct_literal(Literal[1, 2, 3])
+        True
+        >>> is_direct_literal(Literal)
+        False
+        >>> is_direct_literal(int)
+        False
+        >>> is_direct_literal(Union[str, Literal[1, 2]])
+        False
+    """
     if t is typing_extensions.Literal:
         return False
     if hasattr(t, "__origin__") and t.__origin__ is typing_extensions.Literal:
@@ -95,12 +118,27 @@ def is_pure_literal(t: T.Any) -> bool:
     return False
 
 
-def is_literal(t: T.Any) -> bool:
-    if is_pure_literal(t):
+def is_or_contains_literal(t: T.Any) -> bool:
+    """
+    Determine if the given type is a Literal type or contains a Literal type.
+
+    Examples:
+    >>> from typing import Union, Optional
+    >>> from typing_extensions import Literal
+    >>> is_or_contains_literal(Literal[1, 2, 3])
+    True
+    >>> is_or_contains_literal(Union[int, Literal[1, 2]])
+    True
+    >>> is_or_contains_literal(Optional[Literal['a', 'b']])
+    True
+    >>> is_or_contains_literal(int)
+    False
+    """
+    if is_direct_literal(t):
         return True
 
     for i in T.get_args(t):
-        if is_literal(i):
+        if is_or_contains_literal(i):
             return True
     return False
 
@@ -109,24 +147,24 @@ def get_literal_choices(literal_t) -> tuple[str, ...]:
     """
     Get the options of a Python Literal.
     """
-    if is_pure_literal(literal_t):
+    if is_direct_literal(literal_t):
         return T.get_args(literal_t)
     for i in T.get_args(literal_t):
-        if is_pure_literal(i):
+        if is_direct_literal(i):
             return T.get_args(i)
     raise ValueError(f"{literal_t} is not a literal")
 
 
-def literal_contains(literal_t, value: T.Any) -> bool:
+def literal_contains(literal_type, value: T.Any) -> bool:
     """
     Check if a value is in a Python Literal.
     """
-    if not is_pure_literal(literal_t):
-        raise ValueError(f"{literal_t} is not a literal")
+    if not is_direct_literal(literal_type):
+        raise ValueError(f"{literal_type} is not a literal")
 
-    values = get_literal_choices(literal_t)
+    values = get_literal_choices(literal_type)
     if not len(values):
-        raise ValueError(f"{literal_t} has no values")
+        raise ValueError(f"{literal_type} has no values")
     return value in values
 
 
@@ -217,5 +255,5 @@ __all__ = [
     "call_method",
     "get_uninherited_methods",
     "is_enum",
-    "is_literal",
+    "is_or_contains_literal",
 ]

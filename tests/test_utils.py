@@ -5,8 +5,8 @@ import pytest
 from objinspect.util import (
     create_function,
     get_literal_choices,
-    is_literal,
-    is_pure_literal,
+    is_direct_literal,
+    is_or_contains_literal,
     literal_contains,
 )
 
@@ -72,39 +72,39 @@ class TestCreateFunction:
 
 class TestIsPureLiteral:
     def test_literal_type_check(self):
-        assert is_pure_literal(T.Literal["a", "b"])
+        assert is_direct_literal(T.Literal["a", "b"])
 
     def test_nested_literal_type_check(self):
-        assert not is_pure_literal(T.Union[T.Literal["a"], T.Literal["b"]])
+        assert not is_direct_literal(T.Union[T.Literal["a"], T.Literal["b"]])
 
     def test_literal_or_none(self):
-        assert not is_pure_literal(T.Literal["b"] | None)
+        assert not is_direct_literal(T.Literal["b"] | None)
 
     def test_basic_type_as_literal(self):
-        assert not is_pure_literal(str)
+        assert not is_direct_literal(str)
 
     def test_t_literal_as_literal(self):
-        assert not is_pure_literal(T.Literal)
+        assert not is_direct_literal(T.Literal)
 
 
 class TestIsLiteral:
     def test_literal_type(self):
-        assert is_literal(T.Literal["a", "b"])
+        assert is_or_contains_literal(T.Literal["a", "b"])
 
     def test_non_literal_type(self):
-        assert not is_literal(int)
+        assert not is_or_contains_literal(int)
 
     def test_nested_literal_type(self):
         nested_literal = T.Literal[T.Literal["a", "b"]]
-        assert is_literal(nested_literal)
+        assert is_or_contains_literal(nested_literal)
 
     def test_literal_or_none(self):
         literal_or_none = T.Literal["a", "b"] | None
-        assert is_literal(literal_or_none)
+        assert is_or_contains_literal(literal_or_none)
 
     def test_composite_without_literal(self):
         composite_without_literal = T.Union[int, str]
-        assert not is_literal(composite_without_literal)
+        assert not is_or_contains_literal(composite_without_literal)
 
 
 class TestIsInLiteral:

@@ -55,7 +55,13 @@ def inspect(
     return Function(obj)  # type: ignore
 
 
-def prettydir(obj: object, dunders: bool = False, color=True, sep: bool = False) -> None:
+def prettydir(
+    obj: object,
+    dunders: bool = False,
+    color=True,
+    sep: bool = False,
+    indent: int = 2,
+) -> None:
     """
     Print the attributes and methods of an object in a pretty format.
 
@@ -117,7 +123,7 @@ def prettydir(obj: object, dunders: bool = False, color=True, sep: bool = False)
     if dunders and len(data["dunders"].items()):
         print("Dunders:")
         for k, v in data["dunders"].items():
-            print("\t" + v.to_str(color=color))
+            print(" " * indent + v.as_str(color=color))
 
     variables = {k: v for k, v in data["vars"].items() if k not in VARIABLE_SKIPS}
     if len(variables):
@@ -129,13 +135,13 @@ def prettydir(obj: object, dunders: bool = False, color=True, sep: bool = False)
                 val_str = f"'{val_str}'"
             if len(val_str) > 50:
                 val_str = val_str[:50] + "..."
-            print("\t" + k + " = " + val_str)
+            print(" " * indent + k + " = " + val_str)
 
     methods = {k: v for k, v in data["methods"].items() if k not in METHOD_SKIPS}
     if len(methods):
         print("\nMethods:")
         for k, v in methods.items():
-            print("\t" + v.to_str(color=color))
+            print(" " * indent + v.as_str(color=color))
 
     if sep:
         br()
