@@ -137,6 +137,10 @@ class Function:
             "docstring": self.docstring,
         }
 
+    @property
+    def is_coroutine(self) -> bool:
+        return inspect.iscoroutinefunction(self.func)
+
     def as_str(
         self,
         *,

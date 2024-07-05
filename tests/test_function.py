@@ -57,3 +57,14 @@ def test_call():
     from math import pow
 
     assert Function(pow).call(2, 2) == 4
+
+
+def test_async():
+
+    async def async_function():
+        return 1
+
+    async_func = Function(async_function)
+
+    assert not func.is_coroutine
+    assert async_func.is_coroutine

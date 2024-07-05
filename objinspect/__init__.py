@@ -137,12 +137,23 @@ def prettydir(
                 val_str = val_str[:50] + "..."
             print(" " * indent + k + " = " + val_str)
 
-    methods = {k: v for k, v in data["methods"].items() if k not in METHOD_SKIPS}
+    methods = {
+        k: v for k, v in data["methods"].items() if k not in METHOD_SKIPS and isinstance(v, Method)
+    }
     if len(methods):
         print("\nMethods:")
         for k, v in methods.items():
             print(" " * indent + v.as_str(color=color))
 
+    functions = {
+        k: v
+        for k, v in data["methods"].items()
+        if k not in METHOD_SKIPS and isinstance(v, Function)
+    }
+    if len(functions):
+        print("\nFunctions:")
+        for k, v in functions.items():
+            print(" " * indent + v.as_str(color=color))
     if sep:
         br()
 
