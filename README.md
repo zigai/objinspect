@@ -24,7 +24,7 @@ pip install objinspect
 pip install git+https://github.com/zigai/objinspect
 ```
 
-## Example
+## Examples
 
 ``` python
 >>> from objinspect import inspect, pdir
@@ -57,6 +57,9 @@ Function(
     description="The inspect function  takes an object and an optional include_inherited flag (defaults to True) and returns either a Function object or a Class object depending on the type of object.",
 )
 ```
+### prettydir
+![image](https://github.com/zigai/objinspect/assets/69588680/e1adcf90-0ef3-49e4-8804-a662f6388475)
+
 
 ## License
 [MIT License](https://github.com/zigai/obj-inspect/blob/master/LICENSE)
