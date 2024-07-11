@@ -6,6 +6,7 @@ authors = [{ name = "Žiga Ivanšek", email = "ziga.ivansek@gmail.com" }]
 license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.10"
+
 dependencies = [
   "docstring-parser>=0.15.0",
   "stdl>=0.5.1",
@@ -38,8 +39,16 @@ keywords = [
 
 
 [project.optional-dependencies]
+dev = [
+  "black",
+  "pytest",
+  "ruff",
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocs-autorefs",
+  "mkdocstrings[python]",
+]
 test = ["pytest"]
-dev = ["black", "pytest", "ruff"]
 
 [project.urls]
 Repository = "https://github.com/zigai/objinspect"
