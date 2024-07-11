@@ -86,8 +86,8 @@ plugins:
 nav:
   - Get Started: index.md
   - API Documentation:
-      - objinspect.inspect: reference/inspect.md
-      - objinspect.pdir: reference/pdir.md
+      - inspect: reference/inspect.md
+      - pdir: reference/pdir.md
       - Parameter: reference/parameter.md
       - Method: reference/method.md
       - Function: reference/function.md
