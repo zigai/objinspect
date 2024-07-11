@@ -4,6 +4,7 @@ from collections import defaultdict
 from stdl.log import br
 from stdl.st import colored
 
+from objinspect import util
 from objinspect._class import Class
 from objinspect.function import Function
 from objinspect.method import Method, MethodFilter
