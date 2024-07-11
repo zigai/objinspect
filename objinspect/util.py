@@ -209,7 +209,7 @@ def create_function(
     ...         "result = a + b",
     ...         "return result",
     ...          ],
-    ...     docstring="Adds two numbers together. If b is not provided, defaults to 2.",
+    ...     docstring="Adds two numbers together. If b is not provided it defaults to 2.",
     ...     globs=globals(),
     ...   )
     >>> add(2, 2)

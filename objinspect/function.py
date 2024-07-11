@@ -30,8 +30,6 @@ def _get_docstr_desc(docstring: Docstring | None) -> str:
 
 @dataclass
 class FunctionStrTheme:
-    """Theme used for `Function.as_str`."""
-
     name: ForegroundColor = "yellow"
     bracket: ForegroundColor = "white"
     params: ForegroundColor = "light_blue"

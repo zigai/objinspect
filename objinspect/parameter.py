@@ -12,8 +12,6 @@ ParameterKind = inspect._ParameterKind
 
 @dataclass
 class ParameterStrTheme:
-    """Theme used for Parameter.as_str."""
-
     name: ForegroundColor = "light_blue"
     type: ForegroundColor = "green"
     default: ForegroundColor = "blue"

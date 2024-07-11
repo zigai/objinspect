@@ -13,10 +13,6 @@ from objinspect.parameter import Parameter
 
 @dataclass
 class ClassStrTheme:
-    """
-    Theme used for `Class.as_str`.
-    """
-
     class_kw: ForegroundColor = "blue"
     name: ForegroundColor = "yellow"
     description: ForegroundColor = "gray"
@@ -30,7 +26,7 @@ class Class:
         cls (type or object): The class or class instance to wrap.
         init (bool, optional): Include the class's __init__ method.
         public (bool, optional): Include public methods.
-        inherited (bool, optional): Include inherited methods. Defaults to True.
+        inherited (bool, optional): Include inherited methods.
         static_methods (bool, optional): Include static methods.
         protected (bool, optional): Include protected methods.
         private (bool, optional): Include private methods.

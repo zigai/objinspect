@@ -29,10 +29,16 @@ def inspect(
 
     Args:
         obj (object): The object to be inspected.
-        include_inherited (bool, optional): Whether to include inherited attributes and methods in the inspection.
+        init (bool, optional): Whether to include the __init__ method for classes.
+        public (bool, optional): Whether to include public attributes and methods.
+        inherited (bool, optional): Whether to include inherited attributes and methods.
+        static_methods (bool, optional): Whether to include static methods.
+        protected (bool, optional): Whether to include protected attributes and methods (prefixed with _).
+        private (bool, optional): Whether to include private attributes and methods (prefixed with __).
 
     Returns:
-        Either a Function object or a Class object depending on the type of object.
+        An object representing the structure of the inspected object.
+
 
     Example:
     ``` python
@@ -72,7 +78,7 @@ def inspect(
 def prettydir(
     obj: object,
     dunders: bool = False,
-    color=True,
+    color: bool = True,
     sep: bool = False,
     indent: int = 2,
 ) -> None:
@@ -81,9 +87,10 @@ def prettydir(
 
     Args:
         obj (object): The object to be inspected.
-        dunders (bool, optional): Whether to include dunder methods. Defaults to False.
-        color (bool, optional): Whether to colorize the output. Defaults to True.
-        sep (bool, optional): Whether to print a separator before and after the output. Defaults to False.
+        dunders (bool, optional): Whether to include dunder methods.
+        color (bool, optional): Whether to colorize the output.
+        sep (bool, optional): Whether to print a separator before and after the output.
+        indent (int, optional): Indent width.
     """
 
     VARIABLE_SKIPS = [
@@ -125,14 +132,6 @@ def prettydir(
                 data["dunders"][inspected_obj.name] = inspected_obj
             else:
                 data["methods"][inspected_obj.name] = inspected_obj
-        """
-        CLASS_SKIPS = ["type"]
-        elif isinstance(obji, Class):
-            if obji.name in CLASS_SKIPS:
-                continue
-            else:
-                data["classes"][obji.name] = obji
-        """
 
     if dunders and len(data["dunders"].items()):
         print("Dunders:")
