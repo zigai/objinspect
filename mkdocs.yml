@@ -83,7 +83,7 @@ plugins:
             - https://docs.python.org/3/objects.inv
 
 nav:
-  - Get Started: readme.md
+  - Get Started: index.md
   - API Documentation:
       - objinspect.inspect: reference/inspect.md
       - objinspect.pdir: reference/pdir.md
