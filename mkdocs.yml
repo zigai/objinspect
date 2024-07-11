@@ -16,8 +16,8 @@ theme:
     - navigation.indexes
     - navigation.sections
     - navigation.tabs
-    - navigation.path
     - navigation.tabs.sticky
+    - navigation.path
     - navigation.top
     - navigation.expand
     - navigation.instant
@@ -74,6 +74,7 @@ plugins:
             show_root_full_path: true
             show_symbol_type_toc: true
             docstring_section_style: table # table, list or spacy
+            docstring_style: google
             filters:
               - "!^_" # Hide semi-private functions and methods
               - "!^__" # Hide private functions and methods

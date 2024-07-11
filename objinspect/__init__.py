@@ -29,17 +29,20 @@ def inspect(
 
     Returns:
         Either a Function object or a Class object depending on the type of object.
+
     Example:
-        >>> from objinspect import inspect
-        >>> inspect(inspect)
-        >>> Function(name='inspect', parameters=2, description='The inspect function takes an object and an optional include_inherited flag (defaults to True) and returns either a Function object or a Class object depending on the type of object.')
-        >>>
-        >>> import math
-        >>> inspect(math.pow)
-        Function(name='pow', parameters=2, description='Return x**y (x to the power of y).')
-        >>>
-        >>> inspect(math.pow).dict
-        {'name': 'pow', 'parameters': [{'name': 'x', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None}, {'name': 'y', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None}], 'docstring': 'Return x**y (x to the power of y).'}
+    ```python
+    >>> from objinspect import inspect
+    >>> inspect(inspect)
+    >>> Function(name='inspect', parameters=2, description='The inspect function takes an object and an optional include_inherited flag (defaults to True) and returns either a Function object or a Class object depending on the type of object.')
+    >>> ...
+    >>> import math
+    >>> inspect(math.pow)
+    Function(name='pow', parameters=2, description='Return x**y (x to the power of y).')
+    >>> ...
+    >>> inspect(math.pow).dict
+    {'name': 'pow', 'parameters': [{'name': 'x', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None}, {'name': 'y', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None}], 'docstring': 'Return x**y (x to the power of y).'}
+    ```
     """
     if _inspect.isclass(obj):
         return Class(
