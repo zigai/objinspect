@@ -1,5 +1,5 @@
 import pytest
-from examples import ExampleClassA
+from examples import ExampleClassA, ExampleClassC
 
 from objinspect import Class
 
@@ -50,5 +50,18 @@ def test_instance():
     assert iobj.instance.a == "a"
     assert iobj.instance.b == 1
     assert len(iobj.methods) == 3
-    print(iobj.methods)
-    # assert iobj.call_method("method_2") == "a1"
+    assert iobj.call_method("method_2") == "a1"
+
+
+def test_class_instance_initialization():
+    instance = ExampleClassA("test", 123)
+    cls = Class(instance)
+    assert cls.is_initialized
+    assert cls.instance == instance
+    assert cls.name == "ExampleClassA instance"
+
+
+def test_class_inheritance():
+    cls = Class(ExampleClassC)
+    inherited_methods = [method for method in cls.methods if method.is_inherited]
+    assert any(method.name == "inherited_method" for method in inherited_methods)
