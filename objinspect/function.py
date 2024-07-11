@@ -30,6 +30,8 @@ def _get_docstr_desc(docstring: Docstring | None) -> str:
 
 @dataclass
 class FunctionStrTheme:
+    """Theme used for `Function.as_str`."""
+
     name: ForegroundColor = "yellow"
     bracket: ForegroundColor = "white"
     params: ForegroundColor = "light_blue"
@@ -43,7 +45,7 @@ class Function:
 
     Args:
         func (Callable): The function to be inspected.
-        skip_self (bool, optional): Whether to skip the self parameter. Defaults to True.
+        skip_self (bool, optional): Whether to skip the self parameter.
 
     Attributes:
         name (str): The name of the function.
@@ -153,9 +155,9 @@ class Function:
         Return a string representation of the function.
 
         Args:
-            color (bool, optional): Whether to colorize the string. Defaults to True.
-            description (bool, optional): Whether to include the description of the function. Defaults to True.
-            ljust (int, optional): The width of the string. Defaults to 50.
+            color (bool, optional): Whether to colorize the string.
+            description (bool, optional): Whether to include the description of the function.
+            ljust (int, optional): The width of the string.
             theme (FunctionStrTheme, optional): Color theme to use. Default will be used if None.
 
         """

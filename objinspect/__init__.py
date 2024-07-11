@@ -4,7 +4,6 @@ from collections import defaultdict
 from stdl.log import br
 from stdl.st import colored
 
-from objinspect import util
 from objinspect._class import Class
 from objinspect.function import Function
 from objinspect.method import Method, MethodFilter
@@ -13,19 +12,25 @@ from objinspect.parameter import Parameter
 
 def inspect(
     obj: object,
-    init=True,
-    public=True,
-    inherited=True,
-    static_methods=True,
-    protected=False,
-    private=False,
+    init: bool = True,
+    public: bool = True,
+    inherited: bool = True,
+    static_methods: bool = True,
+    protected: bool = False,
+    private: bool = False,
 ) -> Function | Class | Method:
     """
-    The `inspect` function takes an `object` and an optional `include_inherited` flag (defaults to True) and returns either a `Function` or a `Class` object  representing its structure.
+    Inspects an object and returns a structured representation of its attributes and methods.
+
+    This function analyzes the given object and returns either a `Function`, `Class`, or `Method` object
+    that encapsulates the object's structure, including its name, parameters, docstring, and other
+    relevant information
+    The inspection can be customized to include or exclude certain types of attributes and methods
+    based on the provided boolean flags.
 
     Args:
         obj (object): The object to be inspected.
-        include_inherited (bool, optional): Whether to include inherited attributes and methods in the inspection. Defaults to True.
+        include_inherited (bool, optional): Whether to include inherited attributes and methods in the inspection.
 
     Returns:
         Either a Function object or a Class object depending on the type of object.
@@ -34,7 +39,7 @@ def inspect(
     ```python
     >>> from objinspect import inspect
     >>> inspect(inspect)
-    >>> Function(name='inspect', parameters=2, description='The inspect function takes an object and an optional include_inherited flag (defaults to True) and returns either a Function object or a Class object depending on the type of object.')
+    >>> Function(name='inspect', parameters=7, description='Inspects an object and returns a structured representation of its attributes and methods.')
     >>> ...
     >>> import math
     >>> inspect(math.pow)

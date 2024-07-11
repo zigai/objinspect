@@ -13,6 +13,10 @@ from objinspect.parameter import Parameter
 
 @dataclass
 class ClassStrTheme:
+    """
+    Theme used for `Class.as_str`.
+    """
+
     class_kw: ForegroundColor = "blue"
     name: ForegroundColor = "yellow"
     description: ForegroundColor = "gray"
@@ -24,12 +28,12 @@ class Class:
 
     Args:
         cls (type or object): The class or class instance to wrap.
-        init (bool, optional): Include the class's __init__ method. Defaults to True.
-        public (bool, optional): Include public methods. Defaults to True.
+        init (bool, optional): Include the class's __init__ method.
+        public (bool, optional): Include public methods.
         inherited (bool, optional): Include inherited methods. Defaults to True.
-        static_methods (bool, optional): Include static methods. Defaults to True.
-        protected (bool, optional): Include protected methods. Defaults to False.
-        private (bool, optional): Include private methods. Defaults to False.
+        static_methods (bool, optional): Include static methods.
+        protected (bool, optional): Include protected methods.
+        private (bool, optional): Include private methods.
 
     Attributes:
         cls (type or object): The class or class instance that was passed as an argument.
@@ -149,7 +153,7 @@ class Class:
             method (str | int): The method name or index to retrieve.
 
         Returns:
-            Method: The :class:`Method` object representing the requested method.
+            Method: The `Method` object representing the requested method.
         """
         match method:
             case str():

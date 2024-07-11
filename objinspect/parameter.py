@@ -12,6 +12,8 @@ ParameterKind = inspect._ParameterKind
 
 @dataclass
 class ParameterStrTheme:
+    """Theme used for Parameter.as_str."""
+
     name: ForegroundColor = "light_blue"
     type: ForegroundColor = "green"
     default: ForegroundColor = "blue"
@@ -88,7 +90,7 @@ class Parameter:
         Return a string representation of the parameter.
 
         Args:
-            color (bool, optional): Whether to colorize the output. Defaults to True.
+            color (bool, optional): Whether to colorize the output.
             theme (ParameterStrTheme, optional): Color theme to use. Default will be used if None.
         """
         if theme is None:
