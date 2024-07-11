@@ -18,10 +18,10 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3 :: Only",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
@@ -37,7 +37,6 @@ keywords = [
   "function-signature",
 ]
 
-
 [project.optional-dependencies]
 dev = [
   "black",
@@ -52,6 +51,10 @@ test = ["pytest"]
 
 [project.urls]
 Repository = "https://github.com/zigai/objinspect"
+
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 100
@@ -86,7 +89,3 @@ exclude = [
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401", "E402"]
-
-[build-system]
-requires = ["setuptools", "setuptools-scm"]
-build-backend = "setuptools.build_meta"
