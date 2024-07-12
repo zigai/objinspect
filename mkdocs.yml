@@ -97,6 +97,6 @@ nav:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/pawamoy
+      link: https://github.com/zigai/objinspect
     - icon: fontawesome/brands/python
-      link: https://pypi.org/project/mkdocstrings/
+      link: https://pypi.org/project/objinspect/
