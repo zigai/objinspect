@@ -1,8 +1,10 @@
 # objinspect
    
 [![Tests](https://github.com/zigai/objinspect/actions/workflows/tests.yml/badge.svg)](https://github.com/zigai/objinspect/actions/workflows/tests.yml)
+[![Documentation Status](https://readthedocs.org/projects/objinspect/badge/?version=latest)](https://objinspect.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/objinspect.svg)](https://badge.fury.io/py/objinspect)
 ![Supported versions](https://img.shields.io/badge/python-3.10+-blue.svg)
+[![Downloads](https://static.pepy.tech/badge/objinspect/month)](https://pepy.tech/project/objinspect)
 [![Downloads](https://static.pepy.tech/badge/objinspect)](https://pepy.tech/project/objinspect)
 [![license](https://img.shields.io/github/license/zigai/objinspect.svg)](https://github.com/zigai/objinspect/blob/main/LICENSE)
 
