@@ -12,16 +12,18 @@ def type_to_str(t: T.Any) -> str:
     Convert a Python type to its string representation (without the module name).
 
     Args:
-        t (Any): A Python type.
+        t (Any): A type.
 
     Returns:
         str: The string representation of the Python type.
 
     Example:
-        >>> type_to_str(datetime.datetime)
-        'datetime'
-        >>> type_to_str(int)
-        'int'
+    ```python
+    >>> type_to_str(datetime.datetime)
+    'datetime'
+    >>> type_to_str(int)
+    'int'
+    ```
     """
     type_str = repr(t)
     if "<class '" in type_str:
@@ -36,16 +38,18 @@ def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> 
     Args:
         obj (object): The object to call the method on.
         name (str): The name of the method to call.
-        args (tuple, optional): The positional arguments to pass to the method. Defaults to ().
-        kwargs (dict, optional): The keyword arguments to pass to the method. Defaults to {}.
+        args (tuple, optional): The positional arguments to pass to the method.
+        kwargs (dict, optional): The keyword arguments to pass to the method.
 
     Returns:
         object: The result of calling the method.
 
-    Examples:
+    Example:
+    ```python
     >>> import math
     >>> call_method(math, "pow", args=(2, 2))
     4.0
+    ```
     """
     return getattr(obj, name)(*args, **kwargs)
 
@@ -76,13 +80,15 @@ def get_enum_choices(e) -> tuple[str, ...]:
         tuple: A tuple of the names of the Enum options.
 
     Example:
-        >>> import enum
-        >>> class Color(enum.Enum):
-        ...     RED = 1
-        ...     GREEN = 2
-        ...     BLUE = 3
-        >>> get_enum_choices(Color)
-        ('RED', 'GREEN', 'BLUE')
+    ```python
+    >>> import enum
+    >>> class Color(enum.Enum):
+    ...     RED = 1
+    ...     GREEN = 2
+    ...     BLUE = 3
+    >>> get_enum_choices(Color)
+    ('RED', 'GREEN', 'BLUE')
+    ```
     """
     return tuple(e.__members__.keys())
 
@@ -100,16 +106,18 @@ def is_direct_literal(t: T.Any) -> bool:
     Returns:
         bool: True if the type is a pure Literal, False otherwise.
 
-    Examples:
-        >>> from typing_extensions import Literal
-        >>> is_direct_literal(Literal[1, 2, 3])
-        True
-        >>> is_direct_literal(Literal)
-        False
-        >>> is_direct_literal(int)
-        False
-        >>> is_direct_literal(Union[str, Literal[1, 2]])
-        False
+    Example:
+    ```python
+    >>> from typing_extensions import Literal
+    >>> is_direct_literal(Literal[1, 2, 3])
+    True
+    >>> is_direct_literal(Literal)
+    False
+    >>> is_direct_literal(int)
+    False
+    >>> is_direct_literal(Union[str, Literal[1, 2]])
+    False
+    ```
     """
     if t is typing_extensions.Literal:
         return False
@@ -122,7 +130,8 @@ def is_or_contains_literal(t: T.Any) -> bool:
     """
     Determine if the given type is a Literal type or contains a Literal type.
 
-    Examples:
+    Example:
+    ```python
     >>> from typing import Union, Optional
     >>> from typing_extensions import Literal
     >>> is_or_contains_literal(Literal[1, 2, 3])
@@ -133,6 +142,7 @@ def is_or_contains_literal(t: T.Any) -> bool:
     True
     >>> is_or_contains_literal(int)
     False
+    ```
     """
     if is_direct_literal(t):
         return True
@@ -182,28 +192,29 @@ def create_function(
     Args:
         name (str): The name of the function.
         args (dict): A dictionary mapping argument names to tuples of the argument type and default value.
-        body (str | list): The body of the function. If a string, it will be split by newlines.
+        body (str | list): The body of the function. If it's a string, it will be split by newlines.
         globs (dict): The globals to use when executing the function.
-        return_type (Any, optional): The return type of the function. Defaults to EMPTY.
-        docstring (str, optional): The docstring of the function. Defaults to None.
+        return_type (Any, optional): The return type of the function.
+        docstring (str, optional): The docstring of the function.
 
     Example:
-        >>> add = create_function(
-        ...     name="add",
-        ...     args={
-        ...         "a": (int, None),
-        ...         "b": (int, 2),
-        ...     },
-        ...     body=[
-        ...         "result = a + b",
-        ...         "return result",
-        ...          ],
-        ...     docstring="Adds two numbers together. If b is not provided, defaults to 2.",
-        ...     globs=globals(),
-        ...   )
-        >>> add(2, 2)
-        4
-
+    ```python
+    >>> add = create_function(
+    ...     name="add",
+    ...     args={
+    ...         "a": (int, None),
+    ...         "b": (int, 2),
+    ...     },
+    ...     body=[
+    ...         "result = a + b",
+    ...         "return result",
+    ...          ],
+    ...     docstring="Adds two numbers together. If b is not provided it defaults to 2.",
+    ...     globs=globals(),
+    ...   )
+    >>> add(2, 2)
+    4
+    ```
     """
 
     arg_str = []

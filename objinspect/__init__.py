@@ -12,33 +12,53 @@ from objinspect.parameter import Parameter
 
 def inspect(
     obj: object,
-    init=True,
-    public=True,
-    inherited=True,
-    static_methods=True,
-    protected=False,
-    private=False,
+    init: bool = True,
+    public: bool = True,
+    inherited: bool = True,
+    static_methods: bool = True,
+    protected: bool = False,
+    private: bool = False,
 ) -> Function | Class | Method:
     """
-    The `inspect` function takes an `object` and an optional `include_inherited` flag (defaults to True) and returns either a `Function` or a `Class` object  representing its structure.
+    Inspects an object and returns a structured representation of its attributes and methods.
+
+    This function analyzes the given object and returns either a `Function`, `Class`, or `Method` which
+    encapsulates the object's structure, including its name, parameters, docstring, and other relevant information.
+    The inspection can be customized to include or exclude certain types of attributes and methods
+    based on the provided boolean flags.
 
     Args:
         obj (object): The object to be inspected.
-        include_inherited (bool, optional): Whether to include inherited attributes and methods in the inspection. Defaults to True.
+        init (bool, optional): Whether to include the __init__ method for classes.
+        public (bool, optional): Whether to include public attributes and methods.
+        inherited (bool, optional): Whether to include inherited attributes and methods.
+        static_methods (bool, optional): Whether to include static methods.
+        protected (bool, optional): Whether to include protected attributes and methods (prefixed with _).
+        private (bool, optional): Whether to include private attributes and methods (prefixed with __).
 
     Returns:
-        Either a Function object or a Class object depending on the type of object.
+        An object representing the structure of the inspected object.
+
+
     Example:
-        >>> from objinspect import inspect
-        >>> inspect(inspect)
-        >>> Function(name='inspect', parameters=2, description='The inspect function takes an object and an optional include_inherited flag (defaults to True) and returns either a Function object or a Class object depending on the type of object.')
-        >>>
-        >>> import math
-        >>> inspect(math.pow)
-        Function(name='pow', parameters=2, description='Return x**y (x to the power of y).')
-        >>>
-        >>> inspect(math.pow).dict
-        {'name': 'pow', 'parameters': [{'name': 'x', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None}, {'name': 'y', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None}], 'docstring': 'Return x**y (x to the power of y).'}
+    ``` python
+    >>> from objinspect import inspect, pdir
+    >>> import math
+    >>> inspect(math.pow)
+    Function(name='pow', parameters=2, description='Return x**y (x to the power of y).')
+
+    >>> inspect(math.pow).dict
+    {
+    'name': 'pow',
+    'parameters': [
+        {'name': 'x', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None},
+        {'name': 'y', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None}],
+    'docstring': 'Return x**y (x to the power of y).'
+    }
+
+    >>> inspect(inspect)
+    Function(name='inspect', parameters=7, description='Inspects an object and returns a structured representation of its attributes and methods.')
+    ```
     """
     if _inspect.isclass(obj):
         return Class(
@@ -58,7 +78,7 @@ def inspect(
 def prettydir(
     obj: object,
     dunders: bool = False,
-    color=True,
+    color: bool = True,
     sep: bool = False,
     indent: int = 2,
 ) -> None:
@@ -67,9 +87,10 @@ def prettydir(
 
     Args:
         obj (object): The object to be inspected.
-        dunders (bool, optional): Whether to include dunder methods. Defaults to False.
-        color (bool, optional): Whether to colorize the output. Defaults to True.
-        sep (bool, optional): Whether to print a separator before and after the output. Defaults to False.
+        dunders (bool, optional): Whether to include dunder methods.
+        color (bool, optional): Whether to colorize the output.
+        sep (bool, optional): Whether to print a separator before and after the output.
+        indent (int, optional): Indent width.
     """
 
     VARIABLE_SKIPS = [
@@ -111,14 +132,6 @@ def prettydir(
                 data["dunders"][inspected_obj.name] = inspected_obj
             else:
                 data["methods"][inspected_obj.name] = inspected_obj
-        """
-        CLASS_SKIPS = ["type"]
-        elif isinstance(obji, Class):
-            if obji.name in CLASS_SKIPS:
-                continue
-            else:
-                data["classes"][obji.name] = obji
-        """
 
     if dunders and len(data["dunders"].items()):
         print("Dunders:")

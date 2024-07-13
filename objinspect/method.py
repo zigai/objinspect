@@ -11,7 +11,7 @@ class Method(Function):
     Args:
         method (Callable): The method to be inspected.
         cls (type): The class to which the method belongs.
-        skip_self (bool, optional): Whether to skip the self parameter. Defaults to True.
+        skip_self (bool, optional): Whether to skip the self parameter.
 
     Attributes:
         name (str): The name of the method.
@@ -118,4 +118,4 @@ def split_args_kwargs(func_args: dict, func: Function | Method) -> tuple[tuple, 
     return tuple(args), kwargs
 
 
-__all__ = ["Method", "MethodFilter"]
+__all__ = ["Method", "MethodFilter", "split_args_kwargs"]
