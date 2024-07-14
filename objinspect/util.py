@@ -11,8 +11,8 @@ def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> 
     Args:
         obj (object): The object to call the method on.
         name (str): The name of the method to call.
-        args (tuple, optional): The positional arguments to pass to the method. Defaults to ().
-        kwargs (dict, optional): The keyword arguments to pass to the method. Defaults to {}.
+        args (tuple, optional): The positional arguments to pass to the method.
+        kwargs (dict, optional): The keyword arguments to pass to the method.
 
     Returns:
         object: The result of calling the method.
@@ -52,8 +52,8 @@ def create_function(
         args (dict): A dictionary mapping argument names to tuples of the argument type and default value.
         body (str | list): The body of the function. If a string, it will be split by newlines.
         globs (dict): The globals to use when executing the function.
-        return_type (Any, optional): The return type of the function. Defaults to EMPTY.
-        docstring (str, optional): The docstring of the function. Defaults to None.
+        return_type (Any, optional): The return type of the function.
+        docstring (str, optional): The docstring of the function.
 
     Example:
         >>> add = create_function(

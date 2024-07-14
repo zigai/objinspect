@@ -6,9 +6,10 @@ authors = [{ name = "Žiga Ivanšek", email = "ziga.ivansek@gmail.com" }]
 license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.10"
+
 dependencies = [
-  "docstring-parser>=0.15.0",
-  "stdl>=0.5.1",
+  "docstring-parser>=0.16.0",
+  "stdl==0.5.2",
   "typing-extensions>=4.7.1",
 ]
 
@@ -17,10 +18,10 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3 :: Only",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
@@ -36,13 +37,25 @@ keywords = [
   "function-signature",
 ]
 
-
 [project.optional-dependencies]
+dev = [
+  "black",
+  "pytest",
+  "ruff",
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocs-autorefs",
+  "mkdocstrings[python]",
+]
 test = ["pytest"]
-dev = ["black", "pytest", "ruff"]
 
 [project.urls]
 Repository = "https://github.com/zigai/objinspect"
+Documentation = "https://objinspect.readthedocs.io"
+
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 100
@@ -77,7 +90,3 @@ exclude = [
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401", "E402"]
-
-[build-system]
-requires = ["setuptools", "setuptools-scm"]
-build-backend = "setuptools.build_meta"

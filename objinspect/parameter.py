@@ -88,7 +88,7 @@ class Parameter:
         Return a string representation of the parameter.
 
         Args:
-            color (bool, optional): Whether to colorize the output. Defaults to True.
+            color (bool, optional): Whether to colorize the output.
             theme (ParameterStrTheme, optional): Color theme to use. Default will be used if None.
         """
         if theme is None:

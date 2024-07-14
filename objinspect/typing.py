@@ -3,7 +3,6 @@ import typing
 import typing as T
 from collections.abc import Iterable, Mapping
 from enum import EnumMeta
-from types import FunctionType
 
 import typing_extensions
 
