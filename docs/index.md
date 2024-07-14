@@ -7,7 +7,7 @@
 [![Downloads](https://static.pepy.tech/badge/objinspect)](https://pepy.tech/project/objinspect)
 [![license](https://img.shields.io/github/license/zigai/objinspect.svg)](https://github.com/zigai/objinspect/blob/main/LICENSE)
 
-objinspect is a high-level wrapper around Python's built-in `inspect` module. 
+`objinspect` is a high-level wrapper around Python's built-in `inspect` module. 
 It provides a simple interface for examining Python functions and classes.
 
 ## Features
