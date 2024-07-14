@@ -2,13 +2,7 @@ import typing as T
 
 import pytest
 
-from objinspect.util import (
-    create_function,
-    get_literal_choices,
-    is_direct_literal,
-    is_or_contains_literal,
-    literal_contains,
-)
+from objinspect.util import create_function
 
 
 class TestCreateFunction:
@@ -68,78 +62,3 @@ class TestCreateFunction:
     def test_edge_cases(self):
         nop = create_function(name="nop", args={}, body="pass", globs=globals())
         assert nop() is None
-
-
-class TestIsPureLiteral:
-    def test_literal_type_check(self):
-        assert is_direct_literal(T.Literal["a", "b"])
-
-    def test_nested_literal_type_check(self):
-        assert not is_direct_literal(T.Union[T.Literal["a"], T.Literal["b"]])
-
-    def test_literal_or_none(self):
-        assert not is_direct_literal(T.Literal["b"] | None)
-
-    def test_basic_type_as_literal(self):
-        assert not is_direct_literal(str)
-
-    def test_t_literal_as_literal(self):
-        assert not is_direct_literal(T.Literal)
-
-
-class TestIsLiteral:
-    def test_literal_type(self):
-        assert is_or_contains_literal(T.Literal["a", "b"])
-
-    def test_non_literal_type(self):
-        assert not is_or_contains_literal(int)
-
-    def test_nested_literal_type(self):
-        nested_literal = T.Literal[T.Literal["a", "b"]]
-        assert is_or_contains_literal(nested_literal)
-
-    def test_literal_or_none(self):
-        literal_or_none = T.Literal["a", "b"] | None
-        assert is_or_contains_literal(literal_or_none)
-
-    def test_composite_without_literal(self):
-        composite_without_literal = T.Union[int, str]
-        assert not is_or_contains_literal(composite_without_literal)
-
-
-class TestIsInLiteral:
-    def test_value_matches_literal(self):
-        assert literal_contains(T.Literal["a", "b", "c"], "a")
-
-    def test_value_does_not_match_literal(self):
-        assert not literal_contains(T.Literal["a", "b", "c"], "d")
-
-    def test_invalid_literal_type(self):
-        with pytest.raises(ValueError):
-            literal_contains(int, 1)
-
-    def test_none_value(self):
-        assert not literal_contains(T.Literal["a", "b", "c"], None)
-
-    def test_complex_value(self):
-        class CustomClass:
-            pass
-
-        assert not literal_contains(T.Literal["a", "b", "c"], CustomClass())
-
-    def test_empty_literal(self):
-        with pytest.raises(ValueError):
-            literal_contains(T.Literal[()], "a")
-
-
-class TestGetLiteralChoices:
-    def test_get_choices_from_literal(self):
-        assert get_literal_choices(T.Literal["a", "b"]) == ("a", "b")
-
-    def test_invalid_literal_type_for_choices(self):
-        with pytest.raises(ValueError):
-            get_literal_choices(int)
-
-    def test_empty_literal_for_choices(self):
-        with pytest.raises(ValueError):
-            get_literal_choices(T.Literal)

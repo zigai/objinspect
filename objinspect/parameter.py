@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from stdl.st import ForegroundColor, colored
 
 from objinspect.constants import EMPTY
-from objinspect.util import type_to_str
+from objinspect.typing import type_name
 
 ParameterKind = inspect._ParameterKind
 
@@ -94,7 +94,7 @@ class Parameter:
         if theme is None:
             theme = ParameterStrTheme()
 
-        type_str = f"{type_to_str(self.type)}" if self.is_typed else ""
+        type_str = f"{type_name(self.type)}" if self.is_typed else ""
         if color and type_str:
             type_str = colored(type_str, theme.type)
         type_str = f": {type_str}" if type_str != "" else ""

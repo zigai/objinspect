@@ -9,7 +9,7 @@ from stdl.st import ForegroundColor, ansi_ljust, colored
 
 from objinspect.constants import EMPTY
 from objinspect.parameter import Parameter
-from objinspect.util import type_to_str
+from objinspect.typing import type_name
 
 
 def _has_docstr(docstring: str | None) -> bool:
@@ -168,7 +168,7 @@ class Function:
             params = colored("(", theme.bracket) + params + colored(")", theme.bracket)
 
         if self.return_type is not EMPTY:
-            return_str = type_to_str(self.return_type)
+            return_str = type_name(self.return_type)
             if color:
                 return_str = colored(return_str, theme.ret)
             return_str = " -> " + return_str

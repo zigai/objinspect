@@ -118,4 +118,4 @@ def split_args_kwargs(func_args: dict, func: Function | Method) -> tuple[tuple, 
     return tuple(args), kwargs
 
 
-__all__ = ["Method", "MethodFilter"]
+__all__ = ["Method", "split_args_kwargs"]

@@ -1,32 +1,7 @@
 import typing as T
-from enum import EnumMeta
 from types import FunctionType
 
-import typing_extensions
-
 from objinspect.constants import EMPTY
-
-
-def type_to_str(t: T.Any) -> str:
-    """
-    Convert a Python type to its string representation (without the module name).
-
-    Args:
-        t (Any): A Python type.
-
-    Returns:
-        str: The string representation of the Python type.
-
-    Example:
-        >>> type_to_str(datetime.datetime)
-        'datetime'
-        >>> type_to_str(int)
-        'int'
-    """
-    type_str = repr(t)
-    if "<class '" in type_str:
-        type_str = type_str.split("'")[1]
-    return type_str.split(".")[-1]
 
 
 def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> T.Any:
@@ -59,113 +34,6 @@ def get_uninherited_methods(cls) -> list[str]:
         for name, method in cls.__dict__.items()
         if isinstance(method, (FunctionType, classmethod, staticmethod))
     ]
-
-
-def is_enum(t: T.Any) -> bool:
-    return isinstance(t, EnumMeta)
-
-
-def get_enum_choices(e) -> tuple[str, ...]:
-    """
-    Get the options of a Python Enum.
-
-    Args:
-        e (enum.Enum): A Python Enum.
-
-    Returns:
-        tuple: A tuple of the names of the Enum options.
-
-    Example:
-        >>> import enum
-        >>> class Color(enum.Enum):
-        ...     RED = 1
-        ...     GREEN = 2
-        ...     BLUE = 3
-        >>> get_enum_choices(Color)
-        ('RED', 'GREEN', 'BLUE')
-    """
-    return tuple(e.__members__.keys())
-
-
-def is_direct_literal(t: T.Any) -> bool:
-    """
-    Determine if the given type is a 'pure' Literal type.
-    It checks if the input type is a direct instance of Literal,
-    not including the Literal class itself. This function distinguishes between the
-    Literal class itself and instantiated Literal types. It returns True only for the latter.
-
-    Args:
-        t (Any): The type to check.
-
-    Returns:
-        bool: True if the type is a pure Literal, False otherwise.
-
-    Examples:
-        >>> from typing_extensions import Literal
-        >>> is_direct_literal(Literal[1, 2, 3])
-        True
-        >>> is_direct_literal(Literal)
-        False
-        >>> is_direct_literal(int)
-        False
-        >>> is_direct_literal(Union[str, Literal[1, 2]])
-        False
-    """
-    if t is typing_extensions.Literal:
-        return False
-    if hasattr(t, "__origin__") and t.__origin__ is typing_extensions.Literal:
-        return True
-    return False
-
-
-def is_or_contains_literal(t: T.Any) -> bool:
-    """
-    Determine if the given type is a Literal type or contains a Literal type.
-
-    Examples:
-    >>> from typing import Union, Optional
-    >>> from typing_extensions import Literal
-    >>> is_or_contains_literal(Literal[1, 2, 3])
-    True
-    >>> is_or_contains_literal(Union[int, Literal[1, 2]])
-    True
-    >>> is_or_contains_literal(Optional[Literal['a', 'b']])
-    True
-    >>> is_or_contains_literal(int)
-    False
-    """
-    if is_direct_literal(t):
-        return True
-
-    for i in T.get_args(t):
-        if is_or_contains_literal(i):
-            return True
-    return False
-
-
-def get_literal_choices(literal_t) -> tuple[str, ...]:
-    """
-    Get the options of a Python Literal.
-    """
-    if is_direct_literal(literal_t):
-        return T.get_args(literal_t)
-    for i in T.get_args(literal_t):
-        if is_direct_literal(i):
-            return T.get_args(i)
-    raise ValueError(f"{literal_t} is not a literal")
-
-
-def literal_contains(literal_type, value: T.Any) -> bool:
-    """
-    Check if a value is in a Python Literal.
-    """
-    if not is_direct_literal(literal_type):
-        raise ValueError(f"{literal_type} is not a literal")
-
-    values = get_literal_choices(literal_type)
-    if not len(values):
-        raise ValueError(f"{literal_type} has no values")
-    return value in values
 
 
 def create_function(
@@ -248,12 +116,4 @@ def create_function(
     return func
 
 
-__all__ = [
-    "type_to_str",
-    "get_enum_choices",
-    "get_literal_choices",
-    "call_method",
-    "get_uninherited_methods",
-    "is_enum",
-    "is_or_contains_literal",
-]
+__all__ = ["call_method", "get_uninherited_methods", "create_function"]
