@@ -6,8 +6,6 @@ from enum import EnumMeta
 
 import typing_extensions
 
-from objinspect.constants import EMPTY
-
 ALIAS_TYPES = [typing._GenericAlias, types.GenericAlias]  # type:ignore
 UNION_TYPES = [typing._UnionGenericAlias, types.UnionType]  # type:ignore
 
