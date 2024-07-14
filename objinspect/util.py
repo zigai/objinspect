@@ -17,10 +17,12 @@ def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> 
     Returns:
         object: The result of calling the method.
 
-    Examples:
-    >>> import math
-    >>> call_method(math, "pow", args=(2, 2))
-    4.0
+    Example:
+        ```python
+        >>> import math
+        >>> call_method(math, "pow", args=(2, 2))
+        4.0
+        ```
     """
     return getattr(obj, name)(*args, **kwargs)
 
@@ -56,6 +58,7 @@ def create_function(
         docstring (str, optional): The docstring of the function.
 
     Example:
+        ```python
         >>> add = create_function(
         ...     name="add",
         ...     args={
@@ -71,7 +74,7 @@ def create_function(
         ...   )
         >>> add(2, 2)
         4
-
+        ```
     """
 
     arg_str = []

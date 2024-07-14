@@ -88,6 +88,7 @@ nav:
       - Method: reference/method.md
       - Function: reference/function.md
       - Class: reference/class.md
+      - typing: reference/typing.md
       - util: reference/util.md
 
 extra:

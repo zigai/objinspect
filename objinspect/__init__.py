@@ -39,25 +39,24 @@ def inspect(
     Returns:
         An object representing the structure of the inspected object.
 
-
     Example:
-    ``` python
-    >>> from objinspect import inspect, pdir
-    >>> import math
-    >>> inspect(math.pow)
-    Function(name='pow', parameters=2, description='Return x**y (x to the power of y).')
+    ```python
+        >>> from objinspect import inspect, pdir
+        >>> import math
+        >>> inspect(math.pow)
+        Function(name='pow', parameters=2, description='Return x**y (x to the power of y).')
 
-    >>> inspect(math.pow).dict
-    {
-    'name': 'pow',
-    'parameters': [
-        {'name': 'x', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None},
-        {'name': 'y', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None}],
-    'docstring': 'Return x**y (x to the power of y).'
-    }
+        >>> inspect(math.pow).dict
+        {
+        'name': 'pow',
+        'parameters': [
+            {'name': 'x', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None},
+            {'name': 'y', 'kind': <_ParameterKind.POSITIONAL_ONLY: 0>, 'type': <class 'inspect._empty'>, 'default': <class 'inspect._empty'>, 'description': None}],
+        'docstring': 'Return x**y (x to the power of y).'
+        }
 
-    >>> inspect(inspect)
-    Function(name='inspect', parameters=7, description='Inspects an object and returns a structured representation of its attributes and methods.')
+        >>> inspect(inspect)
+        Function(name='inspect', parameters=7, description='Inspects an object and returns a structured representation of its attributes and methods.')
     ```
     """
     if _inspect.isclass(obj):

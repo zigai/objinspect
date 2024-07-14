@@ -71,13 +71,13 @@ class Method(Function):
 class MethodFilter:
     def __init__(
         self,
-        init=True,
-        public=True,
-        inherited=True,
-        static_methods=True,
-        protected=False,
-        private=False,
-        classmethod=False,
+        init: bool = True,
+        public: bool = True,
+        inherited: bool = True,
+        static_methods: bool = True,
+        protected: bool = False,
+        private: bool = False,
+        classmethod: bool = False,
     ) -> None:
         self.checks = []
         if not init:
