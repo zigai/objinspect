@@ -1,7 +1,7 @@
 import inspect
 from inspect import _ParameterKind
 
-from objinspect.function import Function
+from objinspect.function import Function, Parameter
 
 
 class Method(Function):
@@ -33,6 +33,10 @@ class Method(Function):
     def __init__(self, method, cls, skip_self: bool = True):
         super().__init__(method, skip_self)
         self.cls = cls
+
+    @property
+    def class_instance(self):
+        return getattr(self.func, "__self__", None)
 
     @property
     def is_static(self) -> bool:

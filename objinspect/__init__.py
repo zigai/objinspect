@@ -59,19 +59,41 @@ def inspect(
         Function(name='inspect', parameters=7, description='Inspects an object and returns a structured representation of its attributes and methods.')
     ```
     """
-    if _inspect.isclass(obj):
-        return Class(
-            obj,
-            init=init,
-            public=public,
-            inherited=inherited,
-            static_methods=static_methods,
-            protected=protected,
-            private=private,
-        )
     if _inspect.ismethod(obj):
-        return Method(obj, obj.__class__)
-    return Function(obj)  # type: ignore
+        return Method(obj, obj.__self__.__class__)
+
+    if _inspect.isfunction(obj):
+        cls = get_class_from_method(obj)
+        if cls is None:
+            return Function(obj)
+        return Method(obj, cls)
+
+    return Class(
+        obj,
+        init=init,
+        public=public,
+        inherited=inherited,
+        static_methods=static_methods,
+        protected=protected,
+        private=private,
+    )
+
+
+def get_class_from_method(method):
+    qualname = method.__qualname__
+    module = _inspect.getmodule(method)
+    if "." in qualname:
+        parts = qualname.split(".")
+        if module:
+            cls = module
+            for part in parts[:-1]:
+                if hasattr(cls, part):
+                    cls = getattr(cls, part)
+                else:
+                    return None
+            if isinstance(cls, type) and method.__name__ in cls.__dict__:
+                return cls
+    return None
 
 
 def prettydir(
