@@ -1,7 +1,7 @@
 import inspect
 from inspect import _ParameterKind
 
-from objinspect.function import Function, Parameter
+from objinspect.function import Function
 
 
 class Method(Function):
