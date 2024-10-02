@@ -9,7 +9,7 @@ requires-python = ">=3.10"
 
 dependencies = [
   "docstring-parser>=0.16.0",
-  "stdl==0.5.4",
+  "stdl==0.5.5",
   "typing-extensions>=4.7.1",
 ]
 
