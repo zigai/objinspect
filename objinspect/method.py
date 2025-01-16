@@ -84,20 +84,15 @@ class MethodFilter:
         classmethod: bool = False,
     ) -> None:
         self.checks = []
-        if not init:
-            self.checks.append(lambda method: method.name == "__init__")
-        if not static_methods:
-            self.checks.append(lambda method: method.is_static)
-        if not inherited:
-            self.checks.append(lambda method: method.is_inherited)
-        if not private:
-            self.checks.append(lambda method: method.is_private)
-        if not protected:
-            self.checks.append(lambda method: method.is_protected)
-        if not public:
-            self.checks.append(lambda method: method.is_public)
-        if not classmethod:
-            self.checks.append(lambda method: method.is_classmethod)
+        # fmt: off
+        if not init: self.checks.append(lambda method: method.name == "__init__")
+        if not static_methods: self.checks.append(lambda method: method.is_static)
+        if not inherited: self.checks.append(lambda method: method.is_inherited)
+        if not private: self.checks.append(lambda method: method.is_private)
+        if not protected: self.checks.append(lambda method: method.is_protected)
+        if not public: self.checks.append(lambda method: method.is_public)
+        if not classmethod: self.checks.append(lambda method: method.is_classmethod)
+        # fmt: on
 
     def check(self, method: Method) -> bool:
         for check_func in self.checks:

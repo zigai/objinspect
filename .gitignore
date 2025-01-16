@@ -132,3 +132,4 @@ E61*
 models.json
 objinspect/example*.py
 *ruff_cache
+example*.py

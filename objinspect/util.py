@@ -1,7 +1,11 @@
 import typing as T
 from types import FunctionType
+from typing import Type
+
+from stdl.st import TextStyle, with_style
 
 from objinspect.constants import EMPTY
+from objinspect.typing import simplified_type_name, type_name
 
 
 def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> T.Any:
@@ -117,6 +121,28 @@ def create_function(
         func.__annotations__["return"] = return_type
 
     return func
+
+
+def colored_type(
+    t: Type,
+    style: TextStyle,
+    simplify: bool = True,
+) -> str:
+    text = type_name(t)
+    if simplify:
+        text = simplified_type_name(text)
+    NO_COLOR_CHARS = "[](){}|,?"
+    parts = []
+    part = []
+    for char in text:
+        if char in NO_COLOR_CHARS:
+            parts.append(with_style("".join(part), style))
+            part.clear()
+            parts.append(char)
+        else:
+            part.append(char)
+    parts.append(with_style("".join(part), style))
+    return "".join(parts)
 
 
 __all__ = ["call_method", "get_uninherited_methods", "create_function"]

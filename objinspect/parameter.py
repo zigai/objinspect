@@ -2,10 +2,11 @@ import inspect
 import typing as T
 from dataclasses import dataclass
 
-from stdl.st import ForegroundColor, colored
+from stdl.st import ForegroundColor, TextStyle, colored
 
 from objinspect.constants import EMPTY
 from objinspect.typing import type_name
+from objinspect.util import colored_type
 
 ParameterKind = inspect._ParameterKind
 
@@ -74,6 +75,10 @@ class Parameter:
         return not self.is_required
 
     @property
+    def has_default(self) -> bool:
+        return self.default != EMPTY
+
+    @property
     def dict(self):
         return {
             "name": self.name,
@@ -94,10 +99,13 @@ class Parameter:
         if theme is None:
             theme = ParameterStrTheme()
 
-        type_str = f"{type_name(self.type)}" if self.is_typed else ""
-        if color and type_str:
-            type_str = colored(type_str, theme.type)
-        type_str = f": {type_str}" if type_str != "" else ""
+        if self.is_typed:
+            if color:
+                type_str = colored_type(self.type, style=TextStyle(theme.type), simplify=False)
+            else:
+                type_str = type_name(self.type)
+        else:
+            type_str = ""
 
         default_str = f"{self.default}" if self.is_optional else ""
         if self.default is not EMPTY:

@@ -1,6 +1,6 @@
 [project]
 name = "objinspect"
-version = "0.2.13"
+version = "0.2.14"
 description = "A high-level library for Python object inspection"
 authors = [{ name = "Žiga Ivanšek", email = "ziga.ivansek@gmail.com" }]
 license = { file = "LICENSE" }
@@ -9,7 +9,7 @@ requires-python = ">=3.10"
 
 dependencies = [
   "docstring-parser>=0.16.0",
-  "stdl==0.5.5",
+  "stdl>=0.5.5",
   "typing-extensions>=4.7.1",
 ]
 

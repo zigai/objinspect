@@ -1,8 +1,8 @@
 import types
 import typing
-import typing as T
 from collections.abc import Iterable, Mapping
 from enum import EnumMeta
+from typing import Any, Type
 
 import typing_extensions
 
@@ -10,7 +10,7 @@ ALIAS_TYPES = [typing._GenericAlias, types.GenericAlias]  # type:ignore
 UNION_TYPES = [typing._UnionGenericAlias, types.UnionType]  # type:ignore
 
 
-def type_name(t: T.Any) -> str:
+def type_name(t: Any) -> str:
     """
     Convert a Python type to its string representation (without the module name).
 
@@ -32,6 +32,17 @@ def type_name(t: T.Any) -> str:
     if "<class '" in type_str:
         type_str = type_str.split("'")[1]
     return type_str.split(".")[-1]
+
+
+def simplified_type_name(name: str) -> str:
+    """
+    Simplifies the type name by removing module paths and optional "None" union.
+    """
+    name = name.split(".")[-1]
+    if "| None" in name:
+        name = name.replace("| None", "").strip()
+        name += "?"
+    return name
 
 
 def is_generic_alias(t) -> bool:
@@ -148,7 +159,7 @@ def is_mapping_type(t) -> bool:
     return issubclass(t, Mapping)
 
 
-def type_simplified(t: T.Any) -> T.Any | tuple[T.Any, ...]:
+def type_simplified(t: Any) -> Any | tuple[Any, ...]:
     """
     Example:
         ```python
@@ -169,7 +180,7 @@ def type_simplified(t: T.Any) -> T.Any | tuple[T.Any, ...]:
     return origin
 
 
-def is_enum(t: T.Any) -> bool:
+def is_enum(t: Any) -> bool:
     return isinstance(t, EnumMeta)
 
 
@@ -199,7 +210,7 @@ def get_enum_choices(e) -> tuple[str, ...]:
     return tuple(e.__members__.keys())
 
 
-def is_direct_literal(t: T.Any) -> bool:
+def is_direct_literal(t: Any) -> bool:
     """
     Determine if the given type is a 'pure' Literal type.
     It checks if the input type is a direct instance of Literal,not including the Literal class itself.
@@ -231,7 +242,7 @@ def is_direct_literal(t: T.Any) -> bool:
     return False
 
 
-def is_or_contains_literal(t: T.Any) -> bool:
+def is_or_contains_literal(t: Any) -> bool:
     """
     Determine if the given type is a Literal type or contains a Literal type.
 
@@ -252,7 +263,7 @@ def is_or_contains_literal(t: T.Any) -> bool:
     if is_direct_literal(t):
         return True
 
-    for i in T.get_args(t):
+    for i in typing.get_args(t):
         if is_or_contains_literal(i):
             return True
     return False
@@ -263,14 +274,14 @@ def get_literal_choices(literal_t) -> tuple[str, ...]:
     Get the options of a Python Literal.
     """
     if is_direct_literal(literal_t):
-        return T.get_args(literal_t)
-    for i in T.get_args(literal_t):
+        return typing.get_args(literal_t)
+    for i in typing.get_args(literal_t):
         if is_direct_literal(i):
-            return T.get_args(i)
+            return typing.get_args(i)
     raise ValueError(f"{literal_t} is not a literal")
 
 
-def literal_contains(literal_t, value: T.Any) -> bool:
+def literal_contains(literal_t, value: Any) -> bool:
     """
     Check if a value is in a Python Literal.
     """
@@ -283,7 +294,29 @@ def literal_contains(literal_t, value: T.Any) -> bool:
     return value in values
 
 
-def type_origin(t: T.Any) -> T.Any:
+def get_choices(t: Type) -> tuple | None:
+    """
+    Try to get the choices of a Literal or Enum type.
+    Will also work with a Union type that contains Literal or Enum types.
+    Returns None if the type is not a Literal or Enum.
+    """
+    if is_or_contains_literal(t):
+        return get_literal_choices(t)
+    if is_enum(t):
+        return get_enum_choices(t)
+    if is_union_type(t):
+        args = type_args(t)
+        choices = []
+        for i in args:
+            if is_enum(i):
+                choices.extend(get_enum_choices(i))
+            elif is_or_contains_literal(i):
+                choices.extend(get_literal_choices(i))
+        return tuple(choices)
+    return None
+
+
+def type_origin(t: Any) -> Any:
     """
     A wrapper for typing.get_origin to get the origin of a type.
 
@@ -298,7 +331,7 @@ def type_origin(t: T.Any) -> T.Any:
     return typing.get_origin(t)
 
 
-def type_args(t: T.Any) -> tuple[T.Any, ...]:
+def type_args(t: Any) -> tuple[Any, ...]:
     """
     A wrapper for typing.get_args to get the arguments of a type.
 
