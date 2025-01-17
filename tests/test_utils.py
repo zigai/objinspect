@@ -1,5 +1,3 @@
-import typing as T
-
 import pytest
 
 from objinspect.util import create_function

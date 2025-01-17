@@ -1,7 +1,7 @@
 import functools
 import inspect
-import typing as T
 from dataclasses import dataclass
+from typing import Any
 
 import docstring_parser
 from stdl.st import ForegroundColor, colored
@@ -119,7 +119,7 @@ class Class:
         self.instance = self.cls(*args, **kwargs)
         self.is_initialized = True
 
-    def call_method(self, method: str | int, *args, **kwargs) -> T.Any:
+    def call_method(self, method: str | int, *args, **kwargs) -> Any:
         """
         Calls the specified method on the class or instance.
 
@@ -180,7 +180,7 @@ class Class:
         return list(self._methods.values())
 
     @property
-    def dict(self) -> dict[str, T.Any]:
+    def dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "methods": [method.dict for method in self.methods],

@@ -1,7 +1,7 @@
 import inspect
-import typing as T
 from dataclasses import dataclass
 from types import NoneType
+from typing import Any, Callable
 
 import docstring_parser
 from docstring_parser import Docstring
@@ -55,7 +55,7 @@ class Function:
 
     """
 
-    def __init__(self, func: T.Callable, skip_self: bool = True) -> None:
+    def __init__(self, func: Callable, skip_self: bool = True) -> None:
         self.func = func
         self.skip_self = skip_self
         self.name: str = self.func.__name__
@@ -112,7 +112,7 @@ class Function:
             case _:
                 raise TypeError(type(arg))
 
-    def call(self, *args, **kwargs) -> T.Any:
+    def call(self, *args, **kwargs) -> Any:
         """
         Calls the function and returns the result of its call.
 
@@ -130,7 +130,7 @@ class Function:
         return list(self._parameters.values())
 
     @property
-    def dict(self) -> dict[str, T.Any]:
+    def dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "parameters": [i.dict for i in self.params],

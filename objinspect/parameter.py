@@ -1,6 +1,6 @@
 import inspect
-import typing as T
 from dataclasses import dataclass
+from typing import Any
 
 from stdl.st import ForegroundColor, TextStyle, colored
 
@@ -28,8 +28,8 @@ class Parameter:
         self,
         name: str,
         kind: ParameterKind,
-        type: T.Any = EMPTY,
-        default: T.Any = EMPTY,
+        type: Any = EMPTY,
+        default: Any = EMPTY,
         description: str | None = None,
         infer_type: bool = True,
     ) -> None:

@@ -1,6 +1,5 @@
-import typing as T
 from types import FunctionType
-from typing import Type
+from typing import Any, Callable, Tuple, Type
 
 from stdl.st import TextStyle, with_style
 
@@ -8,7 +7,7 @@ from objinspect.constants import EMPTY
 from objinspect.typing import simplified_type_name, type_name
 
 
-def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> T.Any:
+def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> Any:
     """
     Call a method with the given name on the given object.
 
@@ -44,12 +43,12 @@ def get_uninherited_methods(cls) -> list[str]:
 
 def create_function(
     name: str,
-    args: dict[str, T.Tuple[T.Any, T.Any]],
+    args: dict[str, Tuple[Any, Any]],
     body: str | list[str],
-    globs: dict[str, T.Any],
-    return_type: T.Any | EMPTY = EMPTY,
+    globs: dict[str, Any],
+    return_type: Any | EMPTY = EMPTY,
     docstring: str | None = None,
-) -> T.Callable[..., T.Any]:
+) -> Callable[..., Any]:
     """
     Create a function with the given name, arguments, body, and globals.
 

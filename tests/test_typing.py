@@ -1,5 +1,4 @@
 import typing
-import typing as T
 from collections import OrderedDict, defaultdict
 from enum import Enum, Flag, auto
 from typing import Any, DefaultDict, Dict, List, Optional, Set, Tuple, Union
@@ -25,69 +24,69 @@ from objinspect.typing import (
 
 class TestIsDirectLiteral:
     def test_literal_type_check(self):
-        assert is_direct_literal(T.Literal["a", "b"])
+        assert is_direct_literal(typing.Literal["a", "b"])
 
     def test_nested_literal_type_check(self):
-        assert not is_direct_literal(T.Union[T.Literal["a"], T.Literal["b"]])
+        assert not is_direct_literal(typing.Union[typing.Literal["a"], typing.Literal["b"]])
 
     def test_literal_or_none(self):
-        assert not is_direct_literal(T.Literal["b"] | None)
+        assert not is_direct_literal(typing.Literal["b"] | None)
 
     def test_basic_type_as_literal(self):
         assert not is_direct_literal(str)
 
     def test_literal_as_literal(self):
-        assert not is_direct_literal(T.Literal)
+        assert not is_direct_literal(typing.Literal)
 
 
 class TestIsLiteral:
     def test_literal_type(self):
-        assert is_or_contains_literal(T.Literal["a", "b"])
+        assert is_or_contains_literal(typing.Literal["a", "b"])
 
     def test_non_literal_type(self):
         assert not is_or_contains_literal(int)
 
     def test_nested_literal_type(self):
-        nested_literal = T.Literal[T.Literal["a", "b"]]
+        nested_literal = typing.Literal[typing.Literal["a", "b"]]
         assert is_or_contains_literal(nested_literal)
 
     def test_literal_or_none(self):
-        literal_or_none = T.Literal["a", "b"] | None
+        literal_or_none = typing.Literal["a", "b"] | None
         assert is_or_contains_literal(literal_or_none)
 
     def test_composite_without_literal(self):
-        composite_without_literal = T.Union[int, str]
+        composite_without_literal = typing.Union[int, str]
         assert not is_or_contains_literal(composite_without_literal)
 
 
 class TestLiteralContains:
     def test_value_matches_literal(self):
-        assert literal_contains(T.Literal["a", "b", "c"], "a")
+        assert literal_contains(typing.Literal["a", "b", "c"], "a")
 
     def test_value_does_not_match_literal(self):
-        assert not literal_contains(T.Literal["a", "b", "c"], "d")
+        assert not literal_contains(typing.Literal["a", "b", "c"], "d")
 
     def test_invalid_literal_type(self):
         with pytest.raises(ValueError):
             literal_contains(int, 1)
 
     def test_none_value(self):
-        assert not literal_contains(T.Literal["a", "b", "c"], None)
+        assert not literal_contains(typing.Literal["a", "b", "c"], None)
 
     def test_complex_value(self):
         class CustomClass:
             pass
 
-        assert not literal_contains(T.Literal["a", "b", "c"], CustomClass())
+        assert not literal_contains(typing.Literal["a", "b", "c"], CustomClass())
 
     def test_empty_literal(self):
         with pytest.raises(ValueError):
-            literal_contains(T.Literal[()], "a")
+            literal_contains(typing.Literal[()], "a")
 
 
 class TestGetLiteralChoices:
     def test_get_choices_from_literal(self):
-        assert get_literal_choices(T.Literal["a", "b"]) == ("a", "b")
+        assert get_literal_choices(typing.Literal["a", "b"]) == ("a", "b")
 
     def test_invalid_literal_type_for_choices(self):
         with pytest.raises(ValueError):
@@ -95,7 +94,7 @@ class TestGetLiteralChoices:
 
     def test_empty_literal_for_choices(self):
         with pytest.raises(ValueError):
-            get_literal_choices(T.Literal)
+            get_literal_choices(typing.Literal)
 
 
 class TestIsIterableType:
@@ -239,11 +238,11 @@ class TestTypeName:
             (int, "int"),
             (str, "str"),
             (Any, "Any"),
-            (T.Any, "Any"),
+            (typing.Any, "Any"),
             (Union[int, str], "Union[int, str]"),
-            (T.Union[int, str], "Union[int, str]"),
+            (typing.Union[int, str], "Union[int, str]"),
             (List[int], "List[int]"),
-            (T.List[int], "List[int]"),
+            (typing.List[int], "List[int]"),
         ],
     )
     def test_type_name(self, input_type, expected):
