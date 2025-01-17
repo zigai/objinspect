@@ -57,7 +57,7 @@ def prettydir(
         except AttributeError:
             data["vars"][attr_name] = attr
             continue
-        except Exception as e:
+        except Exception:
             continue
 
         if isinstance(inspected_obj, Function):
