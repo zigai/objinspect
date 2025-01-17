@@ -63,7 +63,7 @@ target_version = ['py310']
 
 [tool.ruff]
 line-length = 100
-extend-ignore = ["E731", "E741", "N802", "N803", "N806", "E501"]
+extend-ignore = ["E731", "E741", "N802", "N803", "N806", "E501", "E701"]
 exclude = [
   ".bzr",
   ".direnv",
