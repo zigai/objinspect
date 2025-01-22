@@ -29,7 +29,7 @@ pip install git+https://github.com/zigai/objinspect
 ## Examples
 
 ``` python
->>> from objinspect import inspect, pdir
+>>> from objinspect import inspect
 >>> import math
 >>> inspect(math.pow)
 Function(name='pow', parameters=2, description='Return x**y (x to the power of y).')
