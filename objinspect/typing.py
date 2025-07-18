@@ -106,6 +106,11 @@ def is_iterable_type(t) -> bool:
         frozenset,
         deque,
         defaultdict,
+        typing.List,  # noqa: UP006
+        typing.Dict,  # noqa: UP006
+        typing.Set,  # noqa: UP006
+        typing.Deque,  # noqa: UP006
+        typing.Sequence,
         typing.OrderedDict,
         typing.ChainMap,
         typing.Counter,
@@ -117,14 +122,17 @@ def is_iterable_type(t) -> bool:
         typing.MutableSet,
         typing.Mapping,
         typing.MutableMapping,
-        typing.Sequence,
         typing.MutableSequence,
     ]
     if isinstance(t, (types.GenericAlias, typing._GenericAlias)):  # type:ignore
         t = t.__origin__
     if t in typing_iterables:
         return True
-    return issubclass(t, Iterable)
+
+    try:
+        return issubclass(t, Iterable)
+    except TypeError:
+        return False
 
 
 def is_mapping_type(t) -> bool:
@@ -145,9 +153,11 @@ def is_mapping_type(t) -> bool:
     """
     typing_mappings = [
         dict,
+        typing.Dict,  # noqa: UP006
         typing.Mapping,
         typing.MutableMapping,
         defaultdict,
+        typing.DefaultDict,  # noqa: UP006
         typing.OrderedDict,
         typing.ChainMap,
     ]
@@ -155,7 +165,11 @@ def is_mapping_type(t) -> bool:
         t = t.__origin__
     if t in typing_mappings:
         return True
-    return issubclass(t, Mapping)
+
+    try:
+        return issubclass(t, Mapping)
+    except TypeError:
+        return False
 
 
 def type_simplified(t: Any) -> Any | tuple[Any, ...]:
