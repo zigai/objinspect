@@ -1,7 +1,8 @@
 import inspect
+from collections.abc import Callable
 from dataclasses import dataclass
 from types import NoneType
-from typing import Any, Callable
+from typing import Any
 
 import docstring_parser
 from docstring_parser import Docstring
@@ -124,9 +125,7 @@ class Function:
 
     @property
     def params(self) -> list[Parameter]:
-        """
-        Returns a list of parameters of the function.
-        """
+        """Returns a list of parameters of the function."""
         return list(self._parameters.values())
 
     @property

@@ -174,9 +174,7 @@ class Class:
 
     @property
     def methods(self) -> list[Method]:
-        """
-        Returns the list of methods of the class or instance as a list of :class:`Function` objects.
-        """
+        """Returns the list of methods of the class or instance as a list of :class:`Function` objects."""
         return list(self._methods.values())
 
     @property

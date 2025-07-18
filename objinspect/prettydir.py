@@ -21,7 +21,7 @@ def prettydir(
 
     Args:
         obj (object): The object to be inspected.
-        dunders (bool, optional): Whether to include dunder methods.
+        include_dunders (bool, optional): Whether to include dunder methods.
         color (bool, optional): Whether to colorize the output.
         sep (bool, optional): Whether to print a separator before and after the output.
         indent (int, optional): Indent width.
@@ -68,8 +68,9 @@ def prettydir(
 
     if include_dunders and len(data["dunders"].items()):
         print("Dunders:")
-        for k, v in data["dunders"].items():
+        for _, v in data["dunders"].items():
             print(" " * indent + v.as_str(color=color))
+
     variables = {k: v for k, v in data["vars"].items() if k not in VARIABLE_SKIPS}
     if len(variables):
         print("\nVariables:")
@@ -87,7 +88,7 @@ def prettydir(
     }
     if len(methods):
         print("\nMethods:")
-        for k, v in methods.items():
+        for _, v in methods.items():
             print(" " * indent + v.as_str(color=color))
 
     functions = {
@@ -97,7 +98,7 @@ def prettydir(
     }
     if len(functions):
         print("\nFunctions:")
-        for k, v in functions.items():
+        for _, v in functions.items():
             print(" " * indent + v.as_str(color=color))
     if sep:
         br()

@@ -105,9 +105,7 @@ class MethodFilter:
 
 
 def split_args_kwargs(func_args: dict, func: Function | Method) -> tuple[tuple, dict]:
-    """
-    Split the arguments passed to a function into positional and keyword arguments.
-    """
+    """Split the arguments passed to a function into positional and keyword arguments."""
     args, kwargs = [], {}
     for param in func.params:
         if param.kind == _ParameterKind.POSITIONAL_ONLY:

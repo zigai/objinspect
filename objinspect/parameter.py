@@ -43,6 +43,7 @@ class Parameter:
             type (Any): The type of the parameter.
             default (Any): The default value of the parameter.
             description (str | None): The description of the parameter.
+            infer_type (bool): Infer the type of the parameter based on its default value.
         """
         self.name = name
         self.type = type

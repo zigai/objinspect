@@ -1,8 +1,9 @@
 import types
 import typing
+from collections import defaultdict, deque
 from collections.abc import Iterable, Mapping
 from enum import EnumMeta
-from typing import Any, Type
+from typing import Any
 
 import typing_extensions
 
@@ -35,9 +36,7 @@ def type_name(t: Any) -> str:
 
 
 def simplified_type_name(name: str) -> str:
-    """
-    Simplifies the type name by removing module paths and optional "None" union.
-    """
+    """Simplifies the type name by removing module paths and optional "None" union."""
     name = name.split(".")[-1]
     if "| None" in name:
         name = name.replace("| None", "").strip()
@@ -100,13 +99,13 @@ def is_iterable_type(t) -> bool:
         ```
     """
     typing_iterables = [
-        typing.List,
-        typing.Tuple,
-        typing.Dict,
-        typing.Set,
-        typing.FrozenSet,
-        typing.Deque,
-        typing.DefaultDict,
+        list,
+        tuple,
+        dict,
+        set,
+        frozenset,
+        deque,
+        defaultdict,
         typing.OrderedDict,
         typing.ChainMap,
         typing.Counter,
@@ -145,10 +144,10 @@ def is_mapping_type(t) -> bool:
         ```
     """
     typing_mappings = [
-        typing.Dict,
+        dict,
         typing.Mapping,
         typing.MutableMapping,
-        typing.DefaultDict,
+        defaultdict,
         typing.OrderedDict,
         typing.ChainMap,
     ]
@@ -270,9 +269,7 @@ def is_or_contains_literal(t: Any) -> bool:
 
 
 def get_literal_choices(literal_t) -> tuple[str, ...]:
-    """
-    Get the options of a Python Literal.
-    """
+    """Get the options of a Python Literal."""
     if is_direct_literal(literal_t):
         return typing.get_args(literal_t)
     for i in typing.get_args(literal_t):
@@ -282,9 +279,7 @@ def get_literal_choices(literal_t) -> tuple[str, ...]:
 
 
 def literal_contains(literal_t, value: Any) -> bool:
-    """
-    Check if a value is in a Python Literal.
-    """
+    """Check if a value is in a Python Literal."""
     if not is_direct_literal(literal_t):
         raise ValueError(f"{literal_t} is not a literal")
 
@@ -294,7 +289,7 @@ def literal_contains(literal_t, value: Any) -> bool:
     return value in values
 
 
-def get_choices(t: Type) -> tuple | None:
+def get_choices(t: type) -> tuple | None:
     """
     Try to get the choices of a Literal or Enum type.
     Will also work with a Union type that contains Literal or Enum types.

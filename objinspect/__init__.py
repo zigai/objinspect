@@ -1,5 +1,5 @@
 import inspect as _inspect
-from typing import Callable
+from collections.abc import Callable
 
 from objinspect._class import Class
 from objinspect.function import Function

@@ -60,7 +60,6 @@ def test_call():
 
 
 def test_async():
-
     async def async_function():
         return 1
 

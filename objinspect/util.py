@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from types import FunctionType
-from typing import Any, Callable, Tuple, Type
+from typing import Any
 
 from stdl.st import TextStyle, with_style
 
@@ -7,7 +8,7 @@ from objinspect.constants import EMPTY
 from objinspect.typing import simplified_type_name, type_name
 
 
-def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> Any:
+def call_method(obj: object, name: str, args: tuple = (), kwargs: dict | None = None) -> Any:
     """
     Call a method with the given name on the given object.
 
@@ -27,13 +28,12 @@ def call_method(obj: object, name: str, args: tuple = (), kwargs: dict = {}) -> 
         4.0
         ```
     """
+    kwargs = kwargs or {}
     return getattr(obj, name)(*args, **kwargs)
 
 
 def get_uninherited_methods(cls) -> list[str]:
-    """
-    Get the methods of a class that are not inherited from its parent classes.
-    """
+    """Get the methods of a class that are not inherited from its parent classes."""
     return [
         name
         for name, method in cls.__dict__.items()
@@ -43,7 +43,7 @@ def get_uninherited_methods(cls) -> list[str]:
 
 def create_function(
     name: str,
-    args: dict[str, Tuple[Any, Any]],
+    args: dict[str, tuple[Any, Any]],
     body: str | list[str],
     globs: dict[str, Any],
     return_type: Any | EMPTY = EMPTY,
@@ -79,7 +79,6 @@ def create_function(
         4
         ```
     """
-
     arg_str = []
     for arg, annotations in args.items():
         if len(annotations) == 2:
@@ -123,7 +122,7 @@ def create_function(
 
 
 def colored_type(
-    t: Type,
+    t: type,
     style: TextStyle,
     simplify: bool = True,
 ) -> str:
