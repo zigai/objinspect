@@ -8,7 +8,12 @@ from objinspect.constants import EMPTY
 from objinspect.typing import simplified_type_name, type_name
 
 
-def call_method(obj: object, name: str, args: tuple = (), kwargs: dict | None = None) -> Any:
+def call_method(
+    obj: object,
+    name: str,
+    args: tuple[Any, ...] = (),
+    kwargs: dict[str, Any] | None = None,
+) -> Any:
     """
     Call a method with the given name on the given object.
 
@@ -32,7 +37,7 @@ def call_method(obj: object, name: str, args: tuple = (), kwargs: dict | None = 
     return getattr(obj, name)(*args, **kwargs)
 
 
-def get_uninherited_methods(cls) -> list[str]:
+def get_uninherited_methods(cls: type) -> list[str]:
     """Get the methods of a class that are not inherited from its parent classes."""
     return [
         name
@@ -96,14 +101,14 @@ def create_function(
         if default is not EMPTY:
             arg_str[-1] += f" = {repr(default)}"
 
-    arg_str = ", ".join(arg_str)
+    arg_str_final = ", ".join(arg_str)
     body_str = "\n    ".join(body) if isinstance(body, list) else body
-    func_str = f"def {name}({arg_str})"
+    func_str = f"def {name}({arg_str_final})"
 
     if return_type is not EMPTY:
         if return_type is None:
             func_str += " -> None"
-        else:
+        elif hasattr(return_type, "__name__"):
             func_str += f" -> {return_type.__name__}"
 
     func_str += ":"
@@ -130,17 +135,17 @@ def colored_type(
     if simplify:
         text = simplified_type_name(text)
     NO_COLOR_CHARS = "[](){}|,?"
-    parts = []
-    part = []
+    colored_segments: list[str] = []
+    current_segment: list[str] = []
     for char in text:
         if char in NO_COLOR_CHARS:
-            parts.append(with_style("".join(part), style))
-            part.clear()
-            parts.append(char)
+            colored_segments.append(with_style("".join(current_segment), style))
+            current_segment.clear()
+            colored_segments.append(char)
         else:
-            part.append(char)
-    parts.append(with_style("".join(part), style))
-    return "".join(parts)
+            current_segment.append(char)
+    colored_segments.append(with_style("".join(current_segment), style))
+    return "".join(colored_segments)
 
 
 __all__ = ["call_method", "get_uninherited_methods", "create_function"]

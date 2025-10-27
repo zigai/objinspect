@@ -56,7 +56,7 @@ class Function:
 
     """
 
-    def __init__(self, func: Callable, skip_self: bool = True) -> None:
+    def __init__(self, func: Callable[..., Any], skip_self: bool = True) -> None:
         self.func = func
         self.skip_self = skip_self
         self.name: str = self.func.__name__
@@ -113,7 +113,7 @@ class Function:
             case _:
                 raise TypeError(type(arg))
 
-    def call(self, *args, **kwargs) -> Any:
+    def call(self, *args: Any, **kwargs: Any) -> Any:
         """
         Calls the function and returns the result of its call.
 
@@ -161,27 +161,28 @@ class Function:
         if theme is None:
             theme = FunctionStrTheme()
 
-        name_str = self.name if not color else colored(self.name, theme.name)
-        params = ", ".join([i.as_str(color=color) for i in self.params])
+        name_str: str = self.name if not color else colored(self.name, theme.name)
+        params: str = ", ".join([i.as_str(color=color) for i in self.params])
         if color:
             params = colored("(", theme.bracket) + params + colored(")", theme.bracket)
 
-        if self.return_type is not EMPTY:
-            return_str = type_name(self.return_type)
+        if self.return_type is not EMPTY and self.return_type is not None:  # type: ignore[comparison-overlap]
+            return_str: str = type_name(self.return_type)
             if color:
                 return_str = colored(return_str, theme.ret)
             return_str = " -> " + return_str
         else:
             return_str = ""
 
-        string = f"{name_str}{params}{return_str}"
+        string: str = f"{name_str}{params}{return_str}"
 
         if description and self.description:
             string = ansi_ljust(string, ljust)
             description_str = f" # {self.description}"
             if color:
                 description_str = colored(description_str, theme.description)
-            return string + description_str
+            string += description_str
+            return string
         return string
 
 

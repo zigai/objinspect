@@ -53,11 +53,11 @@ class Parameter:
         if infer_type and not self.is_typed:
             self.type = self.get_infered_type()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         data = f"name='{self.name}', kind={str(self.kind)}, type={self.type}, default={self.default}, description='{self.description}'"
         return f"{self.__class__.__name__}({data})"
 
-    def get_infered_type(self):
+    def get_infered_type(self) -> Any:
         """Infer the type of the parameter based on its default value."""
         if self.default is EMPTY:
             return EMPTY
@@ -65,11 +65,11 @@ class Parameter:
 
     @property
     def is_typed(self) -> bool:
-        return self.type != EMPTY
+        return self.type is not EMPTY
 
     @property
     def is_required(self) -> bool:
-        return self.default == EMPTY
+        return self.default is EMPTY
 
     @property
     def is_optional(self) -> bool:
@@ -77,10 +77,10 @@ class Parameter:
 
     @property
     def has_default(self) -> bool:
-        return self.default != EMPTY
+        return self.default is not EMPTY
 
     @property
-    def dict(self):
+    def dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "kind": self.kind,
@@ -124,7 +124,7 @@ class Parameter:
         cls,
         param: inspect.Parameter,
         description: str | None = None,
-    ):
+    ) -> "Parameter":
         return cls(
             name=param.name,
             type=param.annotation,

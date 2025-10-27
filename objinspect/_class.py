@@ -45,15 +45,15 @@ class Class:
 
     def __init__(
         self,
-        cls,
-        init=True,
-        public=True,
-        inherited=True,
-        static_methods=True,
-        protected=False,
-        private=False,
-        classmethod=True,
-        skip_self=True,
+        cls: type | object,
+        init: bool = True,
+        public: bool = True,
+        inherited: bool = True,
+        static_methods: bool = True,
+        protected: bool = False,
+        private: bool = False,
+        classmethod: bool = True,
+        skip_self: bool = True,
     ) -> None:
         self.cls = cls
         self.is_initialized = False
@@ -61,7 +61,7 @@ class Class:
         self.receieved_instance = False
 
         try:
-            self.name: str = self.cls.__name__
+            self.name: str = getattr(self.cls, "__name__", str(self.cls))
         except AttributeError:
             self.receieved_instance = True
             self.name = f"{self.cls.__class__.__name__} instance"
@@ -90,10 +90,10 @@ class Class:
         return f"{self.__class__.__name__}(name='{self.name}', methods={len(self._methods)}, has_init={self.has_init}, description={self.description})"
 
     @functools.cached_property
-    def _class_base(self):
+    def _class_base(self) -> type:
         if self.is_initialized:
-            return self.cls.__class__
-        return self.cls
+            return self.cls.__class__ if hasattr(self.cls, "__class__") else type(self.cls)
+        return self.cls  # type: ignore[return-value]
 
     def _find_methods(self) -> dict[str, Method]:
         method_filter = MethodFilter(**self.extractor_kwargs)
@@ -106,7 +106,7 @@ class Class:
             methods[method.name] = method
         return methods
 
-    def init(self, *args, **kwargs) -> None:
+    def init(self, *args: Any, **kwargs: Any) -> None:
         """
         Initializes the class as an instance using the provided arguments.
 
@@ -116,10 +116,13 @@ class Class:
         """
         if self.is_initialized:
             raise ValueError(f"Class {self.cls} is already initialized")
-        self.instance = self.cls(*args, **kwargs)
+        if callable(self.cls):
+            self.instance = self.cls(*args, **kwargs)
+        else:
+            raise TypeError(f"Cannot initialize object of type {type(self.cls)}")
         self.is_initialized = True
 
-    def call_method(self, method: str | int, *args, **kwargs) -> Any:
+    def call_method(self, method: str | int, *args: Any, **kwargs: Any) -> Any:
         """
         Calls the specified method on the class or instance.
 
@@ -160,7 +163,7 @@ class Class:
                 raise TypeError(type(method))
 
     @property
-    def init_method(self):
+    def init_method(self) -> Method | None:
         try:
             return self.get_method("__init__")
         except KeyError:
@@ -188,11 +191,16 @@ class Class:
         }
 
     def as_str(
-        self, *, color: bool = True, indent: int = 2, theme: ClassStrTheme | None = None
+        self,
+        *,
+        color: bool = True,
+        indent: int = 2,
+        theme: ClassStrTheme | None = None,
     ) -> str:
         if theme is None:
             theme = ClassStrTheme()
 
+        string: str
         if color:
             string = colored("class", theme.class_kw) + " " + colored(self.name, theme.name) + ":"
         else:
@@ -202,7 +210,7 @@ class Class:
             if color:
                 string += "\n" + colored(self.description, theme.description)
             else:
-                string += "\n" + self.description
+                string += "\n" + str(self.description)
         if not len(self.methods):
             return string
 
@@ -211,7 +219,11 @@ class Class:
         return string
 
 
-def split_init_args(args: dict, cls: Class, method: Method) -> tuple[dict, dict]:
+def split_init_args(
+    args: dict[str, Any],
+    cls: Class,
+    method: Method,
+) -> tuple[dict[str, Any], dict[str, Any]]:
     """
     Split the arguments into those that should be passed to the __init__ method
     and those that should be passed to the method call.

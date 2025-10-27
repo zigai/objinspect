@@ -1,5 +1,6 @@
 import inspect as _inspect
 from collections.abc import Callable
+from typing import Any
 
 from objinspect._class import Class
 from objinspect.function import Function
@@ -76,7 +77,7 @@ def inspect(
     )
 
 
-def get_class_from_method(method: Callable):
+def get_class_from_method(method: Callable[..., Any]) -> type | None:
     qualname = method.__qualname__
     module = _inspect.getmodule(method)
     if "." in qualname:

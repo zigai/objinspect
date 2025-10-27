@@ -39,9 +39,9 @@ def prettydir(
         "__annotations__",
         "__module__",
     ]
-    METHOD_SKIPS = []
+    METHOD_SKIPS: list[str] = []
 
-    def is_dunder(name: str):
+    def is_dunder(name: str) -> bool:
         return name.startswith("__") and name.endswith("__")
 
     if sep:

@@ -1,5 +1,7 @@
 import inspect
+from collections.abc import Callable
 from inspect import _ParameterKind
+from typing import Any
 
 from objinspect.function import Function
 
@@ -30,12 +32,12 @@ class Method(Function):
 
     """
 
-    def __init__(self, method, cls, skip_self: bool = True):
+    def __init__(self, method: Callable[..., Any], cls: type, skip_self: bool = True) -> None:
         super().__init__(method, skip_self)
         self.cls = cls
 
     @property
-    def class_instance(self):
+    def class_instance(self) -> object | None:
         return getattr(self.func, "__self__", None)
 
     @property
@@ -83,7 +85,7 @@ class MethodFilter:
         private: bool = False,
         classmethod: bool = False,
     ) -> None:
-        self.checks = []
+        self.checks: list[Callable[[Method], bool]] = []
         # fmt: off
         if not init: self.checks.append(lambda method: method.name == "__init__")
         if not static_methods: self.checks.append(lambda method: method.is_static)
@@ -104,9 +106,13 @@ class MethodFilter:
         return [i for i in methods if self.check(i)]
 
 
-def split_args_kwargs(func_args: dict, func: Function | Method) -> tuple[tuple, dict]:
+def split_args_kwargs(
+    func_args: dict[str, object],
+    func: Function | Method,
+) -> tuple[tuple[object, ...], dict[str, object]]:
     """Split the arguments passed to a function into positional and keyword arguments."""
-    args, kwargs = [], {}
+    args: list[object] = []
+    kwargs: dict[str, object] = {}
     for param in func.params:
         if param.kind == _ParameterKind.POSITIONAL_ONLY:
             args.append(func_args[param.name])

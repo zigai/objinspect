@@ -59,7 +59,7 @@ def simplified_type_name(name: str) -> str:
     return name
 
 
-def is_generic_alias(t) -> bool:
+def is_generic_alias(t: Any) -> bool:
     """
     Check if a type is an alias type (list[str], dict[str, int], etc...])
 
@@ -77,7 +77,7 @@ def is_generic_alias(t) -> bool:
     return type(t) in ALIAS_TYPES
 
 
-def is_union_type(t) -> bool:
+def is_union_type(t: Any) -> bool:
     """
     Check if a type is a union type (float | int, str | None, etc...)
 
@@ -95,7 +95,7 @@ def is_union_type(t) -> bool:
     return type(t) in UNION_TYPES
 
 
-def is_iterable_type(t) -> bool:
+def is_iterable_type(t: Any) -> bool:
     """
     Check if a type is an iterable type (list, tuple, etc...)
 
@@ -150,7 +150,7 @@ def is_iterable_type(t) -> bool:
         return False
 
 
-def is_mapping_type(t) -> bool:
+def is_mapping_type(t: Any) -> bool:
     """
     Check if a type is a mapping type (dict, OrderedDict, etc...)
 
@@ -212,7 +212,7 @@ def is_enum(t: Any) -> bool:
     return isinstance(t, EnumMeta)
 
 
-def get_enum_choices(e) -> tuple[str, ...]:
+def get_enum_choices(e: Any) -> tuple[str, ...]:
     """
     Get the options of a Python Enum.
 
@@ -297,7 +297,7 @@ def is_or_contains_literal(t: Any) -> bool:
     return False
 
 
-def get_literal_choices(literal_t) -> tuple[str, ...]:
+def get_literal_choices(literal_t: Any) -> tuple[str, ...]:
     """Get the options of a Python Literal."""
     if is_direct_literal(literal_t):
         return typing.get_args(literal_t)
@@ -307,7 +307,7 @@ def get_literal_choices(literal_t) -> tuple[str, ...]:
     raise ValueError(f"{literal_t} is not a literal")
 
 
-def literal_contains(literal_t, value: Any) -> bool:
+def literal_contains(literal_t: Any, value: Any) -> bool:
     """Check if a value is in a Python Literal."""
     if not is_direct_literal(literal_t):
         raise ValueError(f"{literal_t} is not a literal")
@@ -318,7 +318,7 @@ def literal_contains(literal_t, value: Any) -> bool:
     return value in values
 
 
-def get_choices(t: type) -> tuple | None:
+def get_choices(t: Any) -> tuple[Any, ...] | None:
     """
     Try to get the choices of a Literal or Enum type.
     Will also work with a Union type that contains Literal or Enum types.
@@ -330,7 +330,7 @@ def get_choices(t: type) -> tuple | None:
         return get_enum_choices(t)
     if is_union_type(t):
         args = type_args(t)
-        choices = []
+        choices: list[Any] = []
         for i in args:
             if is_enum(i):
                 choices.extend(get_enum_choices(i))
