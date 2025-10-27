@@ -56,18 +56,17 @@ class Class:
         skip_self: bool = True,
     ) -> None:
         self.cls = cls
-        self.is_initialized = False
         self.skip_self = skip_self
-        self.receieved_instance = False
+        self.receieved_instance = not inspect.isclass(cls)
 
-        try:
-            self.name: str = getattr(self.cls, "__name__", str(self.cls))
-        except AttributeError:
-            self.receieved_instance = True
-            self.name = f"{self.cls.__class__.__name__} instance"
+        if self.receieved_instance:
             self.is_initialized = True
-
-        self.instance = None if not self.is_initialized else self.cls
+            self.instance = cls
+            self.name = f"{cls.__class__.__name__} instance"
+        else:
+            self.is_initialized = False
+            self.instance = None
+            self.name = getattr(cls, "__name__", str(cls))
         self.docstring = inspect.getdoc(self.cls)
         self.has_docstring = _has_docstr(self.docstring)
         self.extractor_kwargs = {
