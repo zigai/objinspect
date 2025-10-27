@@ -11,6 +11,17 @@ ALIAS_TYPES = [typing._GenericAlias, types.GenericAlias]  # type:ignore
 UNION_TYPES = [typing._UnionGenericAlias, types.UnionType]  # type:ignore
 
 
+def _flatten_union_args(t: Any) -> list[Any]:
+    """Flatten nested union arguments into a linear list."""
+    flattened: list[Any] = []
+    for arg in typing.get_args(t):
+        if is_union_type(arg):
+            flattened.extend(_flatten_union_args(arg))
+        else:
+            flattened.append(arg)
+    return flattened
+
+
 def type_name(t: Any) -> str:
     """
     Convert a Python type to its string representation (without the module name).
@@ -29,6 +40,10 @@ def type_name(t: Any) -> str:
         'int'
         ```
     """
+    if is_union_type(t):
+        union_args = _flatten_union_args(t) or (t,)
+        return " | ".join(type_name(arg) for arg in union_args)
+
     type_str = repr(t)
     if "<class '" in type_str:
         type_str = type_str.split("'")[1]
