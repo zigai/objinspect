@@ -1,6 +1,6 @@
 [project]
 name = "objinspect"
-version = "0.3.1"
+version = "0.3.2"
 description = "A high-level library for Python object inspection"
 authors = [{ name = "Žiga Ivanšek", email = "ziga.ivansek@gmail.com" }]
 license = { file = "LICENSE" }
