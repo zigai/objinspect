@@ -1,6 +1,6 @@
 [project]
 name = "objinspect"
-version = "0.3.0"
+version = "0.3.1"
 description = "A high-level library for Python object inspection"
 authors = [{ name = "Žiga Ivanšek", email = "ziga.ivansek@gmail.com" }]
 license = { file = "LICENSE" }
@@ -25,6 +25,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 
 keywords = [
@@ -39,27 +40,62 @@ keywords = [
     "function-signature",
 ]
 
-
 [project.optional-dependencies]
-test = ["pytest"]
-dev = ["pytest", "black", "ruff", "pre-commit"]
+test = ["pytest", "coverage"]
+dev = ["pytest", "coverage", "ruff", "pre-commit", "codespell", "mypy"]
 
 [project.urls]
 Repository = "https://github.com/zigai/objinspect"
-Documentation = "https://objinspect.readthedocs.io"
 Issues = "https://github.com/zigai/objinspect/issues"
 Homepage = "https://github.com/zigai/objinspect"
+Documentation = "https://objinspect.readthedocs.io"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.envs.test]
+features = ["test"]
+installer = "uv"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+[tool.hatch.envs.test.scripts]
+test = "pytest -v {args}"
+cov = "coverage run -m pytest {args}"
+
 [tool.hatch.build.targets.wheel]
 packages = ["objinspect"]
 
-[tool.black]
-line-length = 100
-target_version = ['py310', 'py311', 'py312', 'py313']
+[tool.coverage.run]
+source = ["objinspect"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    'pragma: no cover',
+    'raise NotImplementedError',
+    'if TYPE_CHECKING:',
+    'if typing.TYPE_CHECKING:',
+]
+omit = ["tests/*", "tests/**"]
+
+[tool.mypy]
+python_version = "3.10"
+files = ["objinspect"]
+exclude = ["^tests/"]
+
+disallow_untyped_defs = true
+disallow_untyped_calls = true
+disallow_any_generics = true
+no_implicit_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_configs = true
+strict_equality = true
+ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 100
@@ -74,13 +110,13 @@ select = [
     'YTT',     # flake8-2020
     'B',       # flake8-bugbear
     "PLE",     # pylint
-    'PYI006',  # flake8-pyi
-    'PYI019',  # flake8-pyi
-    'PYI024',  # flake8-pyi
-    'PYI030',  # flake8-pyi
-    'PYI062',  # flake8-pyi
-    'PYI063',  # flake8-pyi
-    'PYI066',  # flake8-pyi
+    'PYI006',
+    'PYI019',
+    'PYI024',
+    'PYI030',
+    'PYI062',
+    'PYI063',
+    'PYI066',
     "RUF001",
     "RUF002",
     "RUF003",
@@ -134,33 +170,7 @@ ignore = [
     "UP007",
     "UP038",
 ]
-isort = { known-first-party = ["objinspect", 'tests'] }
-pydocstyle = { convention = 'google' }
-
-exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
-    "tests/*",
-    "tests/**/*",
-]
+exclude = ["build", "tests/**"]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = [
@@ -173,14 +183,13 @@ exclude = [
 quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
-line-ending = "auto"
+line-ending = "lf"
 
-[tool.hatch.envs.test]
-features = ["test"]
-installer = "uv"
+[tool.ruff.lint.isort]
+known-first-party = ["objinspect", "tests"]
 
-[[tool.hatch.envs.test.matrix]]
-python = ["3.10", "3.11", "3.12", "3.13"]
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
-[tool.hatch.envs.test.scripts]
-test = "pytest -v"
+[tool.codespell]
+skip = '.git,uv.lock'
