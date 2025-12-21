@@ -169,6 +169,7 @@ ignore = [
     "N803",
     "N806",
     "UP007",
+    "UP038",
 ]
 exclude = ["build", "tests/**"]
 
