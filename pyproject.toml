@@ -1,6 +1,6 @@
 [project]
 name = "objinspect"
-version = "0.3.2"
+version = "0.3.3"
 description = "A high-level library for Python object inspection"
 authors = [{ name = "Žiga Ivanšek", email = "ziga.ivansek@gmail.com" }]
 license = { file = "LICENSE" }
@@ -106,6 +106,7 @@ select = [
     "E",       # Pycodestyle (Error)
     'I',       # isort
     'D',       # pydocstyle
+    'D213',    # pydocstyle
     'UP',      # pyupgrade
     'YTT',     # flake8-2020
     'B',       # flake8-bugbear
@@ -168,7 +169,6 @@ ignore = [
     "N803",
     "N806",
     "UP007",
-    "UP038",
 ]
 exclude = ["build", "tests/**"]
 
