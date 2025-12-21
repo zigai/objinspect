@@ -65,3 +65,8 @@ def test_class_inheritance():
     cls = Class(ExampleClassC)
     inherited_methods = [method for method in cls.methods if method.is_inherited]
     assert any(method.name == "inherited_method" for method in inherited_methods)
+
+
+def test_class_includes_classmethods_when_enabled():
+    cls = Class(ExampleClassC, classmethod=True)
+    assert "class_method" in [method.name for method in cls.methods]
