@@ -14,6 +14,7 @@ def inspect(
     public: bool = True,
     inherited: bool = True,
     static_methods: bool = True,
+    classmethod: bool = False,
     protected: bool = False,
     private: bool = False,
 ) -> Function | Class | Method:
@@ -31,6 +32,7 @@ def inspect(
         public (bool, optional): Whether to include public attributes and methods.
         inherited (bool, optional): Whether to include inherited attributes and methods.
         static_methods (bool, optional): Whether to include static methods.
+        classmethod (bool, optional): Whether to include class methods.
         protected (bool, optional): Whether to include protected attributes and methods (prefixed with _).
         private (bool, optional): Whether to include private attributes and methods (prefixed with __).
 
@@ -54,7 +56,7 @@ def inspect(
         }
 
         >>> inspect(inspect)
-        Function(name='inspect', parameters=7, description='Inspects an object and returns a structured representation of its attributes and methods.')
+        Function(name='inspect', parameters=8, description='Inspects an object and returns a structured representation of its attributes and methods.')
     ```
     """
     if _inspect.ismethod(obj):
@@ -72,6 +74,7 @@ def inspect(
         public=public,
         inherited=inherited,
         static_methods=static_methods,
+        classmethod=classmethod,
         protected=protected,
         private=private,
     )

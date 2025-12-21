@@ -28,6 +28,7 @@ class Class:
         public (bool, optional): Include public methods.
         inherited (bool, optional): Include inherited methods.
         static_methods (bool, optional): Include static methods.
+        classmethod (bool, optional): Include class methods.
         protected (bool, optional): Include protected methods.
         private (bool, optional): Include private methods.
 
@@ -96,8 +97,12 @@ class Class:
 
     def _find_methods(self) -> dict[str, Method]:
         method_filter = MethodFilter(**self.extractor_kwargs)
-        fn = inspect.isfunction if not self.is_initialized else inspect.ismethod
-        members = inspect.getmembers(self.cls, fn)
+        if self.is_initialized:
+            members = inspect.getmembers(self.cls, inspect.ismethod)
+        else:
+            members = inspect.getmembers(
+                self.cls, lambda m: inspect.isfunction(m) or inspect.ismethod(m)
+            )
         methods = {}
         for method in method_filter.extract(
             [Method(i[1], self._class_base, skip_self=self.skip_self) for i in members]
