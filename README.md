@@ -49,7 +49,7 @@ Function(name='pow', parameters=2, description='Return x**y (x to the power of y
 }
 
 >>> inspect(inspect)
-Function(name='inspect', parameters=7, description='Inspects an object and returns a structured representation of its attributes and methods.')
+Function(name='inspect', parameters=8, description='Inspects an object and returns a structured representation of its attributes and methods.')
 ```
 
 ### prettydir
