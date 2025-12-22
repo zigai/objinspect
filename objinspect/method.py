@@ -51,7 +51,10 @@ class Method(Function):
 
     @property
     def is_classmethod(self) -> bool:
-        return hasattr(self.func, "__self__")
+        for cls in inspect.getmro(self.cls):
+            if self.name in cls.__dict__:
+                return isinstance(cls.__dict__[self.name], classmethod)
+        return False
 
     @property
     def is_property(self) -> bool:
