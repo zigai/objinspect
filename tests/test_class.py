@@ -70,3 +70,11 @@ def test_class_inheritance():
 def test_class_includes_classmethods_when_enabled():
     cls = Class(ExampleClassC, classmethod=True)
     assert "class_method" in [method.name for method in cls.methods]
+
+
+def test_instance_classmethod_filter_only_excludes_classmethods():
+    instance = ExampleClassC()
+    cls = Class(instance, classmethod=False)
+    method_names = [method.name for method in cls.methods]
+    assert "public_method" in method_names
+    assert "class_method" not in method_names
