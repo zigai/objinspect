@@ -4,9 +4,10 @@ from dataclasses import dataclass
 from typing import Any
 
 import docstring_parser
+from docstring_parser import Docstring
 from stdl.st import ForegroundColor, colored
 
-from objinspect.function import _get_docstr_desc, _has_docstr
+from objinspect.function import _get_docstr_description, _has_docstr
 from objinspect.method import Method, MethodFilter
 from objinspect.parameter import Parameter
 
@@ -37,7 +38,8 @@ class Class:
         is_initialized (bool): Whether the class has been initialized as an instance.
         name (str): The name of the class.
         instance (object | None): The instance of the class if it has been initialized, otherwise None.
-        docstring (str | None): The docstring of the class if it exists, otherwise None.
+        docstring (Docstring | None): The parsed docstring object.
+        docstring_text (str | None): The raw docstring text.
         has_docstring (bool): Whether the class has a docstring.
         extractor_kwargs (dict): The keyword arguments used to initialize the MethodExtractor object.
         has_init (bool): Whether the class has an __init__ method.
@@ -68,8 +70,8 @@ class Class:
             self.is_initialized = False
             self.instance = None
             self.name = getattr(cls, "__name__", str(cls))
-        self.docstring = inspect.getdoc(self.cls)
-        self.has_docstring = _has_docstr(self.docstring)
+        self.docstring_text: str | None = inspect.getdoc(self.cls)
+        self.has_docstring = _has_docstr(self.docstring_text)
         self.extractor_kwargs = {
             "init": init,
             "public": public,
@@ -81,10 +83,10 @@ class Class:
         }
         self._methods = self._find_methods()
         self.has_init = "__init__" in self._methods
-        self._parsed_docstring = (
-            docstring_parser.parse(self.docstring) if self.has_docstring else None  # type: ignore
+        self.docstring: Docstring | None = (
+            docstring_parser.parse(self.docstring_text) if self.has_docstring else None  # type: ignore
         )
-        self.description = _get_docstr_desc(self._parsed_docstring)
+        self.description = _get_docstr_description(self.docstring)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name='{self.name}', methods={len(self._methods)}, has_init={self.has_init}, description={self.description})"
@@ -191,7 +193,7 @@ class Class:
             "methods": [method.dict for method in self.methods],
             "description": self.description,
             "initialized": self.is_initialized,
-            "docstring": self.docstring,
+            "docstring": self.docstring_text,
         }
 
     def as_str(

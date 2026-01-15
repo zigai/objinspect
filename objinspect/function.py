@@ -19,7 +19,7 @@ def _has_docstr(docstring: str | None) -> bool:
     return len(docstring) != 0
 
 
-def _get_docstr_desc(docstring: Docstring | None) -> str:
+def _get_docstr_description(docstring: Docstring | None) -> str:
     if docstring is None:
         return ""
     if docstring.short_description:
@@ -48,7 +48,8 @@ class Function:
 
     Attributes:
         name (str): The name of the function.
-        docstring (str): The docstring of the function.
+        docstring (Docstring | None): The parsed docstring object.
+        docstring_text (str | None): The raw docstring text.
         has_docstring (bool): Whether the function has a docstring.
         description (str): The description part of the function's docstring.
         params (list[Parameter]): A list of parameters of the function.
@@ -60,14 +61,14 @@ class Function:
         self.func = func
         self.skip_self = skip_self
         self.name: str = self.func.__name__
-        self.docstring = inspect.getdoc(self.func)
-        self.has_docstring = _has_docstr(self.docstring)
-        self._parsed_docstr: Docstring | None = (
-            docstring_parser.parse(self.docstring) if self.has_docstring else None  # type: ignore
+        self.docstring_text: str | None = inspect.getdoc(self.func)
+        self.has_docstring = _has_docstr(self.docstring_text)
+        self.docstring: Docstring | None = (
+            docstring_parser.parse(self.docstring_text) if self.has_docstring else None  # type: ignore
         )
         self.return_type = NoneType
         self._parameters = self._get_parameters()
-        self.description = _get_docstr_desc(self._parsed_docstr)
+        self.description = _get_docstr_description(self.docstring)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name='{self.name}', parameters={len(self._parameters)}, description='{self.description}')"
@@ -77,9 +78,8 @@ class Function:
         params = [Parameter.from_inspect_param(i) for i in signature.parameters.values()]
         self.return_type = signature.return_annotation
 
-        # Try finding descriptions for parameters
-        if self._parsed_docstr is not None:
-            params_mapping = {par.arg_name: par for par in self._parsed_docstr.params}
+        if self.docstring is not None:
+            params_mapping = {par.arg_name: par for par in self.docstring.params}
             for param in params:
                 if parameter := params_mapping.get(param.name, False):
                     if parameter.description:  # type: ignore
@@ -133,7 +133,7 @@ class Function:
         return {
             "name": self.name,
             "parameters": [i.dict for i in self.params],
-            "docstring": self.docstring,
+            "docstring": self.docstring_text,
         }
 
     @property
