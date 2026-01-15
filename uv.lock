@@ -139,11 +139,11 @@ wheels = [
 
 [[package]]
 name = "docstring-parser"
-version = "0.16"
+version = "0.17.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/08/12/9c22a58c0b1e29271051222d8906257616da84135af9ed167c9e28f85cb3/docstring_parser-0.16.tar.gz", hash = "sha256:538beabd0af1e2db0146b6bd3caa526c35a34d61af9fd2887f3a8a27a739aa6e", size = 26565, upload-time = "2024-03-15T10:39:44.419Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b2/9d/c3b43da9515bd270df0f80548d9944e389870713cc1fe2b8fb35fe2bcefd/docstring_parser-0.17.0.tar.gz", hash = "sha256:583de4a309722b3315439bb31d64ba3eebada841f2e2cee23b99df001434c912", size = 27442, upload-time = "2025-07-21T07:35:01.868Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d5/7c/e9fcff7623954d86bdc17782036cbf715ecab1bec4847c008557affe1ca8/docstring_parser-0.16-py3-none-any.whl", hash = "sha256:bf0a1387354d3691d102edef7ec124f219ef639982d096e26e3b60aeffa90637", size = 36533, upload-time = "2024-03-15T10:39:41.527Z" },
+    { url = "https://files.pythonhosted.org/packages/55/e2/2537ebcff11c1ee1ff17d8d0b6f4db75873e3b0fb32c2d4a2ee31ecb310a/docstring_parser-0.17.0-py3-none-any.whl", hash = "sha256:cf2569abd23dce8099b300f9b4fa8191e9582dda731fd533daf54c4551658708", size = 36896, upload-time = "2025-07-21T07:35:00.684Z" },
 ]
 
 [[package]]
@@ -250,7 +250,7 @@ wheels = [
 
 [[package]]
 name = "objinspect"
-version = "0.3.2"
+version = "0.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "docstring-parser" },
@@ -277,13 +277,13 @@ requires-dist = [
     { name = "codespell", marker = "extra == 'dev'" },
     { name = "coverage", marker = "extra == 'dev'" },
     { name = "coverage", marker = "extra == 'test'" },
-    { name = "docstring-parser", specifier = ">=0.16.0" },
+    { name = "docstring-parser", specifier = ">=0.17.0" },
     { name = "mypy", marker = "extra == 'dev'" },
     { name = "pre-commit", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'test'" },
     { name = "ruff", marker = "extra == 'dev'" },
-    { name = "stdl", specifier = ">=0.6.3" },
+    { name = "stdl", specifier = ">=0.6.7" },
     { name = "typing-extensions", specifier = ">=4.7.1" },
 ]
 provides-extras = ["test", "dev"]
@@ -459,17 +459,17 @@ wheels = [
 
 [[package]]
 name = "stdl"
-version = "0.6.3"
+version = "0.6.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "python-dateutil" },
     { name = "pyyaml" },
     { name = "toml" },
-    { name = "tqdm" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/77/4d/e3cb1e28e573e55a14a218ddb132ed7bb0588d3c095702a0ac055fae27a5/stdl-0.6.3.tar.gz", hash = "sha256:28ce41a5f5dbff879e2d75c8bc9eed201388ef445de6b655d61de7e602f7d3e4", size = 72875, upload-time = "2025-07-18T17:26:18.106Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1e/d7/3989ba37906bed6e9043c2e6cfe29f68721d43a04ef0f48f6c308ecbaa79/stdl-0.6.7.tar.gz", hash = "sha256:f2f12d549bff6a03bc0ea276e0a6c169804038f70b52610d0bb4b82cc102a00f", size = 92958, upload-time = "2026-01-15T22:37:27.063Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b4/05/d733612423cb0b722b0814d88d686ff22757617d8f67ae6109f1d887823a/stdl-0.6.3-py3-none-any.whl", hash = "sha256:e8a74bc25f132bb039c57f8773a7842bfee4eeabbc4312f9fab7380d17470c76", size = 31214, upload-time = "2025-07-18T17:26:17.231Z" },
+    { url = "https://files.pythonhosted.org/packages/e3/80/10db6a384ff627a928e7b5d654b063fbd3a9217798444ed031e17f7e0e24/stdl-0.6.7-py3-none-any.whl", hash = "sha256:caa09945301661fa2541e974e019e9c228ca486ab9dd5aa1d38882bbf6b53a7b", size = 36107, upload-time = "2026-01-15T22:37:25.799Z" },
 ]
 
 [[package]]
@@ -518,18 +518,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/5b/b9/1ed31d167be802da0fc95020d04cd27b7d7065cc6fbefdd2f9186f60d7bd/tomli-2.2.1-cp313-cp313-win32.whl", hash = "sha256:d3f5614314d758649ab2ab3a62d4f2004c825922f9e370b29416484086b264ec", size = 98724, upload-time = "2024-11-27T22:38:32.837Z" },
     { url = "https://files.pythonhosted.org/packages/c7/32/b0963458706accd9afcfeb867c0f9175a741bf7b19cd424230714d722198/tomli-2.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:a38aa0308e754b0e3c67e344754dff64999ff9b513e691d0e786265c93583c69", size = 109383, upload-time = "2024-11-27T22:38:34.455Z" },
     { url = "https://files.pythonhosted.org/packages/6e/c2/61d3e0f47e2b74ef40a68b9e6ad5984f6241a942f7cd3bbfbdbd03861ea9/tomli-2.2.1-py3-none-any.whl", hash = "sha256:cb55c73c5f4408779d0cf3eef9f762b9c9f147a77de7b258bef0a5628adc85cc", size = 14257, upload-time = "2024-11-27T22:38:35.385Z" },
-]
-
-[[package]]
-name = "tqdm"
-version = "4.67.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737, upload-time = "2024-11-24T20:12:22.481Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d0/30/dc54f88dd4a2b5dc8a0279bdd7270e735851848b762aeb1c1184ed1f6b14/tqdm-4.67.1-py3-none-any.whl", hash = "sha256:26445eca388f82e72884e0d580d5464cd801a3ea01e63e5601bdff9ba6a48de2", size = 78540, upload-time = "2024-11-24T20:12:19.698Z" },
 ]
 
 [[package]]
