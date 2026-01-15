@@ -38,8 +38,7 @@ class Parameter:
 
         Args:
             name (str): The name of the parameter.
-            kind (inspect._ParameterKind): The kind of the parameter, i.e. POSITIONAL_ONLY, POSITIONAL_OR_KEYWORD, VAR_POSITIONAL,
-                KEYWORD_ONLY, or VAR_KEYWORD.
+            kind (inspect._ParameterKind): The kind of the parameter, i.e. POSITIONAL_ONLY, POSITIONAL_OR_KEYWORD, VAR_POSITIONAL, KEYWORD_ONLY, or VAR_KEYWORD.
             type (Any): The type of the parameter.
             default (Any): The default value of the parameter.
             description (str | None): The description of the parameter.
