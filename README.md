@@ -21,13 +21,9 @@ It provides a simple interface for examining Python functions and classes.
 
 ### From PyPI
 
-With pip:
-
 ```sh
 pip install objinspect
 ```
-
-With uv:
 
 ```sh
 uv pip install objinspect
@@ -35,13 +31,9 @@ uv pip install objinspect
 
 ### From source
 
-With pip:
-
 ```sh
 pip install git+https://github.com/zigai/objinspect
 ```
-
-With uv:
 
 ```sh
 uv pip install git+https://github.com/zigai/objinspect
