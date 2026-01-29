@@ -1,6 +1,6 @@
 [project]
 name = "objinspect"
-version = "0.4.0"
+version = "0.4.1"
 description = "A high-level library for Python object inspection"
 authors = [{ name = "Žiga Ivanšek", email = "ziga.ivansek@gmail.com" }]
 license = { file = "LICENSE" }
@@ -30,14 +30,18 @@ classifiers = [
 
 keywords = [
     "objinspect",
-    "object inspection",
+    "inspection",
     "code introspection",
     "python inspect",
-    "pretty dir",
     "debugging",
     "development-tools",
     "code-analysis",
     "function-signature",
+    "docstring",
+    "type-hints",
+    "developer-tools",
+    "prettydir",
+
 ]
 
 [project.optional-dependencies]
