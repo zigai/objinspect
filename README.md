@@ -13,22 +13,38 @@ It provides a simple interface for examining Python functions and classes.
 
 ## Features
 
-- Simplified inspection of Python objects (classes, functions, methods)
-- Detailed information about parameters, return types, and docstrings
-- prettydir - like dir(), but with more information and prettier output
+- Inspect functions, methods, and classes with a consistent API
+- Access signatures, parameters, return annotations, and docstrings
+- `prettydir` (alias: `pdir`) for a richer `dir()`-style view
 
 ## Installation
 
-### From PyPi
+### From PyPI
+
+With pip:
 
 ```sh
 pip install objinspect
 ```
 
+With uv:
+
+```sh
+uv pip install objinspect
+```
+
 ### From source
+
+With pip:
 
 ```sh
 pip install git+https://github.com/zigai/objinspect
+```
+
+With uv:
+
+```sh
+uv pip install git+https://github.com/zigai/objinspect
 ```
 
 ## Examples
