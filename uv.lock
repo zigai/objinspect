@@ -250,7 +250,7 @@ wheels = [
 
 [[package]]
 name = "objinspect"
-version = "0.4.0"
+version = "0.4.1"
 source = { editable = "." }
 dependencies = [
     { name = "docstring-parser" },
@@ -283,7 +283,7 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'test'" },
     { name = "ruff", marker = "extra == 'dev'" },
-    { name = "stdl", specifier = ">=0.6.7" },
+    { name = "stdl", specifier = ">=0.6.8" },
     { name = "typing-extensions", specifier = ">=4.7.1" },
 ]
 provides-extras = ["test", "dev"]
@@ -459,7 +459,7 @@ wheels = [
 
 [[package]]
 name = "stdl"
-version = "0.6.7"
+version = "0.6.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "python-dateutil" },
@@ -467,9 +467,9 @@ dependencies = [
     { name = "toml" },
     { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1e/d7/3989ba37906bed6e9043c2e6cfe29f68721d43a04ef0f48f6c308ecbaa79/stdl-0.6.7.tar.gz", hash = "sha256:f2f12d549bff6a03bc0ea276e0a6c169804038f70b52610d0bb4b82cc102a00f", size = 92958, upload-time = "2026-01-15T22:37:27.063Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3a/50/245055f1af5d34c7c2d19dfa36cb42c641ab4a954b44fb254af5302d48f6/stdl-0.6.8.tar.gz", hash = "sha256:cd1b501234880c193f45fed41dbc396accb9727643989030beaf67267c4b69bb", size = 93897, upload-time = "2026-01-30T18:01:28.009Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e3/80/10db6a384ff627a928e7b5d654b063fbd3a9217798444ed031e17f7e0e24/stdl-0.6.7-py3-none-any.whl", hash = "sha256:caa09945301661fa2541e974e019e9c228ca486ab9dd5aa1d38882bbf6b53a7b", size = 36107, upload-time = "2026-01-15T22:37:25.799Z" },
+    { url = "https://files.pythonhosted.org/packages/53/9b/5e817a81e8d8019162ec14f832d4ed86e1cc5d55153c5eac6edb07925c24/stdl-0.6.8-py3-none-any.whl", hash = "sha256:57335a178332efd306c286bb8c52aa38d8558bf3b4bb938821ea86396c67664e", size = 36585, upload-time = "2026-01-30T18:01:26.901Z" },
 ]
 
 [[package]]

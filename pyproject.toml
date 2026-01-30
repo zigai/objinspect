@@ -8,7 +8,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "docstring-parser>=0.17.0",
-    "stdl>=0.6.7",
+    "stdl>=0.6.8",
     "typing-extensions>=4.7.1",
 ]
 
