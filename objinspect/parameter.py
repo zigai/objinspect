@@ -64,22 +64,27 @@ class Parameter:
 
     @property
     def is_typed(self) -> bool:
+        """Whether the parameter has an explicit type annotation."""
         return self.type is not EMPTY
 
     @property
     def is_required(self) -> bool:
+        """Whether the parameter is required (has no default value)."""
         return self.default is EMPTY
 
     @property
     def is_optional(self) -> bool:
+        """Whether the parameter is optional (has a default value)."""
         return not self.is_required
 
     @property
     def has_default(self) -> bool:
+        """Whether the parameter has a default value."""
         return self.default is not EMPTY
 
     @property
     def dict(self) -> dict[str, Any]:
+        """Return a dictionary representation of the parameter."""
         return {
             "name": self.name,
             "kind": self.kind,
@@ -124,6 +129,13 @@ class Parameter:
         param: inspect.Parameter,
         description: str | None = None,
     ) -> "Parameter":
+        """
+        Create a Parameter instance from an inspect.Parameter object.
+
+        Args:
+            param (inspect.Parameter): The inspect.Parameter to convert.
+            description (str | None): Optional description for the parameter.
+        """
         return cls(
             name=param.name,
             type=param.annotation,

@@ -130,6 +130,7 @@ class Function:
 
     @property
     def dict(self) -> dict[str, Any]:
+        """Return a dictionary representation of the function."""
         return {
             "name": self.name,
             "parameters": [i.dict for i in self.params],
@@ -138,6 +139,7 @@ class Function:
 
     @property
     def is_coroutine(self) -> bool:
+        """Whether the function is a coroutine (async function)."""
         return inspect.iscoroutinefunction(self.func)
 
     def as_str(

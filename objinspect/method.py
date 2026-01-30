@@ -38,10 +38,12 @@ class Method(Function):
 
     @property
     def class_instance(self) -> object | None:
+        """The instance to which this method is bound, or None if unbound."""
         return getattr(self.func, "__self__", None)
 
     @property
     def is_static(self) -> bool:
+        """Whether the method is a static method."""
         for cls in inspect.getmro(self.cls):
             if inspect.isroutine(self.func):
                 if self.name in cls.__dict__:
@@ -51,6 +53,7 @@ class Method(Function):
 
     @property
     def is_classmethod(self) -> bool:
+        """Whether the method is a class method."""
         for cls in inspect.getmro(self.cls):
             if self.name in cls.__dict__:
                 return isinstance(cls.__dict__[self.name], classmethod)
@@ -58,22 +61,27 @@ class Method(Function):
 
     @property
     def is_property(self) -> bool:
+        """Whether the method is a property."""
         return isinstance(getattr(self.cls, self.name), property)
 
     @property
     def is_private(self) -> bool:
+        """Whether the method is private (single underscore prefix)."""
         return self.name.startswith("_") and not self.name.startswith("__")
 
     @property
     def is_protected(self) -> bool:
+        """Whether the method is protected (single underscore prefix and suffix)."""
         return self.name.startswith("_") and not self.name.endswith("__")
 
     @property
     def is_public(self) -> bool:
+        """Whether the method is public (no underscore prefix)."""
         return not self.is_private and not self.is_protected
 
     @property
     def is_inherited(self) -> bool:
+        """Whether the method is inherited from a parent class."""
         return self.name not in self.cls.__dict__
 
 
@@ -100,12 +108,30 @@ class MethodFilter:
         # fmt: on
 
     def check(self, method: Method) -> bool:
+        """
+        Check if a method passes all filter criteria.
+
+        Args:
+            method (Method): The method to check.
+
+        Returns:
+            bool: True if the method passes all filters, False otherwise.
+        """
         for check_func in self.checks:
             if check_func(method):
                 return False
         return True
 
     def extract(self, methods: list[Method]) -> list[Method]:
+        """
+        Filter a list of methods based on the configured criteria.
+
+        Args:
+            methods (list[Method]): The list of methods to filter.
+
+        Returns:
+            list[Method]: The filtered list of methods.
+        """
         return [i for i in methods if self.check(i)]
 
 

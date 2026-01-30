@@ -81,6 +81,15 @@ def inspect(
 
 
 def get_class_from_method(method: Callable[..., Any]) -> type | None:
+    """
+    Get the class that defines a given method.
+
+    Args:
+        method (Callable): The method to analyze.
+
+    Returns:
+        type | None: The class that defines the method, or None if not found.
+    """
     qualname = method.__qualname__
     module = _inspect.getmodule(method)
     if "." in qualname:

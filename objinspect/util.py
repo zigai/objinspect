@@ -131,6 +131,14 @@ def colored_type(
     style: TextStyle,
     simplify: bool = True,
 ) -> str:
+    """
+    Return a colored string representation of a type.
+
+    Args:
+        t (type): The type to format.
+        style (TextStyle): The text style (color) to apply.
+        simplify (bool, optional): Whether to simplify the type name. Defaults to True.
+    """
     text = type_name(t)
     if simplify:
         text = simplified_type_name(text)

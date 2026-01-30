@@ -209,6 +209,7 @@ def type_simplified(t: Any) -> Any | tuple[Any, ...]:
 
 
 def is_enum(t: Any) -> bool:
+    """Check if a type is an Enum type."""
     return isinstance(t, EnumMeta)
 
 

@@ -170,6 +170,7 @@ class Class:
 
     @property
     def init_method(self) -> Method | None:
+        """The __init__ method of the class, or None if not present."""
         try:
             return self.get_method("__init__")
         except KeyError:
@@ -177,6 +178,7 @@ class Class:
 
     @property
     def init_args(self) -> list[Parameter] | None:
+        """The parameters of the __init__ method, or None if not present."""
         if self.init_method is None:
             return None
         return self.init_method.params
@@ -188,6 +190,7 @@ class Class:
 
     @property
     def dict(self) -> dict[str, Any]:
+        """Return a dictionary representation of the class."""
         return {
             "name": self.name,
             "methods": [method.dict for method in self.methods],
@@ -203,6 +206,15 @@ class Class:
         indent: int = 2,
         theme: ClassStrTheme | None = None,
     ) -> str:
+        """
+        Return a string representation of the class.
+
+        Args:
+            color (bool, optional): Whether to colorize the output. Defaults to True.
+            indent (int, optional): Indentation width for methods. Defaults to 2.
+            theme (ClassStrTheme | None): Color theme to use. Default will be used if
+                None.
+        """
         if theme is None:
             theme = ClassStrTheme()
 
