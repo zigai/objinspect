@@ -2,7 +2,6 @@ import inspect
 from collections.abc import Callable
 from dataclasses import dataclass
 from types import NoneType
-from typing import Any
 
 import docstring_parser
 from docstring_parser import Docstring
@@ -57,15 +56,16 @@ class Function:
 
     """
 
-    def __init__(self, func: Callable[..., Any], skip_self: bool = True) -> None:
+    def __init__(self, func: Callable[..., object], skip_self: bool = True) -> None:
         self.func = func
         self.skip_self = skip_self
         self.name: str = self.func.__name__
         self.docstring_text: str | None = inspect.getdoc(self.func)
         self.has_docstring = _has_docstr(self.docstring_text)
-        self.docstring: Docstring | None = (
-            docstring_parser.parse(self.docstring_text) if self.has_docstring else None  # type: ignore
-        )
+        if self.has_docstring and self.docstring_text is not None:
+            self.docstring: Docstring | None = docstring_parser.parse(self.docstring_text)
+        else:
+            self.docstring = None
         self.return_type = NoneType
         self._parameters = self._get_parameters()
         self.description = _get_docstr_description(self.docstring)
@@ -81,9 +81,8 @@ class Function:
         if self.docstring is not None:
             params_mapping = {par.arg_name: par for par in self.docstring.params}
             for param in params:
-                if parameter := params_mapping.get(param.name, False):
-                    if parameter.description:  # type: ignore
-                        param.description = parameter.description  # type: ignore
+                if (parameter := params_mapping.get(param.name)) and parameter.description:
+                    param.description = parameter.description
 
         parameters = {}
         for param in params:
@@ -113,7 +112,7 @@ class Function:
             case _:
                 raise TypeError(type(arg))
 
-    def call(self, *args: Any, **kwargs: Any) -> Any:
+    def call(self, *args: object, **kwargs: object) -> object:
         """
         Calls the function and returns the result of its call.
 
@@ -129,7 +128,7 @@ class Function:
         return list(self._parameters.values())
 
     @property
-    def dict(self) -> dict[str, Any]:
+    def dict(self) -> dict[str, object]:
         """Return a dictionary representation of the function."""
         return {
             "name": self.name,

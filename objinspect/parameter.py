@@ -1,6 +1,5 @@
 import inspect
 from dataclasses import dataclass
-from typing import Any
 
 from stdl.st import ForegroundColor, TextStyle, colored
 
@@ -8,7 +7,7 @@ from objinspect.constants import EMPTY
 from objinspect.typing import type_name
 from objinspect.util import colored_type
 
-ParameterKind = inspect._ParameterKind
+ParameterKind = type(inspect.Parameter.POSITIONAL_ONLY)
 
 
 @dataclass
@@ -28,24 +27,35 @@ class Parameter:
         self,
         name: str,
         kind: ParameterKind,
-        type: Any = EMPTY,
-        default: Any = EMPTY,
+        annotation: object = EMPTY,
+        default: object = EMPTY,
         description: str | None = None,
         infer_type: bool = True,
+        **legacy_kwargs: object,
     ) -> None:
         """
         Initialize a `Parameter` instance.
 
         Args:
             name (str): The name of the parameter.
-            kind (inspect._ParameterKind): The kind of the parameter, i.e. POSITIONAL_ONLY, POSITIONAL_OR_KEYWORD, VAR_POSITIONAL, KEYWORD_ONLY, or VAR_KEYWORD.
-            type (Any): The type of the parameter.
-            default (Any): The default value of the parameter.
+            kind: The kind of the parameter (e.g. POSITIONAL_ONLY, VAR_POSITIONAL).
+            annotation (object): The type annotation of the parameter.
+            default (object): The default value of the parameter.
             description (str | None): The description of the parameter.
             infer_type (bool): Infer the type of the parameter based on its default value.
+            **legacy_kwargs (object): Backward-compatible keyword support for `type=`.
         """
+        if "type" in legacy_kwargs:
+            if annotation is not EMPTY:
+                msg = "'annotation' and legacy 'type' cannot both be provided."
+                raise TypeError(msg)
+            annotation = legacy_kwargs.pop("type")
+        if legacy_kwargs:
+            unknown = ", ".join(sorted(legacy_kwargs))
+            raise TypeError(f"Unexpected keyword arguments: {unknown}")
+
         self.name = name
-        self.type = type
+        self.type = annotation
         self.default = default
         self.description = description
         self.kind = kind
@@ -53,10 +63,10 @@ class Parameter:
             self.type = self.get_infered_type()
 
     def __repr__(self) -> str:
-        data = f"name='{self.name}', kind={str(self.kind)}, type={self.type}, default={self.default}, description='{self.description}'"
+        data = f"name='{self.name}', kind={self.kind!s}, type={self.type}, default={self.default}, description='{self.description}'"
         return f"{self.__class__.__name__}({data})"
 
-    def get_infered_type(self) -> Any:
+    def get_infered_type(self) -> object:
         """Infer the type of the parameter based on its default value."""
         if self.default is EMPTY:
             return EMPTY
@@ -83,7 +93,7 @@ class Parameter:
         return self.default is not EMPTY
 
     @property
-    def dict(self) -> dict[str, Any]:
+    def dict(self) -> dict[str, object]:
         """Return a dictionary representation of the parameter."""
         return {
             "name": self.name,
@@ -138,7 +148,7 @@ class Parameter:
         """
         return cls(
             name=param.name,
-            type=param.annotation,
+            annotation=param.annotation,
             default=param.default,
             description=description,
             kind=param.kind,

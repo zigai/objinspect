@@ -34,7 +34,7 @@ def test_type_inference():
 
 
 def test_descriptions():
-    assert func.has_docstring == True
+    assert func.has_docstring
     assert func.description == "example_function dostring"
     assert func.get_param("a").description == "Argument a"
     assert func.get_param("b").description == "Argument b. Defaults to None."
@@ -42,21 +42,21 @@ def test_descriptions():
 
 
 def test_is_param_typed():
-    assert func.get_param("a").is_typed == False
-    assert func.get_param("b").is_typed == True
-    assert func.get_param("c").is_typed == True
+    assert not func.get_param("a").is_typed
+    assert func.get_param("b").is_typed
+    assert func.get_param("c").is_typed
 
 
 def test_is_param_optional():
-    assert func.get_param("a").is_optional == False
-    assert func.get_param("b").is_optional == True
-    assert func.get_param("c").is_optional == True
+    assert not func.get_param("a").is_optional
+    assert func.get_param("b").is_optional
+    assert func.get_param("c").is_optional
 
 
 def test_call():
-    from math import pow
+    from math import pow as math_pow
 
-    assert Function(pow).call(2, 2) == 4
+    assert Function(math_pow).call(2, 2) == 4
 
 
 def test_async():

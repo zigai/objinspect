@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from types import FunctionType
-from typing import Any
+from typing import cast
 
 from stdl.st import TextStyle, with_style
 
@@ -11,9 +11,9 @@ from objinspect.typing import simplified_type_name, type_name
 def call_method(
     obj: object,
     name: str,
-    args: tuple[Any, ...] = (),
-    kwargs: dict[str, Any] | None = None,
-) -> Any:
+    args: tuple[object, ...] = (),
+    kwargs: dict[str, object] | None = None,
+) -> object:
     """
     Call a method with the given name on the given object.
 
@@ -46,14 +46,65 @@ def get_uninherited_methods(cls: type) -> list[str]:
     ]
 
 
+ArgumentDef = tuple[object] | tuple[object, object]
+
+
+def _parse_argument_def(name: str, arg_def: ArgumentDef) -> tuple[object, object]:
+    if len(arg_def) == 2:
+        return arg_def
+    if len(arg_def) == 1:
+        return arg_def[0], EMPTY
+    raise ValueError(f"Invalid annotations for argument {name}: {arg_def}")
+
+
+def _build_argument_signature(args: dict[str, ArgumentDef]) -> str:
+    arg_str: list[str] = []
+    for arg_name, arg_def in args.items():
+        arg_type, default = _parse_argument_def(arg_name, arg_def)
+        arg_repr = arg_name if arg_type is EMPTY else f"{arg_name}: {arg_type.__name__}"
+        if default is not EMPTY:
+            arg_repr += f" = {default!r}"
+        arg_str.append(arg_repr)
+    return ", ".join(arg_str)
+
+
+def _build_return_signature(return_type: object) -> str:
+    if return_type is EMPTY:
+        return ""
+    if return_type is None:
+        return " -> None"
+    if hasattr(return_type, "__name__"):
+        return f" -> {return_type.__name__}"
+    return ""
+
+
+def _build_function_source(
+    *,
+    name: str,
+    args: dict[str, ArgumentDef],
+    body: str | list[str],
+    return_type: object,
+    docstring: str | None,
+) -> str:
+    arg_str_final = _build_argument_signature(args)
+    body_str = "\n    ".join(body) if isinstance(body, list) else body
+    function_source = f"def {name}({arg_str_final})"
+    function_source += _build_return_signature(return_type)
+    function_source += ":"
+    if docstring:
+        function_source += f'\n    """{docstring}"""'
+    function_source += f"\n    {body_str}"
+    return function_source
+
+
 def create_function(
     name: str,
-    args: dict[str, tuple[Any, Any]],
+    args: dict[str, ArgumentDef],
     body: str | list[str],
-    globs: dict[str, Any],
-    return_type: Any | EMPTY = EMPTY,
+    globs: dict[str, object],
+    return_type: object = EMPTY,
     docstring: str | None = None,
-) -> Callable[..., Any]:
+) -> Callable[..., object]:
     """
     Create a function with the given name, arguments, body, and globals.
 
@@ -84,41 +135,16 @@ def create_function(
         4
         ```
     """
-    arg_str = []
-    for arg, annotations in args.items():
-        if len(annotations) == 2:
-            t, default = annotations
-        elif len(annotations) == 1:
-            t = annotations[0]
-            default = EMPTY
-        else:
-            raise ValueError(f"Invalid annotations for argument {arg}: {annotations}")
-
-        if t is not EMPTY:
-            arg_str.append(f"{arg}: {t.__name__}")
-        else:
-            arg_str.append(arg)
-        if default is not EMPTY:
-            arg_str[-1] += f" = {repr(default)}"
-
-    arg_str_final = ", ".join(arg_str)
-    body_str = "\n    ".join(body) if isinstance(body, list) else body
-    func_str = f"def {name}({arg_str_final})"
-
-    if return_type is not EMPTY:
-        if return_type is None:
-            func_str += " -> None"
-        elif hasattr(return_type, "__name__"):
-            func_str += f" -> {return_type.__name__}"
-
-    func_str += ":"
-    if docstring:
-        func_str += f'\n    """{docstring}"""'
-    func_str += f"\n    {body_str}"
-
+    func_str = _build_function_source(
+        name=name,
+        args=args,
+        body=body,
+        return_type=return_type,
+        docstring=docstring,
+    )
     code_obj = compile(func_str, "<string>", "exec")
-    exec(code_obj, globs)
-    func = globs[name]
+    exec(code_obj, globs)  # noqa: S102  # required for runtime function definition
+    func = cast(Callable[..., object], globs[name])
     func.__annotations__ = {arg: annotation[0] for arg, annotation in args.items()}
     if return_type is not EMPTY:
         func.__annotations__["return"] = return_type
@@ -156,4 +182,4 @@ def colored_type(
     return "".join(colored_segments)
 
 
-__all__ = ["call_method", "get_uninherited_methods", "create_function"]
+__all__ = ["call_method", "create_function", "get_uninherited_methods"]

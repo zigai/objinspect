@@ -1,7 +1,6 @@
 import functools
 import inspect
 from dataclasses import dataclass
-from typing import Any
 
 import docstring_parser
 from docstring_parser import Docstring
@@ -29,7 +28,7 @@ class Class:
         public (bool, optional): Include public methods.
         inherited (bool, optional): Include inherited methods.
         static_methods (bool, optional): Include static methods.
-        classmethod (bool, optional): Include class methods.
+        class_method (bool, optional): Include class methods.
         protected (bool, optional): Include protected methods.
         private (bool, optional): Include private methods.
 
@@ -55,9 +54,19 @@ class Class:
         static_methods: bool = True,
         protected: bool = False,
         private: bool = False,
-        classmethod: bool = True,
+        class_method: bool = True,
         skip_self: bool = True,
+        **legacy_options: object,
     ) -> None:
+        legacy_classmethod = legacy_options.pop("classmethod", None)
+        if legacy_classmethod is not None:
+            if not isinstance(legacy_classmethod, bool):
+                raise TypeError("`classmethod` must be a bool")
+            class_method = legacy_classmethod
+        if legacy_options:
+            unexpected_keys = ", ".join(sorted(legacy_options))
+            raise TypeError(f"Unexpected keyword argument(s): {unexpected_keys}")
+
         self.cls = cls
         self.skip_self = skip_self
         self.receieved_instance = not inspect.isclass(cls)
@@ -79,13 +88,14 @@ class Class:
             "static_methods": static_methods,
             "protected": protected,
             "private": private,
-            "classmethod": classmethod,
+            "class_method": class_method,
         }
         self._methods = self._find_methods()
         self.has_init = "__init__" in self._methods
-        self.docstring: Docstring | None = (
-            docstring_parser.parse(self.docstring_text) if self.has_docstring else None  # type: ignore
-        )
+        if self.has_docstring and self.docstring_text is not None:
+            self.docstring: Docstring | None = docstring_parser.parse(self.docstring_text)
+        else:
+            self.docstring = None
         self.description = _get_docstr_description(self.docstring)
 
     def __repr__(self) -> str:
@@ -95,7 +105,9 @@ class Class:
     def _class_base(self) -> type:
         if self.is_initialized:
             return self.cls.__class__ if hasattr(self.cls, "__class__") else type(self.cls)
-        return self.cls  # type: ignore[return-value]
+        if isinstance(self.cls, type):
+            return self.cls
+        return type(self.cls)
 
     def _find_methods(self) -> dict[str, Method]:
         method_filter = MethodFilter(**self.extractor_kwargs)
@@ -112,7 +124,7 @@ class Class:
             methods[method.name] = method
         return methods
 
-    def init(self, *args: Any, **kwargs: Any) -> None:
+    def init(self, *args: object, **kwargs: object) -> None:
         """
         Initializes the class as an instance using the provided arguments.
 
@@ -128,7 +140,7 @@ class Class:
             raise TypeError(f"Cannot initialize object of type {type(self.cls)}")
         self.is_initialized = True
 
-    def call_method(self, method: str | int, *args: Any, **kwargs: Any) -> Any:
+    def call_method(self, method: str | int, *args: object, **kwargs: object) -> object:
         """
         Calls the specified method on the class or instance.
 
@@ -189,7 +201,7 @@ class Class:
         return list(self._methods.values())
 
     @property
-    def dict(self) -> dict[str, Any]:
+    def dict(self) -> dict[str, object]:
         """Return a dictionary representation of the class."""
         return {
             "name": self.name,
@@ -238,10 +250,10 @@ class Class:
 
 
 def split_init_args(
-    args: dict[str, Any],
+    args: dict[str, object],
     cls: Class,
     method: Method,
-) -> tuple[dict[str, Any], dict[str, Any]]:
+) -> tuple[dict[str, object], dict[str, object]]:
     """
     Split the arguments into those that should be passed to the __init__ method
     and those that should be passed to the method call.

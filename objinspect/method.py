@@ -1,9 +1,20 @@
 import inspect
 from collections.abc import Callable
 from inspect import _ParameterKind
-from typing import Any
 
 from objinspect.function import Function
+
+
+def _resolve_class_method_option(class_method: bool, legacy_options: dict[str, object]) -> bool:
+    legacy_classmethod = legacy_options.pop("classmethod", None)
+    if legacy_classmethod is not None:
+        if not isinstance(legacy_classmethod, bool):
+            raise TypeError("`classmethod` must be a bool")
+        class_method = legacy_classmethod
+    if legacy_options:
+        unexpected_keys = ", ".join(sorted(legacy_options))
+        raise TypeError(f"Unexpected keyword argument(s): {unexpected_keys}")
+    return class_method
 
 
 class Method(Function):
@@ -32,7 +43,7 @@ class Method(Function):
 
     """
 
-    def __init__(self, method: Callable[..., Any], cls: type, skip_self: bool = True) -> None:
+    def __init__(self, method: Callable[..., object], cls: type, skip_self: bool = True) -> None:
         super().__init__(method, skip_self)
         self.cls = cls
 
@@ -44,11 +55,12 @@ class Method(Function):
     @property
     def is_static(self) -> bool:
         """Whether the method is a static method."""
+        if not inspect.isroutine(self.func):
+            return False
         for cls in inspect.getmro(self.cls):
-            if inspect.isroutine(self.func):
-                if self.name in cls.__dict__:
-                    binded_value = cls.__dict__[self.name]
-                    return isinstance(binded_value, staticmethod)
+            if self.name in cls.__dict__:
+                binded_value = cls.__dict__[self.name]
+                return isinstance(binded_value, staticmethod)
         return False
 
     @property
@@ -94,18 +106,24 @@ class MethodFilter:
         static_methods: bool = True,
         protected: bool = False,
         private: bool = False,
-        classmethod: bool = False,
+        class_method: bool = False,
+        **legacy_options: object,
     ) -> None:
+        class_method = _resolve_class_method_option(class_method, dict(legacy_options))
+
         self.checks: list[Callable[[Method], bool]] = []
-        # fmt: off
-        if not init: self.checks.append(lambda method: method.name == "__init__")
-        if not static_methods: self.checks.append(lambda method: method.is_static)
-        if not inherited: self.checks.append(lambda method: method.is_inherited)
-        if not private: self.checks.append(lambda method: method.is_private)
-        if not protected: self.checks.append(lambda method: method.is_protected)
-        if not public: self.checks.append(lambda method: method.is_public)
-        if not classmethod: self.checks.append(lambda method: method.is_classmethod)
-        # fmt: on
+        filter_checks: tuple[tuple[bool, Callable[[Method], bool]], ...] = (
+            (not init, lambda method: method.name == "__init__"),
+            (not static_methods, lambda method: method.is_static),
+            (not inherited, lambda method: method.is_inherited),
+            (not private, lambda method: method.is_private),
+            (not protected, lambda method: method.is_protected),
+            (not public, lambda method: method.is_public),
+            (not class_method, lambda method: method.is_classmethod),
+        )
+        for enabled, check in filter_checks:
+            if enabled:
+                self.checks.append(check)
 
     def check(self, method: Method) -> bool:
         """
@@ -117,10 +135,7 @@ class MethodFilter:
         Returns:
             bool: True if the method passes all filters, False otherwise.
         """
-        for check_func in self.checks:
-            if check_func(method):
-                return False
-        return True
+        return all(not check_func(method) for check_func in self.checks)
 
     def extract(self, methods: list[Method]) -> list[Method]:
         """

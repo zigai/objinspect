@@ -1,5 +1,5 @@
 import inspect
 
-EMPTY = inspect._empty
+EMPTY = inspect.Signature.empty
 
 __all__ = ["EMPTY"]

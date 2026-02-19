@@ -1,10 +1,9 @@
 import typing
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict, defaultdict, deque
 from enum import Enum, Flag, auto
-from typing import Any, DefaultDict, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Literal
 
 import pytest
-from typing_extensions import Literal
 
 from objinspect.typing import (
     get_enum_choices,
@@ -27,7 +26,7 @@ class TestIsDirectLiteral:
         assert is_direct_literal(typing.Literal["a", "b"])
 
     def test_nested_literal_type_check(self):
-        assert not is_direct_literal(typing.Union[typing.Literal["a"], typing.Literal["b"]])
+        assert not is_direct_literal(int | typing.Literal["a", "b"])
 
     def test_literal_or_none(self):
         assert not is_direct_literal(typing.Literal["b"] | None)
@@ -47,7 +46,7 @@ class TestIsLiteral:
         assert not is_or_contains_literal(int)
 
     def test_nested_literal_type(self):
-        nested_literal = typing.Literal[typing.Literal["a", "b"]]
+        nested_literal = list[typing.Literal["a", "b"]]
         assert is_or_contains_literal(nested_literal)
 
     def test_literal_or_none(self):
@@ -55,7 +54,7 @@ class TestIsLiteral:
         assert is_or_contains_literal(literal_or_none)
 
     def test_composite_without_literal(self):
-        composite_without_literal = typing.Union[int, str]
+        composite_without_literal = int | str
         assert not is_or_contains_literal(composite_without_literal)
 
 
@@ -67,7 +66,7 @@ class TestLiteralContains:
         assert not literal_contains(typing.Literal["a", "b", "c"], "d")
 
     def test_invalid_literal_type(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="is not a literal"):
             literal_contains(int, 1)
 
     def test_none_value(self):
@@ -80,7 +79,7 @@ class TestLiteralContains:
         assert not literal_contains(typing.Literal["a", "b", "c"], CustomClass())
 
     def test_empty_literal(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="has no values"):
             literal_contains(typing.Literal[()], "a")
 
 
@@ -89,11 +88,11 @@ class TestGetLiteralChoices:
         assert get_literal_choices(typing.Literal["a", "b"]) == ("a", "b")
 
     def test_invalid_literal_type_for_choices(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="is not a literal"):
             get_literal_choices(int)
 
     def test_empty_literal_for_choices(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="is not a literal"):
             get_literal_choices(typing.Literal)
 
 
@@ -112,21 +111,21 @@ class TestIsIterableType:
         assert is_iterable_type(tuple[int])
 
     def test_is_iterable_type_typing(self):
-        assert is_iterable_type(typing.List)
-        assert is_iterable_type(typing.Dict)
+        assert is_iterable_type(list)
+        assert is_iterable_type(dict)
         assert is_iterable_type(typing.Sequence)
-        assert is_iterable_type(typing.Set)
-        assert is_iterable_type(typing.Deque)
+        assert is_iterable_type(set)
+        assert is_iterable_type(deque)
 
 
 class TestIsMappingType:
     def test_is_mapping_type_typing(self):
         assert is_mapping_type(OrderedDict)
         assert is_mapping_type(defaultdict)
-        assert is_mapping_type(typing.Dict)
+        assert is_mapping_type(dict)
         assert is_mapping_type(typing.Mapping)
         assert is_mapping_type(typing.OrderedDict)
-        assert is_mapping_type(typing.DefaultDict)
+        assert is_mapping_type(defaultdict)
 
     def test_is_mapping_type_simple(self):
         assert not is_mapping_type(int)
@@ -143,27 +142,27 @@ class TestIsGenericAlias:
     @pytest.fixture
     def generic_types(self):
         return [
-            List[int],
-            Dict[str, int],
-            Tuple[str, int],
-            Set[float],
-            List[Dict[str, Set[int]]],
+            list[int],
+            dict[str, int],
+            tuple[str, int],
+            set[float],
+            list[dict[str, set[int]]],
             defaultdict[str, int],
-            DefaultDict[str, int],
+            defaultdict[str, int],
             OrderedDict[str, int],
         ]
 
     def test_positive_cases(self, generic_types):
         for type_hint in generic_types:
-            print(type(List[int]))
-            print(type(List))
+            print(type(list[int]))
+            print(type(list))
             assert is_generic_alias(type_hint)
 
     def test_negative_cases(self):
-        non_generic_types = [int, str, List, Dict, Union[int, str], Any]
+        non_generic_types = [int, str, list, dict, int | str, Any]
         for type_hint in non_generic_types:
-            print(type(List[int]))
-            print(type(List))
+            print(type(list[int]))
+            print(type(list))
             assert not is_generic_alias(type_hint)
 
     def test_custom_generic(self):
@@ -187,10 +186,10 @@ class TestIsUnionType:
     @pytest.fixture
     def union_types(self):
         return {
-            "simple_union": Union[int, str],
-            "multi_union": Union[int, str, float],
-            "optional": Optional[int],
-            "nested_union": Union[int, Union[str, float]],
+            "simple_union": int | str,
+            "multi_union": int | str | float,
+            "optional": int | None,
+            "nested_union": int | str | float,
         }
 
     def test_positive_cases(self, union_types):
@@ -198,7 +197,7 @@ class TestIsUnionType:
             assert is_union_type(type_hint)
 
     def test_negative_cases(self):
-        non_union_types = [int, str, List[int], Dict[str, int], Any]
+        non_union_types = [int, str, list[int], dict[str, int], Any]
         for type_hint in non_union_types:
             assert not is_union_type(type_hint)
 
@@ -210,19 +209,19 @@ class TestIsUnionType:
     def test_edge_cases(self):
         assert not is_union_type(None)
         assert not is_union_type(...)
-        assert not is_union_type(Union)  # Union itself, not a union type
+        assert not is_union_type(typing.Union)  # Union itself, not a union type
 
     def test_nested_unions(self):
-        NestedUnion = Union[int, Union[str, float]]
-        assert is_union_type(NestedUnion)
-        assert is_union_type(Union[NestedUnion, bool])
+        nested_union = int | str | float
+        assert is_union_type(nested_union)
+        assert is_union_type(nested_union | bool)
 
     @pytest.mark.parametrize(
-        "type_hint,expected",
+        ("type_hint", "expected"),
         [
-            (Union[int, str], True),
-            (Optional[int], True),
-            (List[int], False),
+            (int | str, True),
+            (int | None, True),
+            (list[int], False),
             (int, False),
             (Any, False),
         ],
@@ -233,16 +232,14 @@ class TestIsUnionType:
 
 class TestTypeName:
     @pytest.mark.parametrize(
-        "input_type,expected",
+        ("input_type", "expected"),
         [
             (int, "int"),
             (str, "str"),
             (Any, "Any"),
             (typing.Any, "Any"),
-            (Union[int, str], "int | str"),
-            (typing.Union[int, str], "int | str"),
-            (List[int], "List[int]"),
-            (typing.List[int], "List[int]"),
+            (int | str, "int | str"),
+            (typing.List[int], "List[int]"),  # noqa: UP006
         ],
     )
     def test_type_name(self, input_type, expected):
@@ -257,17 +254,17 @@ class TestTypeName:
 
 class TestTypeSimplified:
     @pytest.mark.parametrize(
-        "input_type,expected",
+        ("input_type", "expected"),
         [
             (int, int),
             (str, str),
-            (List[int], list),
-            (Dict[str, int], dict),
-            (Union[int, str], (int, str)),
-            (Optional[int], (int, type(None))),
+            (list[int], list),
+            (dict[str, int], dict),
+            (int | str, (int, str)),
+            (int | None, (int, type(None))),
             (Any, Any),
-            (List[Dict[str, int]], list),
-            (Tuple[int, str], tuple),
+            (list[dict[str, int]], list),
+            (tuple[int, str], tuple),
             (OrderedDict[str, int], OrderedDict),
             (defaultdict[str, int], defaultdict),
         ],
@@ -276,7 +273,7 @@ class TestTypeSimplified:
         assert type_simplified(input_type) == expected
 
     def test_nested_types(self):
-        assert type_simplified(List[Dict[str, List[int]]]) == list
+        assert type_simplified(list[dict[str, list[int]]]) is list
 
     def test_custom_generic(self):
         from typing import Generic, TypeVar
@@ -289,13 +286,13 @@ class TestTypeSimplified:
         assert type_simplified(MyGeneric[int]) == MyGeneric
 
     def test_complex_union(self):
-        complex_type = Union[int, str, List[Dict[str, Any]]]
+        complex_type = int | str | list[dict[str, Any]]
         simplified = type_simplified(complex_type)
         assert isinstance(simplified, tuple)
         assert set(simplified) == {int, str, list}
 
     def test_none_type(self):
-        assert type_simplified(type(None)) == type(None)
+        assert type_simplified(type(None)) is type(None)
 
     @pytest.mark.parametrize("var", [None, 42, "string", [1, 2, 3]])
     def test_non_type_inputs(self, var):
@@ -308,8 +305,8 @@ def literal_types():
         "simple": Literal[1, 2, 3],
         "str_literal": Literal["a", "b", "c"],
         "mixed": Literal[1, "a", True],
-        "nested": Union[int, Literal[1, 2]],
-        "optional": Optional[Literal["x", "y"]],
+        "nested": int | Literal[1, 2],
+        "optional": Literal["x", "y"] | None,
     }
 
 
@@ -330,17 +327,17 @@ def test_is_or_contains_literal(literal_types):
     assert is_or_contains_literal(literal_types["nested"])
     assert is_or_contains_literal(literal_types["optional"])
     assert not is_or_contains_literal(int)
-    assert not is_or_contains_literal(Union[int, str])
+    assert not is_or_contains_literal(int | str)
 
 
 @pytest.mark.parametrize(
-    "literal_type, expected",
+    ("literal_type", "expected"),
     [
         (Literal[1, 2, 3], (1, 2, 3)),
         (Literal["a", "b"], ("a", "b")),
         (Literal[True, False], (True, False)),
-        (Union[int, Literal["x", "y"]], ("x", "y")),
-        (Optional[Literal[1, 2]], (1, 2)),
+        (int | Literal["x", "y"], ("x", "y")),
+        (Literal[1, 2] | None, (1, 2)),
     ],
 )
 def test_get_literal_choices(literal_type, expected):
@@ -348,12 +345,12 @@ def test_get_literal_choices(literal_type, expected):
 
 
 def test_get_literal_choices_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="is not a literal"):
         get_literal_choices(int)
 
 
 @pytest.mark.parametrize(
-    "literal_type, value, expected",
+    ("literal_type", "value", "expected"),
     [
         (Literal[1, 2, 3], 2, True),
         (Literal[1, 2, 3], 4, False),
@@ -368,19 +365,19 @@ def test_literal_contains(literal_type, value, expected):
 
 
 def test_literal_contains_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="is not a literal"):
         literal_contains(int, 1)
 
 
 def test_nested_literal_structures():
-    nested_literal = Union[Literal[1, 2], Literal["a", "b"]]
+    nested_literal = int | Literal[1, 2]
     assert is_or_contains_literal(nested_literal)
     assert not is_direct_literal(nested_literal)
-    assert get_literal_choices(nested_literal) in {(1, 2), ("a", "b")}
+    assert get_literal_choices(nested_literal) == (1, 2)
 
 
 def test_complex_union_with_literal():
-    complex_union = Union[int, str, Literal[1, "a"], Optional[Literal[True, False]]]
+    complex_union = int | str | Literal[1, "a"] | None
     assert is_or_contains_literal(complex_union)
     assert not is_direct_literal(complex_union)
     assert get_literal_choices(complex_union) == (1, "a")
@@ -447,7 +444,7 @@ def test_get_enum_choices_error():
 
 
 @pytest.mark.parametrize(
-    "enum_type,expected_len",
+    ("enum_type", "expected_len"),
     [
         (Color, 3),
         (ColorString, 3),

@@ -8,7 +8,7 @@ obj = Class(ExampleClassA)
 
 def test_getitem():
     assert obj.get_method("__init__").name == "__init__"
-    assert obj.has_init == True
+    assert obj.has_init
     assert obj.get_method(0).name == "__init__"
     assert obj.get_method("method_1").name == "method_1"
     assert len(obj.methods) == 3
@@ -21,7 +21,7 @@ def test_getitem():
 
 
 def test_init():
-    assert obj.has_init == True
+    assert obj.has_init
 
 
 def test_description():
@@ -33,7 +33,7 @@ def test_methods_len():
 
 
 def test_init_2():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="is not initialized"):
         obj.call_method("method_2")
 
     obj.init("a", 1)
@@ -68,13 +68,13 @@ def test_class_inheritance():
 
 
 def test_class_includes_classmethods_when_enabled():
-    cls = Class(ExampleClassC, classmethod=True)
+    cls = Class(ExampleClassC, class_method=True)
     assert "class_method" in [method.name for method in cls.methods]
 
 
 def test_instance_classmethod_filter_only_excludes_classmethods():
     instance = ExampleClassC()
-    cls = Class(instance, classmethod=False)
+    cls = Class(instance, class_method=False)
     method_names = [method.name for method in cls.methods]
     assert "public_method" in method_names
     assert "class_method" not in method_names
