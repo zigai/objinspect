@@ -5,18 +5,6 @@ from inspect import _ParameterKind
 from objinspect.function import Function
 
 
-def _resolve_class_method_option(class_method: bool, legacy_options: dict[str, object]) -> bool:
-    legacy_classmethod = legacy_options.pop("classmethod", None)
-    if legacy_classmethod is not None:
-        if not isinstance(legacy_classmethod, bool):
-            raise TypeError("`classmethod` must be a bool")
-        class_method = legacy_classmethod
-    if legacy_options:
-        unexpected_keys = ", ".join(sorted(legacy_options))
-        raise TypeError(f"Unexpected keyword argument(s): {unexpected_keys}")
-    return class_method
-
-
 class Method(Function):
     """
     The Method class represents a method of a class.
@@ -106,11 +94,8 @@ class MethodFilter:
         static_methods: bool = True,
         protected: bool = False,
         private: bool = False,
-        class_method: bool = False,
-        **legacy_options: object,
+        classmethod: bool = False,
     ) -> None:
-        class_method = _resolve_class_method_option(class_method, dict(legacy_options))
-
         self.checks: list[Callable[[Method], bool]] = []
         filter_checks: tuple[tuple[bool, Callable[[Method], bool]], ...] = (
             (not init, lambda method: method.name == "__init__"),
@@ -119,7 +104,7 @@ class MethodFilter:
             (not private, lambda method: method.is_private),
             (not protected, lambda method: method.is_protected),
             (not public, lambda method: method.is_public),
-            (not class_method, lambda method: method.is_classmethod),
+            (not classmethod, lambda method: method.is_classmethod),
         )
         for enabled, check in filter_checks:
             if enabled:

@@ -28,7 +28,7 @@ class Class:
         public (bool, optional): Include public methods.
         inherited (bool, optional): Include inherited methods.
         static_methods (bool, optional): Include static methods.
-        class_method (bool, optional): Include class methods.
+        classmethod (bool, optional): Include class methods.
         protected (bool, optional): Include protected methods.
         private (bool, optional): Include private methods.
 
@@ -54,19 +54,9 @@ class Class:
         static_methods: bool = True,
         protected: bool = False,
         private: bool = False,
-        class_method: bool = True,
+        classmethod: bool = True,
         skip_self: bool = True,
-        **legacy_options: object,
     ) -> None:
-        legacy_classmethod = legacy_options.pop("classmethod", None)
-        if legacy_classmethod is not None:
-            if not isinstance(legacy_classmethod, bool):
-                raise TypeError("`classmethod` must be a bool")
-            class_method = legacy_classmethod
-        if legacy_options:
-            unexpected_keys = ", ".join(sorted(legacy_options))
-            raise TypeError(f"Unexpected keyword argument(s): {unexpected_keys}")
-
         self.cls = cls
         self.skip_self = skip_self
         self.receieved_instance = not inspect.isclass(cls)
@@ -88,7 +78,7 @@ class Class:
             "static_methods": static_methods,
             "protected": protected,
             "private": private,
-            "class_method": class_method,
+            "classmethod": classmethod,
         }
         self._methods = self._find_methods()
         self.has_init = "__init__" in self._methods

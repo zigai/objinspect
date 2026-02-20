@@ -14,10 +14,9 @@ def inspect(
     public: bool = True,
     inherited: bool = True,
     static_methods: bool = True,
-    class_method: bool = False,
+    classmethod: bool = False,
     protected: bool = False,
     private: bool = False,
-    **legacy_options: object,
 ) -> Function | Class | Method:
     """
     Inspects an object and returns a structured representation of its attributes and methods.
@@ -33,10 +32,9 @@ def inspect(
         public (bool, optional): Whether to include public attributes and methods.
         inherited (bool, optional): Whether to include inherited attributes and methods.
         static_methods (bool, optional): Whether to include static methods.
-        class_method (bool, optional): Whether to include class methods.
+        classmethod (bool, optional): Whether to include class methods.
         protected (bool, optional): Whether to include protected attributes and methods (prefixed with _).
         private (bool, optional): Whether to include private attributes and methods (prefixed with __).
-        **legacy_options: Backward-compatible keyword options (supports `classmethod`).
 
     Returns:
         An object representing the structure of the inspected object.
@@ -70,22 +68,13 @@ def inspect(
             return Function(obj)
         return Method(obj, cls)
 
-    legacy_classmethod = legacy_options.pop("classmethod", None)
-    if legacy_classmethod is not None:
-        if not isinstance(legacy_classmethod, bool):
-            raise TypeError("`classmethod` must be a bool")
-        class_method = legacy_classmethod
-    if legacy_options:
-        unexpected_keys = ", ".join(sorted(legacy_options))
-        raise TypeError(f"Unexpected keyword argument(s): {unexpected_keys}")
-
     return Class(
         obj,
         init=init,
         public=public,
         inherited=inherited,
         static_methods=static_methods,
-        class_method=class_method,
+        classmethod=classmethod,
         protected=protected,
         private=private,
     )
