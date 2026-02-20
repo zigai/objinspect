@@ -1,7 +1,7 @@
 import typing
-from collections import OrderedDict, defaultdict, deque
+from collections import OrderedDict, defaultdict
 from enum import Enum, Flag, auto
-from typing import Any, Literal
+from typing import Any, DefaultDict, Dict, List, Literal, Set, Tuple, Union
 
 import pytest
 
@@ -111,21 +111,21 @@ class TestIsIterableType:
         assert is_iterable_type(tuple[int])
 
     def test_is_iterable_type_typing(self):
-        assert is_iterable_type(list)
-        assert is_iterable_type(dict)
+        assert is_iterable_type(typing.List)
+        assert is_iterable_type(typing.Dict)
         assert is_iterable_type(typing.Sequence)
-        assert is_iterable_type(set)
-        assert is_iterable_type(deque)
+        assert is_iterable_type(typing.Set)
+        assert is_iterable_type(typing.Deque)
 
 
 class TestIsMappingType:
     def test_is_mapping_type_typing(self):
         assert is_mapping_type(OrderedDict)
         assert is_mapping_type(defaultdict)
-        assert is_mapping_type(dict)
+        assert is_mapping_type(typing.Dict)
         assert is_mapping_type(typing.Mapping)
         assert is_mapping_type(typing.OrderedDict)
-        assert is_mapping_type(defaultdict)
+        assert is_mapping_type(typing.DefaultDict)
 
     def test_is_mapping_type_simple(self):
         assert not is_mapping_type(int)
@@ -142,27 +142,27 @@ class TestIsGenericAlias:
     @pytest.fixture
     def generic_types(self):
         return [
-            list[int],
-            dict[str, int],
-            tuple[str, int],
-            set[float],
-            list[dict[str, set[int]]],
+            List[int],
+            Dict[str, int],
+            Tuple[str, int],
+            Set[float],
+            List[Dict[str, Set[int]]],
             defaultdict[str, int],
-            defaultdict[str, int],
+            DefaultDict[str, int],
             OrderedDict[str, int],
         ]
 
     def test_positive_cases(self, generic_types):
         for type_hint in generic_types:
-            print(type(list[int]))
-            print(type(list))
+            print(type(List[int]))
+            print(type(List))
             assert is_generic_alias(type_hint)
 
     def test_negative_cases(self):
-        non_generic_types = [int, str, list, dict, int | str, Any]
+        non_generic_types = [int, str, List, Dict, Union[int, str], Any]
         for type_hint in non_generic_types:
-            print(type(list[int]))
-            print(type(list))
+            print(type(List[int]))
+            print(type(List))
             assert not is_generic_alias(type_hint)
 
     def test_custom_generic(self):
@@ -239,7 +239,7 @@ class TestTypeName:
             (Any, "Any"),
             (typing.Any, "Any"),
             (int | str, "int | str"),
-            (typing.List[int], "List[int]"),  # noqa: UP006
+            (typing.List[int], "List[int]"),
         ],
     )
     def test_type_name(self, input_type, expected):
