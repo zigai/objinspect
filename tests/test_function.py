@@ -1,5 +1,7 @@
+import asyncio
+
 import pytest
-from examples import example_function
+from examples import async_example_function, example_function
 
 from objinspect.constants import EMPTY
 from objinspect.function import Function
@@ -60,10 +62,17 @@ def test_call():
 
 
 def test_async():
-    async def async_function():
-        return 1
-
-    async_func = Function(async_function)
+    async_func = Function(async_example_function)
 
     assert not func.is_coroutine
     assert async_func.is_coroutine
+
+
+def test_call_async_with_sync_function():
+    from math import pow as math_pow
+
+    assert asyncio.run(Function(math_pow).call_async(2, 2)) == 4
+
+
+def test_call_async_with_async_function():
+    assert asyncio.run(Function(async_example_function).call_async(3)) == 4

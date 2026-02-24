@@ -1,6 +1,9 @@
-import pytest
+import asyncio
 
-from objinspect.util import create_function
+import pytest
+from examples import ExampleAsyncClass
+
+from objinspect.util import call_method_async, create_function
 
 
 class TestCreateFunction:
@@ -60,3 +63,13 @@ class TestCreateFunction:
     def test_edge_cases(self):
         nop = create_function(name="nop", args={}, body="pass", globs=globals())
         assert nop() is None
+
+
+def test_call_method_async_with_async_method():
+    obj = ExampleAsyncClass("util")
+    assert asyncio.run(call_method_async(obj, "async_instance_method", args=(2,))) == "util:2"
+
+
+def test_call_method_async_with_sync_method():
+    obj = ExampleAsyncClass()
+    assert asyncio.run(call_method_async(obj, "sync_method", args=(3,))) == 6

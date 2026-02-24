@@ -13,7 +13,7 @@ class ExampleClassA:
         print("ExampleClassA init")
 
     def method_1(self):
-        """test docstring"""
+        """Test docstring"""
         print("method test called")
         print(f"{self.a=}")
         print(f"{self.b=}")
@@ -61,6 +61,25 @@ class ExampleClassC(ExampleClassB):
         return "property"
 
 
+class ExampleAsyncClass:
+    def __init__(self, prefix: str = "value") -> None:
+        self.prefix = prefix
+
+    async def async_instance_method(self, value: int) -> str:
+        return f"{self.prefix}:{value}"
+
+    @staticmethod
+    async def async_static_method(value: int) -> int:
+        return value + 1
+
+    @classmethod
+    async def async_class_method(cls, value: str = "x") -> str:
+        return f"{cls.__name__}:{value}"
+
+    def sync_method(self, value: int) -> int:
+        return value * 2
+
+
 def example_function(a, b=None, c=4) -> int:
     """
     example_function dostring
@@ -71,3 +90,7 @@ def example_function(a, b=None, c=4) -> int:
         c (int, optional): Argument c. Defaults to 4.
     """
     return c * 2
+
+
+async def async_example_function(value: int = 1) -> int:
+    return value + 1

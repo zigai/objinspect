@@ -1,4 +1,4 @@
-from examples import ExampleClassC
+from examples import ExampleAsyncClass, ExampleClassC
 
 from objinspect import Class
 from objinspect.method import Method, MethodFilter
@@ -67,3 +67,11 @@ def test_extractor():
     assert "inherited_method" not in [
         i.name for i in MethodFilter(inherited=False).extract(ALL_METHODS)
     ]
+
+
+def test_async_methods():
+    assert Method(ExampleAsyncClass.async_instance_method, ExampleAsyncClass).is_coroutine
+    assert Method(ExampleAsyncClass.async_static_method, ExampleAsyncClass).is_coroutine
+    assert Method(ExampleAsyncClass.async_class_method, ExampleAsyncClass).is_coroutine
+    assert Method(ExampleAsyncClass.async_static_method, ExampleAsyncClass).is_static
+    assert Method(ExampleAsyncClass.async_class_method, ExampleAsyncClass).is_classmethod

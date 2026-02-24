@@ -1,5 +1,7 @@
+import asyncio
+
 import pytest
-from examples import ExampleClassA, ExampleClassC
+from examples import ExampleAsyncClass, ExampleClassA, ExampleClassC
 
 from objinspect import Class
 
@@ -78,3 +80,27 @@ def test_instance_classmethod_filter_only_excludes_classmethods():
     method_names = [method.name for method in cls.methods]
     assert "public_method" in method_names
     assert "class_method" not in method_names
+
+
+def test_classmethod_can_be_called_without_initialization():
+    cls = Class(ExampleClassC, classmethod=True)
+    assert cls.call_method("class_method") is None
+
+
+def test_async_method_call_requires_initialization():
+    cls = Class(ExampleAsyncClass, classmethod=True)
+    with pytest.raises(ValueError, match="is not initialized"):
+        asyncio.run(cls.call_method_async("async_instance_method", 3))
+
+
+def test_async_static_and_class_methods_call_without_initialization():
+    cls = Class(ExampleAsyncClass, classmethod=True)
+    assert asyncio.run(cls.call_method_async("async_static_method", 4)) == 5
+    assert asyncio.run(cls.call_method_async("async_class_method", "ok")) == "ExampleAsyncClass:ok"
+
+
+def test_async_call_on_initialized_instance():
+    cls = Class(ExampleAsyncClass)
+    cls.init("pref")
+    assert asyncio.run(cls.call_method_async("async_instance_method", 7)) == "pref:7"
+    assert asyncio.run(cls.call_method_async("sync_method", 7)) == 14
