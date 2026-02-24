@@ -1,6 +1,15 @@
+import enum as _enum
 import inspect as _inspect
 from collections.abc import Callable
 from typing import Any
+
+# `stdl` expects `enum.StrEnum` (added in Python 3.11). Backport it for 3.10.
+if not hasattr(_enum, "StrEnum"):
+
+    class StrEnum(str, _enum.Enum):
+        """Compatibility backport for Python 3.10."""
+
+    _enum.StrEnum = StrEnum  # type: ignore[attr-defined]
 
 from objinspect._class import Class
 from objinspect.function import Function
@@ -60,13 +69,15 @@ def inspect(
     ```
     """
     if _inspect.ismethod(obj):
-        return Method(obj, obj.__self__.__class__)
+        owner = obj.__self__
+        owner_cls = owner if isinstance(owner, type) else owner.__class__
+        return Method(obj, owner_cls)
 
     if _inspect.isfunction(obj):
-        cls = get_class_from_method(obj)
-        if cls is None:
+        method_cls = get_class_from_method(obj)
+        if method_cls is None:
             return Function(obj)
-        return Method(obj, cls)
+        return Method(obj, method_cls)
 
     return Class(
         obj,

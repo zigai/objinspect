@@ -145,10 +145,9 @@ def is_iterable_type(t: object) -> bool:
     if t in typing_iterables:
         return True
 
-    try:
-        return issubclass(t, Iterable)
-    except TypeError:
+    if not isinstance(t, type):
         return False
+    return issubclass(t, Iterable)
 
 
 def is_mapping_type(t: object) -> bool:
@@ -183,10 +182,9 @@ def is_mapping_type(t: object) -> bool:
     if t in typing_mappings:
         return True
 
-    try:
-        return issubclass(t, Mapping)
-    except TypeError:
+    if not isinstance(t, type):
         return False
+    return issubclass(t, Mapping)
 
 
 def type_simplified(t: object) -> object | tuple[object, ...]:
@@ -240,7 +238,7 @@ def get_enum_choices(e: object) -> tuple[str, ...]:
     """
     if not is_enum(e):
         raise TypeError(f"'{e}' is not an Enum")
-    return tuple(e.__members__.keys())
+    return tuple(typing.cast(EnumMeta, e).__members__.keys())
 
 
 def is_direct_literal(t: object) -> bool:

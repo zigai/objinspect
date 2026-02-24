@@ -1,5 +1,6 @@
 import inspect
 from dataclasses import dataclass
+from typing import TypeAlias
 
 from stdl.st import ForegroundColor, TextStyle, colored
 
@@ -7,7 +8,7 @@ from objinspect.constants import EMPTY
 from objinspect.typing import type_name
 from objinspect.util import colored_type
 
-ParameterKind = type(inspect.Parameter.POSITIONAL_ONLY)
+ParameterKind: TypeAlias = inspect._ParameterKind  # noqa: SLF001
 
 
 @dataclass
