@@ -1,3 +1,4 @@
+import inspect
 from collections.abc import Callable
 from types import FunctionType
 from typing import cast
@@ -37,6 +38,31 @@ def call_method(
     return getattr(obj, name)(*args, **kwargs)
 
 
+async def call_method_async(
+    obj: object,
+    name: str,
+    args: tuple[object, ...] = (),
+    kwargs: dict[str, object] | None = None,
+) -> object:
+    """
+    Call a method with the given name on the given object and await when needed.
+
+    Args:
+        obj (object): The object to call the method on.
+        name (str): The name of the method to call.
+        args (tuple, optional): The positional arguments to pass to the method.
+        kwargs (dict, optional): The keyword arguments to pass to the method.
+
+    Returns:
+        object: The result of calling the method.
+    """
+    kwargs = kwargs or {}
+    result = getattr(obj, name)(*args, **kwargs)
+    if inspect.isawaitable(result):
+        return await result
+    return result
+
+
 def get_uninherited_methods(cls: type) -> list[str]:
     """Get the methods of a class that are not inherited from its parent classes."""
     return [
@@ -61,7 +87,12 @@ def _build_argument_signature(args: dict[str, ArgumentDef]) -> str:
     arg_str: list[str] = []
     for arg_name, arg_def in args.items():
         arg_type, default = _parse_argument_def(arg_name, arg_def)
-        arg_repr = arg_name if arg_type is EMPTY else f"{arg_name}: {arg_type.__name__}"
+        if arg_type is EMPTY:
+            arg_repr = arg_name
+        elif isinstance(arg_type, type):
+            arg_repr = f"{arg_name}: {arg_type.__name__}"
+        else:
+            arg_repr = f"{arg_name}: {type_name(arg_type)}"
         if default is not EMPTY:
             arg_repr += f" = {default!r}"
         arg_str.append(arg_repr)
@@ -153,7 +184,7 @@ def create_function(
 
 
 def colored_type(
-    t: type,
+    t: object,
     style: TextStyle,
     simplify: bool = True,
 ) -> str:
@@ -182,4 +213,4 @@ def colored_type(
     return "".join(colored_segments)
 
 
-__all__ = ["call_method", "create_function", "get_uninherited_methods"]
+__all__ = ["call_method", "call_method_async", "create_function", "get_uninherited_methods"]

@@ -146,11 +146,37 @@ class Class:
             ValueError: If the class has not been initialized.
         """
         method_obj = self.get_method(method)
-        if not self.is_initialized and not method_obj.is_static:
+        if not self.is_initialized and not (method_obj.is_static or method_obj.is_classmethod):
             raise ValueError(f"Class {self.cls} is not initialized")
         if self.receieved_instance:
             return method_obj.call(*args, **kwargs)
+        if method_obj.is_static or method_obj.is_classmethod:
+            return method_obj.call(*args, **kwargs)
         return method_obj.call(self.instance, *args, **kwargs)
+
+    async def call_method_async(self, method: str | int, *args: object, **kwargs: object) -> object:
+        """
+        Call the specified method and await its result when needed.
+
+        Args:
+            method (str | int): The name or index of the method to call.
+            *args: Positional arguments to pass to the method.
+            **kwargs: Keyword arguments to pass to the method.
+
+        Returns:
+            Any: The result of calling the specified method.
+
+        Raises:
+            ValueError: If the class has not been initialized.
+        """
+        method_obj = self.get_method(method)
+        if not self.is_initialized and not (method_obj.is_static or method_obj.is_classmethod):
+            raise ValueError(f"Class {self.cls} is not initialized")
+        if self.receieved_instance:
+            return await method_obj.call_async(*args, **kwargs)
+        if method_obj.is_static or method_obj.is_classmethod:
+            return await method_obj.call_async(*args, **kwargs)
+        return await method_obj.call_async(self.instance, *args, **kwargs)
 
     def get_method(self, method: str | int) -> Method:
         """

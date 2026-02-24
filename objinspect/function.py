@@ -122,6 +122,19 @@ class Function:
         """
         return self.func(*args, **kwargs)
 
+    async def call_async(self, *args: object, **kwargs: object) -> object:
+        """
+        Call the function and await its result when needed.
+
+        Args:
+            *args: Positional arguments passed to the function.
+            **kwargs: Keyword arguments passed to the function.
+        """
+        result = self.func(*args, **kwargs)
+        if inspect.isawaitable(result):
+            return await result
+        return result
+
     @property
     def params(self) -> list[Parameter]:
         """Returns a list of parameters of the function."""
