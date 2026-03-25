@@ -26,7 +26,7 @@ pip install objinspect
 ```
 
 ```sh
-uv pip install objinspect
+uv add objinspect
 ```
 
 ### From source
@@ -36,7 +36,7 @@ pip install git+https://github.com/zigai/objinspect
 ```
 
 ```sh
-uv pip install git+https://github.com/zigai/objinspect
+uv add git+https://github.com/zigai/objinspect
 ```
 
 ## Examples
