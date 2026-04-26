@@ -5,7 +5,7 @@ from typing import TypeAlias
 from stdl.st import ForegroundColor, TextStyle, colored
 
 from objinspect.constants import EMPTY
-from objinspect.typing import type_name
+from objinspect.typing import RuntimeValue, TypeAnnotation, type_name
 from objinspect.util import colored_type
 
 ParameterKind: TypeAlias = inspect._ParameterKind  # noqa: SLF001
@@ -28,11 +28,11 @@ class Parameter:
         self,
         name: str,
         kind: ParameterKind,
-        annotation: object = EMPTY,
-        default: object = EMPTY,
+        annotation: TypeAnnotation = EMPTY,
+        default: RuntimeValue = EMPTY,
         description: str | None = None,
         infer_type: bool = True,
-        **legacy_kwargs: object,
+        **legacy_kwargs: TypeAnnotation,
     ) -> None:
         """
         Initialize a `Parameter` instance.
@@ -51,6 +51,7 @@ class Parameter:
                 msg = "'annotation' and legacy 'type' cannot both be provided."
                 raise TypeError(msg)
             annotation = legacy_kwargs.pop("type")
+
         if legacy_kwargs:
             unknown = ", ".join(sorted(legacy_kwargs))
             raise TypeError(f"Unexpected keyword arguments: {unknown}")
@@ -67,10 +68,11 @@ class Parameter:
         data = f"name='{self.name}', kind={self.kind!s}, type={self.type}, default={self.default}, description='{self.description}'"
         return f"{self.__class__.__name__}({data})"
 
-    def get_infered_type(self) -> object:
+    def get_infered_type(self) -> TypeAnnotation:
         """Infer the type of the parameter based on its default value."""
         if self.default is EMPTY:
             return EMPTY
+
         return type(self.default)
 
     @property
@@ -132,6 +134,7 @@ class Parameter:
             default_str = ""
 
         name_str = self.name if not color else colored(self.name, theme.name)
+
         return f"{name_str}{type_str}{default_str}"
 
     @classmethod

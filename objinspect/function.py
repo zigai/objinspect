@@ -2,6 +2,7 @@ import inspect
 from collections.abc import Callable
 from dataclasses import dataclass
 from types import NoneType
+from typing import cast
 
 import docstring_parser
 from docstring_parser import Docstring
@@ -9,22 +10,24 @@ from stdl.st import ForegroundColor, ansi_ljust, colored
 
 from objinspect.constants import EMPTY
 from objinspect.parameter import Parameter
-from objinspect.typing import type_name
+from objinspect.typing import RuntimeValue, type_name
 
 
-def _has_docstr(docstring: str | None) -> bool:
+def has_docstr(docstring: str | None) -> bool:
     if docstring is None:
         return False
+
     return len(docstring) != 0
 
 
-def _get_docstr_description(docstring: Docstring | None) -> str:
+def get_docstr_description(docstring: Docstring | None) -> str:
     if docstring is None:
         return ""
     if docstring.short_description:
         return docstring.short_description
     if docstring.long_description:
         return docstring.long_description
+
     return ""
 
 
@@ -56,19 +59,20 @@ class Function:
 
     """
 
-    def __init__(self, func: Callable[..., object], skip_self: bool = True) -> None:
+    def __init__(self, func: Callable[..., RuntimeValue], skip_self: bool = True) -> None:
         self.func = func
         self.skip_self = skip_self
         self.name: str = self.func.__name__
         self.docstring_text: str | None = inspect.getdoc(self.func)
-        self.has_docstring = _has_docstr(self.docstring_text)
+        self.has_docstring = has_docstr(self.docstring_text)
         if self.has_docstring and self.docstring_text is not None:
             self.docstring: Docstring | None = docstring_parser.parse(self.docstring_text)
         else:
             self.docstring = None
+
         self.return_type = NoneType
         self._parameters = self._get_parameters()
-        self.description = _get_docstr_description(self.docstring)
+        self.description = get_docstr_description(self.docstring)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name='{self.name}', parameters={len(self._parameters)}, description='{self.description}')"
@@ -89,6 +93,7 @@ class Function:
             if param.name == "self" and self.skip_self:
                 continue
             parameters[param.name] = param
+
         return parameters
 
     def get_param(self, arg: str | int) -> Parameter:
@@ -112,7 +117,7 @@ class Function:
             case _:
                 raise TypeError(type(arg))
 
-    def call(self, *args: object, **kwargs: object) -> object:
+    def call(self, *args: RuntimeValue, **kwargs: RuntimeValue) -> RuntimeValue:
         """
         Calls the function and returns the result of its call.
 
@@ -122,7 +127,7 @@ class Function:
         """
         return self.func(*args, **kwargs)
 
-    async def call_async(self, *args: object, **kwargs: object) -> object:
+    async def call_async(self, *args: RuntimeValue, **kwargs: RuntimeValue) -> RuntimeValue:
         """
         Call the function and await its result when needed.
 
@@ -132,7 +137,8 @@ class Function:
         """
         result = self.func(*args, **kwargs)
         if inspect.isawaitable(result):
-            return await result
+            return cast(RuntimeValue, await result)
+
         return result
 
     @property
@@ -195,9 +201,12 @@ class Function:
             description_str = f" # {self.description}"
             if color:
                 description_str = colored(description_str, theme.description)
+
             string += description_str
+
             return string
+
         return string
 
 
-__all__ = ["Function"]
+__all__ = ["Function", "get_docstr_description", "has_docstr"]

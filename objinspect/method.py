@@ -3,6 +3,7 @@ from collections.abc import Callable
 from inspect import _ParameterKind
 
 from objinspect.function import Function
+from objinspect.typing import RuntimeValue
 
 
 class Method(Function):
@@ -31,12 +32,14 @@ class Method(Function):
 
     """
 
-    def __init__(self, method: Callable[..., object], cls: type, skip_self: bool = True) -> None:
+    def __init__(
+        self, method: Callable[..., RuntimeValue], cls: type, skip_self: bool = True
+    ) -> None:
         super().__init__(method, skip_self)
         self.cls = cls
 
     @property
-    def class_instance(self) -> object | None:
+    def class_instance(self) -> RuntimeValue | None:
         """The instance to which this method is bound, or None if unbound."""
         return getattr(self.func, "__self__", None)
 
@@ -136,12 +139,12 @@ class MethodFilter:
 
 
 def split_args_kwargs(
-    func_args: dict[str, object],
+    func_args: dict[str, RuntimeValue],
     func: Function | Method,
-) -> tuple[tuple[object, ...], dict[str, object]]:
+) -> tuple[tuple[RuntimeValue, ...], dict[str, RuntimeValue]]:
     """Split the arguments passed to a function into positional and keyword arguments."""
-    args: list[object] = []
-    kwargs: dict[str, object] = {}
+    args: list[RuntimeValue] = []
+    kwargs: dict[str, RuntimeValue] = {}
     for param in func.params:
         if param.kind == _ParameterKind.POSITIONAL_ONLY:
             args.append(func_args[param.name])

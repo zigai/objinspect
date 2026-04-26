@@ -6,9 +6,10 @@ import docstring_parser
 from docstring_parser import Docstring
 from stdl.st import ForegroundColor, colored
 
-from objinspect.function import _get_docstr_description, _has_docstr
+from objinspect.function import get_docstr_description, has_docstr
 from objinspect.method import Method, MethodFilter
 from objinspect.parameter import Parameter
+from objinspect.typing import RuntimeValue
 
 
 @dataclass
@@ -70,7 +71,7 @@ class Class:
             self.instance = None
             self.name = getattr(cls, "__name__", str(cls))
         self.docstring_text: str | None = inspect.getdoc(self.cls)
-        self.has_docstring = _has_docstr(self.docstring_text)
+        self.has_docstring = has_docstr(self.docstring_text)
         self.extractor_kwargs = {
             "init": init,
             "public": public,
@@ -86,7 +87,7 @@ class Class:
             self.docstring: Docstring | None = docstring_parser.parse(self.docstring_text)
         else:
             self.docstring = None
-        self.description = _get_docstr_description(self.docstring)
+        self.description = get_docstr_description(self.docstring)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name='{self.name}', methods={len(self._methods)}, has_init={self.has_init}, description={self.description})"
@@ -114,7 +115,7 @@ class Class:
             methods[method.name] = method
         return methods
 
-    def init(self, *args: object, **kwargs: object) -> None:
+    def init(self, *args: RuntimeValue, **kwargs: RuntimeValue) -> None:
         """
         Initializes the class as an instance using the provided arguments.
 
@@ -130,7 +131,12 @@ class Class:
             raise TypeError(f"Cannot initialize object of type {type(self.cls)}")
         self.is_initialized = True
 
-    def call_method(self, method: str | int, *args: object, **kwargs: object) -> object:
+    def call_method(
+        self,
+        method: str | int,
+        *args: RuntimeValue,
+        **kwargs: RuntimeValue,
+    ) -> RuntimeValue:
         """
         Calls the specified method on the class or instance.
 
@@ -154,7 +160,12 @@ class Class:
             return method_obj.call(*args, **kwargs)
         return method_obj.call(self.instance, *args, **kwargs)
 
-    async def call_method_async(self, method: str | int, *args: object, **kwargs: object) -> object:
+    async def call_method_async(
+        self,
+        method: str | int,
+        *args: RuntimeValue,
+        **kwargs: RuntimeValue,
+    ) -> RuntimeValue:
         """
         Call the specified method and await its result when needed.
 
@@ -266,10 +277,10 @@ class Class:
 
 
 def split_init_args(
-    args: dict[str, object],
+    args: dict[str, RuntimeValue],
     cls: Class,
     method: Method,
-) -> tuple[dict[str, object], dict[str, object]]:
+) -> tuple[dict[str, RuntimeValue], dict[str, RuntimeValue]]:
     """
     Split the arguments into those that should be passed to the __init__ method
     and those that should be passed to the method call.

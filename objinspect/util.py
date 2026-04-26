@@ -1,20 +1,20 @@
 import inspect
 from collections.abc import Callable
 from types import FunctionType
-from typing import cast
+from typing import TypeAlias, cast
 
 from stdl.st import TextStyle, with_style
 
 from objinspect.constants import EMPTY
-from objinspect.typing import simplified_type_name, type_name
+from objinspect.typing import RuntimeValue, TypeAnnotation, simplified_type_name, type_name
 
 
 def call_method(
-    obj: object,
+    obj: RuntimeValue,
     name: str,
-    args: tuple[object, ...] = (),
-    kwargs: dict[str, object] | None = None,
-) -> object:
+    args: tuple[RuntimeValue, ...] = (),
+    kwargs: dict[str, RuntimeValue] | None = None,
+) -> RuntimeValue:
     """
     Call a method with the given name on the given object.
 
@@ -35,15 +35,15 @@ def call_method(
         ```
     """
     kwargs = kwargs or {}
-    return getattr(obj, name)(*args, **kwargs)
+    return cast(RuntimeValue, getattr(obj, name)(*args, **kwargs))
 
 
 async def call_method_async(
-    obj: object,
+    obj: RuntimeValue,
     name: str,
-    args: tuple[object, ...] = (),
-    kwargs: dict[str, object] | None = None,
-) -> object:
+    args: tuple[RuntimeValue, ...] = (),
+    kwargs: dict[str, RuntimeValue] | None = None,
+) -> RuntimeValue:
     """
     Call a method with the given name on the given object and await when needed.
 
@@ -59,8 +59,9 @@ async def call_method_async(
     kwargs = kwargs or {}
     result = getattr(obj, name)(*args, **kwargs)
     if inspect.isawaitable(result):
-        return await result
-    return result
+        return cast(RuntimeValue, await result)
+
+    return cast(RuntimeValue, result)
 
 
 def get_uninherited_methods(cls: type) -> list[str]:
@@ -72,14 +73,15 @@ def get_uninherited_methods(cls: type) -> list[str]:
     ]
 
 
-ArgumentDef = tuple[object] | tuple[object, object]
+ArgumentDef: TypeAlias = tuple[TypeAnnotation] | tuple[TypeAnnotation, RuntimeValue]
 
 
-def _parse_argument_def(name: str, arg_def: ArgumentDef) -> tuple[object, object]:
+def _parse_argument_def(name: str, arg_def: ArgumentDef) -> tuple[TypeAnnotation, RuntimeValue]:
     if len(arg_def) == 2:
         return arg_def
     if len(arg_def) == 1:
         return arg_def[0], EMPTY
+
     raise ValueError(f"Invalid annotations for argument {name}: {arg_def}")
 
 
@@ -87,25 +89,29 @@ def _build_argument_signature(args: dict[str, ArgumentDef]) -> str:
     arg_str: list[str] = []
     for arg_name, arg_def in args.items():
         arg_type, default = _parse_argument_def(arg_name, arg_def)
+
         if arg_type is EMPTY:
             arg_repr = arg_name
         elif isinstance(arg_type, type):
             arg_repr = f"{arg_name}: {arg_type.__name__}"
         else:
             arg_repr = f"{arg_name}: {type_name(arg_type)}"
+
         if default is not EMPTY:
             arg_repr += f" = {default!r}"
         arg_str.append(arg_repr)
+
     return ", ".join(arg_str)
 
 
-def _build_return_signature(return_type: object) -> str:
+def _build_return_signature(return_type: TypeAnnotation) -> str:
     if return_type is EMPTY:
         return ""
     if return_type is None:
         return " -> None"
     if hasattr(return_type, "__name__"):
         return f" -> {return_type.__name__}"
+
     return ""
 
 
@@ -114,7 +120,7 @@ def _build_function_source(
     name: str,
     args: dict[str, ArgumentDef],
     body: str | list[str],
-    return_type: object,
+    return_type: TypeAnnotation,
     docstring: str | None,
 ) -> str:
     arg_str_final = _build_argument_signature(args)
@@ -124,7 +130,9 @@ def _build_function_source(
     function_source += ":"
     if docstring:
         function_source += f'\n    """{docstring}"""'
+
     function_source += f"\n    {body_str}"
+
     return function_source
 
 
@@ -132,10 +140,10 @@ def create_function(
     name: str,
     args: dict[str, ArgumentDef],
     body: str | list[str],
-    globs: dict[str, object],
-    return_type: object = EMPTY,
+    globs: dict[str, RuntimeValue],
+    return_type: TypeAnnotation = EMPTY,
     docstring: str | None = None,
-) -> Callable[..., object]:
+) -> Callable[..., RuntimeValue]:
     """
     Create a function with the given name, arguments, body, and globals.
 
@@ -175,7 +183,7 @@ def create_function(
     )
     code_obj = compile(func_str, "<string>", "exec")
     exec(code_obj, globs)  # noqa: S102  # required for runtime function definition
-    func = cast(Callable[..., object], globs[name])
+    func = cast(Callable[..., RuntimeValue], globs[name])
     func.__annotations__ = {arg: annotation[0] for arg, annotation in args.items()}
     if return_type is not EMPTY:
         func.__annotations__["return"] = return_type
@@ -184,7 +192,7 @@ def create_function(
 
 
 def colored_type(
-    t: object,
+    t: TypeAnnotation,
     style: TextStyle,
     simplify: bool = True,
 ) -> str:
@@ -199,6 +207,7 @@ def colored_type(
     text = type_name(t)
     if simplify:
         text = simplified_type_name(text)
+
     NO_COLOR_CHARS = "[](){}|,?"
     colored_segments: list[str] = []
     current_segment: list[str] = []
@@ -209,8 +218,16 @@ def colored_type(
             colored_segments.append(char)
         else:
             current_segment.append(char)
+
     colored_segments.append(with_style("".join(current_segment), style))
+
     return "".join(colored_segments)
 
 
-__all__ = ["call_method", "call_method_async", "create_function", "get_uninherited_methods"]
+__all__ = [
+    "call_method",
+    "call_method_async",
+    "colored_type",
+    "create_function",
+    "get_uninherited_methods",
+]

@@ -7,6 +7,7 @@ from objinspect import inspect
 from objinspect._class import Class
 from objinspect.function import Function
 from objinspect.method import Method
+from objinspect.typing import RuntimeValue
 
 VARIABLE_SKIPS = {
     "__class__",
@@ -28,7 +29,7 @@ def _is_dunder(name: str) -> bool:
     return name.startswith("__") and name.endswith("__")
 
 
-def _try_inspect_attribute(attr: object) -> tuple[Function | Class | Method | None, bool]:
+def _try_inspect_attribute(attr: RuntimeValue) -> tuple[Function | Class | Method | None, bool]:
     try:
         return inspect(attr), False
     except AttributeError:
@@ -37,7 +38,7 @@ def _try_inspect_attribute(attr: object) -> tuple[Function | Class | Method | No
         return None, False
 
 
-def _collect_data(obj: object) -> defaultdict[str, dict[str, object]]:
+def _collect_data(obj: RuntimeValue) -> defaultdict[str, dict[str, object]]:
     data: defaultdict[str, dict[str, object]] = defaultdict(dict)
     for attr_name in dir(obj):
         try:
@@ -54,13 +55,15 @@ def _collect_data(obj: object) -> defaultdict[str, dict[str, object]]:
 
         key = "dunders" if _is_dunder(inspected_obj.name) else "methods"
         data[key][inspected_obj.name] = inspected_obj
+
     return data
 
 
-def _format_variable_value(value: object) -> str:
+def _format_variable_value(value: RuntimeValue) -> str:
     value_str = f"'{value}'" if isinstance(value, str) else str(value)
     if len(value_str) > 50:
         return value_str[:50] + "..."
+
     return value_str
 
 
@@ -71,6 +74,7 @@ def _print_dunders(
         return
 
     print("Dunders:")
+
     for dunder in dunders.values():
         if isinstance(dunder, Function):
             print(" " * indent + dunder.as_str(color=color))
@@ -82,6 +86,7 @@ def _print_variables(variables: dict[str, object], *, color: bool, indent: int) 
         return
 
     print("\nVariables:")
+
     for key, value in visible_vars.items():
         visible_key = colored(key, "light_blue") if color else key
         print(" " * indent + visible_key + " = " + _format_variable_value(value))
@@ -109,12 +114,13 @@ def _print_function_like_section(
         return
 
     print(f"\n{title}:")
+
     for method in methods:
         print(" " * indent + method.as_str(color=color))
 
 
 def prettydir(
-    obj: object,
+    obj: RuntimeValue,
     include_dunders: bool = False,
     color: bool = True,
     sep: bool = False,
@@ -148,6 +154,7 @@ def prettydir(
         color=color,
         indent=indent,
     )
+
     if sep:
         br()
 

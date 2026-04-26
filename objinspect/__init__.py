@@ -1,24 +1,24 @@
-import enum as _enum
-import inspect as _inspect
+import enum
+import inspect as inspect_module
 from collections.abc import Callable
-from typing import Any
 
 # `stdl` expects `enum.StrEnum` (added in Python 3.11). Backport it for 3.10.
-if not hasattr(_enum, "StrEnum"):
+if not hasattr(enum, "StrEnum"):
 
-    class StrEnum(str, _enum.Enum):
+    class StrEnum(str, enum.Enum):
         """Compatibility backport for Python 3.10."""
 
-    _enum.StrEnum = StrEnum  # type: ignore[attr-defined]
+    enum.StrEnum = StrEnum  # type: ignore[attr-defined]
 
 from objinspect._class import Class
 from objinspect.function import Function
 from objinspect.method import Method, MethodFilter
 from objinspect.parameter import Parameter
+from objinspect.typing import RuntimeValue
 
 
 def inspect(
-    obj: object,
+    obj: RuntimeValue,
     init: bool = True,
     public: bool = True,
     inherited: bool = True,
@@ -68,12 +68,12 @@ def inspect(
         Function(name='inspect', parameters=8, description='Inspects an object and returns a structured representation of its attributes and methods.')
     ```
     """
-    if _inspect.ismethod(obj):
+    if inspect_module.ismethod(obj):
         owner = obj.__self__
         owner_cls = owner if isinstance(owner, type) else owner.__class__
         return Method(obj, owner_cls)
 
-    if _inspect.isfunction(obj):
+    if inspect_module.isfunction(obj):
         method_cls = get_class_from_method(obj)
         if method_cls is None:
             return Function(obj)
@@ -91,7 +91,7 @@ def inspect(
     )
 
 
-def get_class_from_method(method: Callable[..., Any]) -> type | None:
+def get_class_from_method(method: Callable[..., RuntimeValue]) -> type | None:
     """
     Get the class that defines a given method.
 
@@ -102,7 +102,7 @@ def get_class_from_method(method: Callable[..., Any]) -> type | None:
         type | None: The class that defines the method, or None if not found.
     """
     qualname = method.__qualname__
-    module = _inspect.getmodule(method)
+    module = inspect_module.getmodule(method)
     if "." in qualname:
         parts = qualname.split(".")
         if module:
