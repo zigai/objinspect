@@ -73,10 +73,19 @@ def inspect(
         owner_cls = owner if isinstance(owner, type) else owner.__class__
         return Method(obj, owner_cls)
 
-    if inspect_module.isfunction(obj):
+    if inspect_module.isbuiltin(obj):
+        owner = getattr(obj, "__self__", None)
+        if owner is not None and not inspect_module.ismodule(owner):
+            owner_cls = owner if isinstance(owner, type) else owner.__class__
+            return Method(obj, owner_cls)
+
+        return Function(obj)
+
+    if inspect_module.isfunction(obj) or inspect_module.ismethoddescriptor(obj):
         method_cls = get_class_from_method(obj)
         if method_cls is None:
             return Function(obj)
+
         return Method(obj, method_cls)
 
     return Class(
@@ -101,6 +110,10 @@ def get_class_from_method(method: Callable[..., RuntimeValue]) -> type | None:
     Returns:
         type | None: The class that defines the method, or None if not found.
     """
+    objclass = getattr(method, "__objclass__", None)
+    if isinstance(objclass, type):
+        return objclass
+
     qualname = method.__qualname__
     module = inspect_module.getmodule(method)
     if "." in qualname:
@@ -112,10 +125,14 @@ def get_class_from_method(method: Callable[..., RuntimeValue]) -> type | None:
                     cls = getattr(cls, part)
                 else:
                     return None
+
             if isinstance(cls, type) and method.__name__ in cls.__dict__:
                 return cls
+
     return None
 
+
+from objinspect.prettydir import pdir, prettydir
 
 __all__ = [
     "Class",
@@ -124,4 +141,6 @@ __all__ = [
     "MethodFilter",
     "Parameter",
     "inspect",
+    "pdir",
+    "prettydir",
 ]
