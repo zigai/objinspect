@@ -1,6 +1,6 @@
 [project]
 name = "objinspect"
-version = "0.4.2"
+version = "0.4.3"
 description = "A high-level library for Python object inspection"
 authors = [{ name = "Žiga Ivanšek", email = "ziga.ivansek@gmail.com" }]
 license = { file = "LICENSE" }
@@ -8,7 +8,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "docstring-parser>=0.17.0",
-    "stdl>=0.7.0",
+    "stdl>=0.7.1",
     "typing-extensions>=4.7.1",
 ]
 
@@ -45,8 +45,17 @@ keywords = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest", "coverage"]
-dev = ["pytest", "coverage", "ruff", "pre-commit", "codespell", "mypy"]
+test = ["pytest>=9.0.2", "coverage>=7.13.5"]
+dev = [
+    "pytest>=9.0.2",
+    "coverage>=7.13.5",
+    "ruff==0.15.8",
+    "pre-commit>=4.5.1",
+    "codespell>=2.4.2",
+    "mypy>=1.19.1",
+    "rattle-lint>=1.0.6",
+    "rattle-blank-lines>=0.2.6",
+]
 
 [project.urls]
 Repository = "https://github.com/zigai/objinspect"
@@ -103,6 +112,10 @@ ignore_missing_imports = true
 
 [tool.codespell]
 skip = '.git,uv.lock'
+
+[tool.rattle]
+root = true
+enable = ["rattle_blank_lines.rules"]
 
 [tool.ruff]
 line-length = 100
@@ -198,11 +211,7 @@ exclude = ["build"]
     "FBT001",
     "SIM300",
 ]
-"tests/test_typing.py" = [
-    "UP006",
-    "UP007",
-    "UP035",
-]
+"tests/test_typing.py" = ["UP006", "UP007", "UP035"]
 "examples/*.py" = ["INP001"]
 
 [tool.ruff.lint.pep8-naming]
