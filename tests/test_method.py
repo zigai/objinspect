@@ -11,6 +11,18 @@ def test_method():
     assert Method(ExampleClassC.class_method, ExampleClassC).is_classmethod
 
 
+def test_private_method_detection_and_inheritance():
+    class PrivateExample:
+        def __private_method(self):
+            return None
+
+    method = Method(PrivateExample.__dict__["_PrivateExample__private_method"], PrivateExample)
+    assert method.is_private
+    assert not method.is_protected
+    assert not method.is_public
+    assert not method.is_inherited
+
+
 def test_method_inherited():
     assert Method(ExampleClassC.inherited_method, ExampleClassC).is_inherited
     assert not Method(ExampleClassC.public_method, ExampleClassC).is_inherited

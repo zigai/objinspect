@@ -14,10 +14,13 @@ def test_getitem():
     assert obj.get_method(0).name == "__init__"
     assert obj.get_method("method_1").name == "method_1"
     assert len(obj.methods) == 3
+
     with pytest.raises(IndexError):
         obj.get_method(3)
+
     with pytest.raises(TypeError):
         obj.get_method(3.3)
+
     with pytest.raises(KeyError):
         obj.get_method("abc")
 
@@ -80,6 +83,33 @@ def test_instance_classmethod_filter_only_excludes_classmethods():
     method_names = [method.name for method in cls.methods]
     assert "public_method" in method_names
     assert "class_method" not in method_names
+
+
+def test_instance_includes_static_methods():
+    instance = ExampleClassC()
+    cls = Class(instance)
+    assert "static_method" in [method.name for method in cls.methods]
+
+
+def test_private_filter_includes_private_methods_only_when_enabled():
+    class PrivateExample:
+        def __private_method(self):
+            return None
+
+        def _protected_method(self):
+            return None
+
+        def public_method(self):
+            return None
+
+    assert "__private_method" not in [method.name for method in Class(PrivateExample).methods]
+    assert "__private_method" in [
+        method.name for method in Class(PrivateExample, private=True).methods
+    ]
+    assert "_protected_method" not in [method.name for method in Class(PrivateExample).methods]
+    assert "_protected_method" in [
+        method.name for method in Class(PrivateExample, protected=True).methods
+    ]
 
 
 def test_classmethod_can_be_called_without_initialization():

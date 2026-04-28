@@ -21,10 +21,13 @@ def test_getitem():
     assert func.get_param("b").name == "b"
     assert func.get_param("c").name == "c"
     assert func.return_type is int
+
     with pytest.raises(IndexError):
         func.get_param(3)
+
     with pytest.raises(TypeError):
         func.get_param(3.3)
+
     with pytest.raises(KeyError):
         func.get_param("d")
 

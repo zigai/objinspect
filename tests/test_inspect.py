@@ -1,3 +1,5 @@
+import math
+
 from examples import (
     ExampleAsyncClass,
     ExampleClassA,
@@ -6,7 +8,7 @@ from examples import (
     example_function,
 )
 
-from objinspect import Class, Function, Method, inspect
+from objinspect import Class, Function, Method, inspect, pdir, prettydir
 
 
 def test_correct_return_types():
@@ -35,3 +37,14 @@ def test_inspect_async_metadata():
     assert inspect(async_example_function).is_coroutine
     assert inspect(ExampleAsyncClass.async_static_method).is_coroutine
     assert inspect(ExampleAsyncClass.async_class_method).is_coroutine
+
+
+def test_inspect_builtin_function_and_methods():
+    assert isinstance(inspect(math.pow), Function)
+    assert isinstance(inspect([].append), Method)
+    assert isinstance(inspect(list.append), Method)
+
+
+def test_prettydir_exports_are_available_from_package_root():
+    assert callable(pdir)
+    assert callable(prettydir)
