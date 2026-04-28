@@ -70,6 +70,7 @@ class Class:
             self.is_initialized = False
             self.instance = None
             self.name = getattr(cls, "__name__", str(cls))
+
         self.docstring_text: str | None = inspect.getdoc(self.cls)
         self.has_docstring = has_docstr(self.docstring_text)
         self.extractor_kwargs = {
@@ -87,6 +88,7 @@ class Class:
             self.docstring: Docstring | None = docstring_parser.parse(self.docstring_text)
         else:
             self.docstring = None
+
         self.description = get_docstr_description(self.docstring)
 
     def __repr__(self) -> str:
@@ -98,21 +100,51 @@ class Class:
             return self.cls.__class__ if hasattr(self.cls, "__class__") else type(self.cls)
         if isinstance(self.cls, type):
             return self.cls
+
         return type(self.cls)
 
     def _find_methods(self) -> dict[str, Method]:
         method_filter = MethodFilter(**self.extractor_kwargs)
         if self.is_initialized:
-            members = inspect.getmembers(self.cls, inspect.ismethod)
+            bound_members = inspect.getmembers(
+                self.cls,
+                inspect.ismethod,
+            )
+            member_names = {name for name, _ in bound_members}
+            static_members = [
+                (name, member)
+                for name, member in inspect.getmembers(
+                    self._class_base,
+                    lambda m: inspect.isfunction(m) or inspect.ismethoddescriptor(m),
+                )
+                if name not in member_names
+            ]
+            members = bound_members + static_members
         else:
             members = inspect.getmembers(
-                self.cls, lambda m: inspect.isfunction(m) or inspect.ismethod(m)
+                self.cls,
+                lambda m: (
+                    inspect.isfunction(m) or inspect.ismethod(m) or inspect.ismethoddescriptor(m)
+                ),
             )
+
         methods = {}
-        for method in method_filter.extract(
-            [Method(i[1], self._class_base, skip_self=self.skip_self) for i in members]
-        ):
+        method_objects: list[Method] = []
+        for _, member in members:
+            if (
+                inspect.ismethoddescriptor(member)
+                and getattr(member, "__objclass__", None) is not self._class_base
+            ):
+                continue
+
+            try:
+                method_objects.append(Method(member, self._class_base, skip_self=self.skip_self))
+            except (TypeError, ValueError):
+                continue
+
+        for method in method_filter.extract(method_objects):
             methods[method.name] = method
+
         return methods
 
     def init(self, *args: RuntimeValue, **kwargs: RuntimeValue) -> None:
@@ -125,10 +157,12 @@ class Class:
         """
         if self.is_initialized:
             raise ValueError(f"Class {self.cls} is already initialized")
+
         if callable(self.cls):
             self.instance = self.cls(*args, **kwargs)
         else:
             raise TypeError(f"Cannot initialize object of type {type(self.cls)}")
+
         self.is_initialized = True
 
     def call_method(
@@ -158,6 +192,7 @@ class Class:
             return method_obj.call(*args, **kwargs)
         if method_obj.is_static or method_obj.is_classmethod:
             return method_obj.call(*args, **kwargs)
+
         return method_obj.call(self.instance, *args, **kwargs)
 
     async def call_method_async(
@@ -187,6 +222,7 @@ class Class:
             return await method_obj.call_async(*args, **kwargs)
         if method_obj.is_static or method_obj.is_classmethod:
             return await method_obj.call_async(*args, **kwargs)
+
         return await method_obj.call_async(self.instance, *args, **kwargs)
 
     def get_method(self, method: str | int) -> Method:
@@ -220,6 +256,7 @@ class Class:
         """The parameters of the __init__ method, or None if not present."""
         if self.init_method is None:
             return None
+
         return self.init_method.params
 
     @property
@@ -268,11 +305,13 @@ class Class:
                 string += "\n" + colored(self.description, theme.description)
             else:
                 string += "\n" + str(self.description)
+
         if not len(self.methods):
             return string
 
         string += "\n"
         string += "\n".join([" " * indent + method.as_str(color=color) for method in self.methods])
+
         return string
 
 
@@ -290,7 +329,9 @@ def split_init_args(
         init_arg_names = [i.name for i in init_method.params]
         args_init = {k: v for k, v in args.items() if k in init_arg_names}
         args_method = {k: v for k, v in args.items() if k not in init_arg_names}
+
         return args_init, args_method
+
     return {}, args
 
 

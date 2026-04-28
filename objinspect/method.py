@@ -36,7 +36,21 @@ class Method(Function):
         self, method: Callable[..., RuntimeValue], cls: type, skip_self: bool = True
     ) -> None:
         super().__init__(method, skip_self)
+
         self.cls = cls
+
+    def _lookup_descriptor(self) -> tuple[type, RuntimeValue] | tuple[None, None]:
+        """Return the defining class and descriptor for this method, if found."""
+        for cls in inspect.getmro(self.cls):
+            candidate_names = [self.name]
+            if self.is_private:
+                candidate_names.append(f"_{cls.__name__.lstrip('_')}{self.name}")
+
+            for candidate_name in candidate_names:
+                if candidate_name in cls.__dict__:
+                    return cls, cls.__dict__[candidate_name]
+
+        return None, None
 
     @property
     def class_instance(self) -> RuntimeValue | None:
@@ -48,44 +62,47 @@ class Method(Function):
         """Whether the method is a static method."""
         if not inspect.isroutine(self.func):
             return False
-        for cls in inspect.getmro(self.cls):
-            if self.name in cls.__dict__:
-                binded_value = cls.__dict__[self.name]
-                return isinstance(binded_value, staticmethod)
+        _, descriptor = self._lookup_descriptor()
+        if descriptor is not None:
+            return isinstance(descriptor, staticmethod)
+
         return False
 
     @property
     def is_classmethod(self) -> bool:
         """Whether the method is a class method."""
-        for cls in inspect.getmro(self.cls):
-            if self.name in cls.__dict__:
-                return isinstance(cls.__dict__[self.name], classmethod)
+        _, descriptor = self._lookup_descriptor()
+        if descriptor is not None:
+            return isinstance(descriptor, classmethod)
+
         return False
 
     @property
     def is_property(self) -> bool:
         """Whether the method is a property."""
-        return isinstance(getattr(self.cls, self.name), property)
+        _, descriptor = self._lookup_descriptor()
+        return isinstance(descriptor, property)
 
     @property
     def is_private(self) -> bool:
-        """Whether the method is private (single underscore prefix)."""
-        return self.name.startswith("_") and not self.name.startswith("__")
+        """Whether the method is private (double underscore prefix, excluding dunders)."""
+        return self.name.startswith("__") and not self.name.endswith("__")
 
     @property
     def is_protected(self) -> bool:
-        """Whether the method is protected (single underscore prefix and suffix)."""
-        return self.name.startswith("_") and not self.name.endswith("__")
+        """Whether the method is protected (single underscore prefix, excluding dunders)."""
+        return self.name.startswith("_") and not self.name.startswith("__")
 
     @property
     def is_public(self) -> bool:
         """Whether the method is public (no underscore prefix)."""
-        return not self.is_private and not self.is_protected
+        return not self.name.startswith("_")
 
     @property
     def is_inherited(self) -> bool:
         """Whether the method is inherited from a parent class."""
-        return self.name not in self.cls.__dict__
+        owner_cls, _ = self._lookup_descriptor()
+        return owner_cls is not None and owner_cls is not self.cls
 
 
 class MethodFilter:
@@ -150,6 +167,7 @@ def split_args_kwargs(
             args.append(func_args[param.name])
         else:
             kwargs[param.name] = func_args[param.name]
+
     return tuple(args), kwargs
 
 
