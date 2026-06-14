@@ -52,7 +52,8 @@ spell: _require-uv
     uv run codespell
 
 # run all quality checks
-check: format lint coverage typecheck spell
+check: lint coverage typecheck spell
+  uv run ruff format --check .
 
 # list available recipes
 help:
