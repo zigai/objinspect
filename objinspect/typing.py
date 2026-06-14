@@ -3,7 +3,7 @@ import typing
 from collections import defaultdict, deque
 from collections.abc import Hashable, Iterable, Mapping
 from enum import EnumMeta
-from typing import TypeAlias
+from typing import TypeAlias, TypeGuard
 
 import typing_extensions
 
@@ -220,7 +220,7 @@ def type_simplified(t: TypeAnnotation) -> TypeAnnotation | tuple[TypeAnnotation,
     return origin
 
 
-def is_enum(t: TypeAnnotation) -> bool:
+def is_enum(t: TypeAnnotation) -> TypeGuard[EnumMeta]:
     """Check if a type is an Enum type."""
     return isinstance(t, EnumMeta)
 
@@ -249,7 +249,7 @@ def get_enum_choices(e: TypeAnnotation) -> tuple[str, ...]:
     if not is_enum(e):
         raise TypeError(f"'{e}' is not an Enum")
 
-    return tuple(typing.cast(EnumMeta, e).__members__.keys())
+    return tuple(e.__members__.keys())
 
 
 def is_direct_literal(t: TypeAnnotation) -> bool:

@@ -1,7 +1,7 @@
 import inspect
 from collections.abc import Callable
 from types import FunctionType
-from typing import TypeAlias, cast
+from typing import TypeAlias
 
 from stdl.st import TextStyle, with_style
 
@@ -35,7 +35,7 @@ def call_method(
         ```
     """
     kwargs = kwargs or {}
-    return cast(RuntimeValue, getattr(obj, name)(*args, **kwargs))
+    return getattr(obj, name)(*args, **kwargs)
 
 
 async def call_method_async(
@@ -59,9 +59,9 @@ async def call_method_async(
     kwargs = kwargs or {}
     result = getattr(obj, name)(*args, **kwargs)
     if inspect.isawaitable(result):
-        return cast(RuntimeValue, await result)
+        return await result
 
-    return cast(RuntimeValue, result)
+    return result
 
 
 def get_uninherited_methods(cls: type) -> list[str]:
@@ -183,7 +183,10 @@ def create_function(
     )
     code_obj = compile(func_str, "<string>", "exec")
     exec(code_obj, globs)  # noqa: S102  # required for runtime function definition
-    func = cast(Callable[..., RuntimeValue], globs[name])
+    func = globs[name]
+    if not isinstance(func, FunctionType):
+        raise TypeError(f"Expected generated function {name!r}, got {type(func)!r}")
+
     func.__annotations__ = {arg: annotation[0] for arg, annotation in args.items()}
     if return_type is not EMPTY:
         func.__annotations__["return"] = return_type

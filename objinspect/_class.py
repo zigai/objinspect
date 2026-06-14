@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import functools
 import inspect
 from dataclasses import dataclass
+from typing import TypeAlias
 
 import docstring_parser
 from docstring_parser import Docstring
@@ -10,6 +13,8 @@ from objinspect.function import get_docstr_description, has_docstr
 from objinspect.method import Method, MethodFilter
 from objinspect.parameter import Parameter
 from objinspect.typing import RuntimeValue
+
+MethodMap: TypeAlias = dict[str, Method]
 
 
 @dataclass
@@ -93,59 +98,6 @@ class Class:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name='{self.name}', methods={len(self._methods)}, has_init={self.has_init}, description={self.description})"
-
-    @functools.cached_property
-    def _class_base(self) -> type:
-        if self.is_initialized:
-            return self.cls.__class__ if hasattr(self.cls, "__class__") else type(self.cls)
-        if isinstance(self.cls, type):
-            return self.cls
-
-        return type(self.cls)
-
-    def _find_methods(self) -> dict[str, Method]:
-        method_filter = MethodFilter(**self.extractor_kwargs)
-        if self.is_initialized:
-            bound_members = inspect.getmembers(
-                self.cls,
-                inspect.ismethod,
-            )
-            member_names = {name for name, _ in bound_members}
-            static_members = [
-                (name, member)
-                for name, member in inspect.getmembers(
-                    self._class_base,
-                    lambda m: inspect.isfunction(m) or inspect.ismethoddescriptor(m),
-                )
-                if name not in member_names
-            ]
-            members = bound_members + static_members
-        else:
-            members = inspect.getmembers(
-                self.cls,
-                lambda m: (
-                    inspect.isfunction(m) or inspect.ismethod(m) or inspect.ismethoddescriptor(m)
-                ),
-            )
-
-        methods = {}
-        method_objects: list[Method] = []
-        for _, member in members:
-            if (
-                inspect.ismethoddescriptor(member)
-                and getattr(member, "__objclass__", None) is not self._class_base
-            ):
-                continue
-
-            try:
-                method_objects.append(Method(member, self._class_base, skip_self=self.skip_self))
-            except (TypeError, ValueError):
-                continue
-
-        for method in method_filter.extract(method_objects):
-            methods[method.name] = method
-
-        return methods
 
     def init(self, *args: RuntimeValue, **kwargs: RuntimeValue) -> None:
         """
@@ -313,6 +265,59 @@ class Class:
         string += "\n".join([" " * indent + method.as_str(color=color) for method in self.methods])
 
         return string
+
+    @functools.cached_property
+    def _class_base(self) -> type:
+        if self.is_initialized:
+            return self.cls.__class__ if hasattr(self.cls, "__class__") else type(self.cls)
+        if isinstance(self.cls, type):
+            return self.cls
+
+        return type(self.cls)
+
+    def _find_methods(self) -> MethodMap:
+        method_filter = MethodFilter(**self.extractor_kwargs)
+        if self.is_initialized:
+            bound_members = inspect.getmembers(
+                self.cls,
+                inspect.ismethod,
+            )
+            member_names = {name for name, _ in bound_members}
+            static_members = [
+                (name, member)
+                for name, member in inspect.getmembers(
+                    self._class_base,
+                    lambda m: inspect.isfunction(m) or inspect.ismethoddescriptor(m),
+                )
+                if name not in member_names
+            ]
+            members = bound_members + static_members
+        else:
+            members = inspect.getmembers(
+                self.cls,
+                lambda m: (
+                    inspect.isfunction(m) or inspect.ismethod(m) or inspect.ismethoddescriptor(m)
+                ),
+            )
+
+        methods = {}
+        method_objects: list[Method] = []
+        for _, member in members:
+            if (
+                inspect.ismethoddescriptor(member)
+                and getattr(member, "__objclass__", None) is not self._class_base
+            ):
+                continue
+
+            try:
+                method_objects.append(Method(member, self._class_base, skip_self=self.skip_self))
+            except (TypeError, ValueError):
+                continue
+
+        for method in method_filter.extract(method_objects):
+            methods[method.name] = method
+
+        return methods
 
 
 def split_init_args(

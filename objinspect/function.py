@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import inspect
 from collections.abc import Callable
 from dataclasses import dataclass
 from types import NoneType
-from typing import cast
+from typing import TypeAlias
 
 import docstring_parser
 from docstring_parser import Docstring
@@ -11,6 +13,8 @@ from stdl.st import ForegroundColor, ansi_ljust, colored
 from objinspect.constants import EMPTY
 from objinspect.parameter import Parameter
 from objinspect.typing import RuntimeValue, type_name
+
+ParameterMap: TypeAlias = dict[str, Parameter]
 
 
 def has_docstr(docstring: str | None) -> bool:
@@ -77,25 +81,6 @@ class Function:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name='{self.name}', parameters={len(self._parameters)}, description='{self.description}')"
 
-    def _get_parameters(self) -> dict[str, Parameter]:
-        signature = inspect.signature(self.func)
-        params = [Parameter.from_inspect_param(i) for i in signature.parameters.values()]
-        self.return_type = signature.return_annotation
-
-        if self.docstring is not None:
-            params_mapping = {par.arg_name: par for par in self.docstring.params}
-            for param in params:
-                if (parameter := params_mapping.get(param.name)) and parameter.description:
-                    param.description = parameter.description
-
-        parameters = {}
-        for param in params:
-            if param.name == "self" and self.skip_self:
-                continue
-            parameters[param.name] = param
-
-        return parameters
-
     def get_param(self, arg: str | int) -> Parameter:
         """
         Retrieve a single `Parameter` object.
@@ -137,7 +122,7 @@ class Function:
         """
         result = self.func(*args, **kwargs)
         if inspect.isawaitable(result):
-            return cast(RuntimeValue, await result)
+            return await result
 
         return result
 
@@ -207,6 +192,26 @@ class Function:
             return string
 
         return string
+
+    def _get_parameters(self) -> ParameterMap:
+        signature = inspect.signature(self.func)
+        params = [Parameter.from_inspect_param(i) for i in signature.parameters.values()]
+        self.return_type = signature.return_annotation
+
+        if self.docstring is not None:
+            params_mapping = {par.arg_name: par for par in self.docstring.params}
+            for param in params:
+                if (parameter := params_mapping.get(param.name)) and parameter.description:
+                    param.description = parameter.description
+
+        parameters = {}
+        for param in params:
+            if param.name == "self" and self.skip_self:
+                continue
+
+            parameters[param.name] = param
+
+        return parameters
 
 
 __all__ = ["Function", "get_docstr_description", "has_docstr"]

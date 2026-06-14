@@ -93,13 +93,13 @@ def test_instance_includes_static_methods():
 
 def test_private_filter_includes_private_methods_only_when_enabled():
     class PrivateExample:
-        def __private_method(self):
+        def public_method(self):
             return None
 
         def _protected_method(self):
             return None
 
-        def public_method(self):
+        def __private_method(self):
             return None
 
     assert "__private_method" not in [method.name for method in Class(PrivateExample).methods]

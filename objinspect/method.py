@@ -62,6 +62,7 @@ class Method(Function):
         """Whether the method is a static method."""
         if not inspect.isroutine(self.func):
             return False
+
         _, descriptor = self._lookup_descriptor()
         if descriptor is not None:
             return isinstance(descriptor, staticmethod)

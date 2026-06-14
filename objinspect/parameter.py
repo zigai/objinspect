@@ -48,8 +48,8 @@ class Parameter:
         """
         if "type" in legacy_kwargs:
             if annotation is not EMPTY:
-                msg = "'annotation' and legacy 'type' cannot both be provided."
-                raise TypeError(msg)
+                raise TypeError("'annotation' and legacy 'type' cannot both be provided.")
+
             annotation = legacy_kwargs.pop("type")
 
         if legacy_kwargs:
