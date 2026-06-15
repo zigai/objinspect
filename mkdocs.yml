@@ -76,7 +76,7 @@ plugins:
               - "!^__" # Hide private functions and methods
             show_signature_annotations: true
             signature_crossrefs: true
-          import:
+          inventories:
             - https://docs.python.org/3/objects.inv
 
 nav:
