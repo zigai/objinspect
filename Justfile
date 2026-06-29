@@ -93,7 +93,7 @@ clean:
 
 # static type check with pyrefly
 typecheck: _require-uv
-  uv run --group dev pyrefly check
+  uv run --group dev pyrefly check --min-severity warn
 
 # check code for common misspellings
 spell: _require-uv
