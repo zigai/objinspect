@@ -56,6 +56,20 @@ dev = [
     "rattle-lint>=2.5.1",
 ]
 
+[dependency-groups]
+test = ["pytest>=9.0.3", "coverage>=7.14.1"]
+dev = [
+    { include-group = "test" },
+    "ruff==0.15.16",
+    "pre-commit>=4.6.0",
+    "codespell>=2.4.2",
+    "pyrefly>=1.0.0",
+    "rattle-lint>=2.5.1",
+]
+
+[tool.uv]
+default-groups = ["test"]
+
 [project.urls]
 Repository = "https://github.com/zigai/objinspect"
 Issues = "https://github.com/zigai/objinspect/issues"
@@ -65,17 +79,6 @@ Documentation = "https://objinspect.readthedocs.io"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.hatch.envs.test]
-features = ["test"]
-installer = "uv"
-
-[[tool.hatch.envs.test.matrix]]
-python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
-
-[tool.hatch.envs.test.scripts]
-test = "pytest -v {args}"
-cov = "coverage run -m pytest {args}"
 
 [tool.hatch.build.targets.wheel]
 packages = ["objinspect"]
