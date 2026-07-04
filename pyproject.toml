@@ -3,7 +3,8 @@ name = "objinspect"
 version = "1.0.1"
 description = "A high-level library for Python object inspection"
 authors = [{ name = "Žiga Ivanšek", email = "ziga.ivansek@gmail.com" }]
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -13,7 +14,6 @@ dependencies = [
 ]
 
 classifiers = [
-    "License :: OSI Approved :: MIT License",
     "Typing :: Typed",
     "Operating System :: OS Independent",
     "Intended Audience :: Developers",
