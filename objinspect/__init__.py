@@ -1,14 +1,5 @@
-import enum
 import inspect as inspect_module
 from collections.abc import Callable
-
-# `stdl` expects `enum.StrEnum` (added in Python 3.11). Backport it for 3.10.
-if not hasattr(enum, "StrEnum"):
-
-    class StrEnum(str, enum.Enum):
-        """Compatibility backport for Python 3.10."""
-
-    enum.StrEnum = StrEnum  # type: ignore[attr-defined]
 
 from objinspect._class import Class
 from objinspect.function import Function
