@@ -7,19 +7,20 @@ _:
 _require-uv:
   @uv --version > /dev/null || (echo "Please install uv: https://docs.astral.sh/uv/" && exit 1)
 
-# check code style and potential issues
+# Check code style and potential issues
 lint: _require-uv
   uv run --group dev ruff check .
 
-# format code
+# Format code
 format: _require-uv
   uv run --group dev ruff format .
 
-# fix automatically fixable linting issues
+
+# Fix automatically fixable linting issues
 fix: _require-uv
   uv run --group dev ruff check --fix .
 
-# run tests across all supported Python versions
+# Run tests across all supported Python versions
 [script]
 test *args: _require-uv
   from pathlib import Path
@@ -72,38 +73,38 @@ test *args: _require-uv
       if result.returncode:
           raise SystemExit(result.returncode)
 
-# build the package
+# Build the package
 build: _require-uv
   uv build
 
-# setup or update local dev environment, keeps previously installed packages
+# Setup or update local dev environment, keeps previously installed packages
 sync: _require-uv
   uv sync --inexact --group dev
   uv run --group dev pre-commit install
 
-# run tests with coverage and show a coverage report
+# Run tests with coverage and show a coverage report
 coverage: _require-uv
   uv run coverage run -m pytest
   uv run coverage report
 
-# clean build artifacts and caches
+# Clean build artifacts and caches
 clean:
   rm -rf .venv .pytest_cache .mypy_cache .ruff_cache
   find . -type d -name "__pycache__" -exec rm -r {} +
 
-# static type check with pyrefly
+# Static type check with pyrefly
 typecheck: _require-uv
   uv run --group dev pyrefly check --min-severity warn
 
-# check code for common misspellings
+# Check code for common misspellings
 spell: _require-uv
   uv run --group dev codespell
 
-# run all quality checks
-check: lint coverage typecheck spell
+# Run all quality checks
+check: lint test coverage typecheck spell
   uv run --group dev ruff format --check .
 
-# list available recipes
+# List available recipes
 help:
   @just --list
 
