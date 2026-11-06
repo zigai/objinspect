@@ -42,22 +42,10 @@ keywords = [
 
 [project.optional-dependencies]
 test = ["pytest>=9.0.3", "coverage>=7.14.1"]
-dev = [
-    "pytest>=9.0.3",
-    "coverage>=7.14.1",
-    "ruff==0.16.10",
-    "pyrefly>=1.0.0",
-    "rattle-lint>=3.4.0",
-]
+dev = ["pytest>=9.0.3", "coverage>=7.14.1", "ruff==0.16.10", "pyrefly>=1.0.0", "rattle-lint>=3.4.0"]
 
 [dependency-groups]
-dev = [
-    "pytest>=9.0.3",
-    "coverage>=7.14.1",
-    "ruff==0.16.10",
-    "pyrefly>=1.0.0",
-    "rattle-lint>=3.4.0",
-]
+dev = ["pytest>=9.0.3", "coverage>=7.14.1", "ruff==0.16.10", "pyrefly>=1.0.0", "rattle-lint>=3.4.0"]
 
 [tool.uv]
 default-groups = ["dev"]
