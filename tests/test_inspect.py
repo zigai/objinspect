@@ -1,3 +1,4 @@
+import functools
 import math
 
 from examples import (
@@ -43,6 +44,15 @@ def test_inspect_builtin_function_and_methods():
     assert isinstance(inspect(math.pow), Function)
     assert isinstance(inspect([].append), Method)
     assert isinstance(inspect(list.append), Method)
+
+
+def test_inspect_partial_uses_wrapped_function_metadata():
+    obj = inspect(functools.partial(example_function, c=2))
+    assert isinstance(obj, Function)
+    assert obj.name == "example_function"
+    assert obj.description == "example_function dostring"
+    assert obj.get_param("c").default == 2
+    assert obj.call(1) == 4
 
 
 def test_prettydir_exports_are_available_from_package_root():

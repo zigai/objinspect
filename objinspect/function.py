@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import inspect
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -15,6 +16,13 @@ from objinspect.parameter import Parameter
 from objinspect.typing import RuntimeValue, type_name
 
 ParameterMap: TypeAlias = dict[str, Parameter]
+
+
+def _partial_target(func: Callable[..., RuntimeValue]) -> Callable[..., RuntimeValue]:
+    while isinstance(func, functools.partial):
+        func = func.func
+
+    return func
 
 
 def has_docstr(docstring: str | None) -> bool:
@@ -66,8 +74,9 @@ class Function:
     def __init__(self, func: Callable[..., RuntimeValue], skip_self: bool = True) -> None:
         self.func = func
         self.skip_self = skip_self
-        self.name: str = self.func.__name__
-        self.docstring_text: str | None = inspect.getdoc(self.func)
+        target = _partial_target(func)
+        self.name: str = target.__name__
+        self.docstring_text: str | None = inspect.getdoc(target)
         self.has_docstring = has_docstr(self.docstring_text)
         if self.has_docstring and self.docstring_text is not None:
             self.docstring: Docstring | None = docstring_parser.parse(self.docstring_text)

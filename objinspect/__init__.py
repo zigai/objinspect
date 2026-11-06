@@ -1,3 +1,4 @@
+import functools
 import inspect as inspect_module
 from collections.abc import Callable
 
@@ -72,7 +73,11 @@ def inspect(
 
         return Function(obj)
 
-    if inspect_module.isfunction(obj) or inspect_module.ismethoddescriptor(obj):
+    if (
+        isinstance(obj, functools.partial)
+        or inspect_module.isfunction(obj)
+        or inspect_module.ismethoddescriptor(obj)
+    ):
         method_cls = get_class_from_method(obj)
         if method_cls is None:
             return Function(obj)
@@ -105,7 +110,7 @@ def get_class_from_method(method: Callable[..., RuntimeValue]) -> type | None:
     if isinstance(objclass, type):
         return objclass
 
-    qualname = method.__qualname__
+    qualname = getattr(method, "__qualname__", "")
     module = inspect_module.getmodule(method)
     if "." in qualname:
         parts = qualname.split(".")
