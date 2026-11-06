@@ -11,17 +11,22 @@
 It provides a simple interface for examining Python functions and classes.
 
 ## Features
+
 - Simplified inspection of Python objects (classes, functions, methods)
 - Detailed information about parameters, return types, and docstrings
 - prettydir - like dir(), but with more information and prettier output
 
 ## Installation
+
 #### From PyPi
-```
+
+```text
 pip install objinspect
 ```
+
 #### From source
-```
+
+```text
 pip install git+https://github.com/zigai/objinspect
 ```
 
@@ -45,9 +50,11 @@ Function(name='pow', parameters=2, description='Return x**y (x to the power of y
 >>> inspect(inspect)
 Function(name='inspect', parameters=8, description='Inspects an object and returns a structured representation of its attributes and methods.')
 ```
+
 ### prettydir
+
 ![image](https://github.com/zigai/objinspect/assets/69588680/e1adcf90-0ef3-49e4-8804-a662f6388475)
 
-
 ## License
+
 [MIT License](https://github.com/zigai/obj-inspect/blob/master/LICENSE)

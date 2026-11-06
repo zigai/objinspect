@@ -1,2 +1,1 @@
 ::: objinspect._class
-
