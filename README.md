@@ -1,12 +1,12 @@
 # objinspect
 
-[![Tests](https://github.com/zigai/objinspect/actions/workflows/tests.yml/badge.svg)](https://github.com/zigai/objinspect/actions/workflows/tests.yml)
-[![Documentation Status](https://readthedocs.org/projects/objinspect/badge/?version=latest)](https://objinspect.readthedocs.io/en/latest/?badge=latest)
-[![PyPI version](https://badge.fury.io/py/objinspect.svg)](https://badge.fury.io/py/objinspect)
-![Supported versions](https://img.shields.io/badge/python-3.11+-blue.svg)
-[![Downloads](https://static.pepy.tech/badge/objinspect/month)](https://pepy.tech/project/objinspect)
-[![Downloads](https://static.pepy.tech/badge/objinspect)](https://pepy.tech/project/objinspect)
-[![license](https://img.shields.io/github/license/zigai/objinspect.svg)](https://github.com/zigai/objinspect/blob/main/LICENSE)
+[![tests](https://img.shields.io/github/actions/workflow/status/zigai/objinspect/tests.yml?branch=master&label=tests&labelColor=30363d)](https://github.com/zigai/objinspect/actions/workflows/tests.yml)
+[![docs](https://img.shields.io/readthedocs/objinspect?label=docs&logo=readthedocs&logoColor=white&labelColor=30363d)](https://objinspect.readthedocs.io/en/latest/)
+[![PyPI](https://img.shields.io/pypi/v/objinspect?label=PyPI&color=blue&logo=pypi&logoColor=white&labelColor=30363d)](https://pypi.org/project/objinspect/)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python&logoColor=white&labelColor=30363d)](pyproject.toml)
+[![downloads](https://img.shields.io/pypi/dm/objinspect?label=downloads&color=blue&labelColor=30363d)](https://pepy.tech/projects/objinspect)
+[![downloads](https://img.shields.io/pepy/dt/objinspect?label=downloads&color=blue&labelColor=30363d)](https://pepy.tech/projects/objinspect)
+[![license](https://img.shields.io/github/license/zigai/objinspect?label=license&labelColor=30363d)](LICENSE)
 
 `objinspect` is a high-level wrapper around Python's built-in `inspect` module.
 It provides a simple interface for examining Python functions and classes.
